@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.venv/
+env/
+*.egg-info/
+temp.mp3
+
+# Node / Frontend
+node_modules/
+dist/
+*.log
+
+# Build artifacts
+frontend/dist/
+backend/temp.mp3
+
+# Docker
+*.pid
+*.sock
+*.tar
+*.db
+.dockerignore
+
+# Environment Variables
+.env
+.env.*
+
+# VS Code / IDEs
+.vscode/
+.idea/
+
+# OS / System
+.DS_Store
+Thumbs.db
+
+# Others
+*.zip
+*.bak
