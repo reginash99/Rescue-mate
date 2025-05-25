@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <!--<div id="app">
     <h1>🎤 Transcribe Audio</h1>
 
     <input type="file" @change="handleFile" accept="audio/*" />
@@ -10,10 +10,19 @@
       <h2>📝 Result</h2>
       <pre>{{ result }}</pre>
     </div>
+  </div>-->
+  
+<div>
+    <Record />
   </div>
+   
 </template>
 
+<script setup>
+import Record from "./components/Record.vue";
+</script>
 <script>
+
 export default {
   data() {
     return {
