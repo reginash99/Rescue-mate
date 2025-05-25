@@ -5,31 +5,27 @@ defineProps<{
 </script>
 
 <template>
-  <div class="trnascription-main">
-    <h1 class="green">{{ msg }}</h1>
-    <h3>Transcription</h3>
+  <div class="transcription-main">
+    <h1>Transcription</h1>
     <div class="transcription">
-        
+        <p>Transcribing...</p>
     </div>
-
   </div>
 </template>
 
 <style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
+.transcription-main {
+  display:grid;
+  height: 100px;
 }
 
 .transcribe h1,
 .transcribe h3 {
-  text-align: center;
+  text-align: left;
+}
+
+.transcription{
+  background-color: rgb(163, 163, 163);
 }
 
 @media (min-width: 1024px) {
