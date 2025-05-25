@@ -1,3 +1,4 @@
+<!--
 <template>
   <div id="app">
     <h1>🎤 Transcribe Audio</h1>
@@ -12,6 +13,15 @@
     </div>
   </div>
 </template>
+-->
+
+<template>
+    <Transcription/>
+</template>
+
+<script setup>
+import Transcription from "../src/components/Transcription.vue";
+</script>
 
 <script>
 export default {
