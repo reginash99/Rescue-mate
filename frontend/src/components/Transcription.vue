@@ -19,7 +19,7 @@ defineProps<{
   flex-direction: column;
   height: 100%;
   width: 100%;
-  box-sizing: border-box; /* NEW */
+  box-sizing: border-box;
 }
 
 .transcription {
@@ -35,7 +35,7 @@ defineProps<{
 h1 {
   text-align: left;
   margin: 1% 0 0 2%;
-  box-sizing: border-box; /* Optional but helpful */
+  box-sizing: border-box;
 }
 </style>
 
