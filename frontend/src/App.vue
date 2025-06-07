@@ -67,7 +67,6 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: black;
 }
 
 .grid-container {
@@ -99,13 +98,8 @@ html, body {
   .grid-container {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, 1fr);
-    height: auto;
+    height: 100vh;
     width: auto;
-  }
-  .grid-item.col2-row1,
-  .grid-item.col2-row2 {
-    height: auto;
-    align-self: stretch;
   }
 }
 </style>
