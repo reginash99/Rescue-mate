@@ -15,23 +15,27 @@ defineProps<{
 
 <style scoped>
 .transcription-main {
-  display:grid;
-  height: 100px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box; /* NEW */
 }
 
-.transcribe h1,
-.transcribe h3 {
+.transcription {
+  flex: 1 1 0;
+  display: flex;
+  padding: 10px;
+  font-size: large;
+  background-color: #EEEEEE;
+  box-sizing: border-box;
+  margin: 15px;
+}
+
+h1 {
   text-align: left;
-}
-
-.transcription{
-  background-color: rgb(163, 163, 163);
-}
-
-@media (min-width: 1024px) {
-  .transcribe h1,
-  .transcribe h3 {
-    text-align: left;
-  }
+  margin: 1% 0 0 2%;
+  box-sizing: border-box; /* Optional but helpful */
 }
 </style>
+

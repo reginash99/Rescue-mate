@@ -1,22 +1,19 @@
-<!--
 <template>
-  <div id="app">
-    <h1>🎤 Transcribe Audio</h1>
-
-    <input type="file" @change="handleFile" accept="audio/*" />
-    <button :disabled="!file" @click="uploadAudio">Transcribe</button>
-
-    <div v-if="loading">⏳ Transcribing...</div>
-    <div v-if="result">
-      <h2>📝 Result</h2>
-      <pre>{{ result }}</pre>
+  <div class="grid-container">
+    <div class="grid-item" style="grid-column: 1; grid-row: 1;">
+      <h1>Map</h1>
+    </div>
+    <div class="grid-item" style="grid-column: 1; grid-row: 2;">
+      <h1>History</h1>
+    </div>
+    <div class="grid-item">
+      <h1>Recording</h1>
+    </div>
+    <div class="grid-item">
+      <!-- Second column, second row (40%) -->
+      <Transcription/>
     </div>
   </div>
-</template>
--->
-
-<template>
-    <Transcription/>
 </template>
 
 <script setup>
@@ -64,13 +61,52 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  padding: 2em;
-  max-width: 600px;
-  margin: auto;
-  text-align: center;
+  font-family: "Roboto Mono";
 }
-input {
-  margin: 1em 0;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: black;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 5px;
+  height: calc(100vh - 20px);   /* Account for margin */
+  width: calc(100vw - 20px);    /* Account for margin */
+  box-sizing: border-box;
+  border-width: .5px;
+  border-style: solid;
+  border-color: black;
+  padding: 0;      /* Remove padding for full snap */
+  margin: 0;       /* Remove margin for full snap */
+}
+
+.grid-item {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: .5px;
+  border-style: solid;
+  border-color: black;
+}
+
+@media (max-width: 900px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    height: auto;
+    width: auto;
+  }
+  .grid-item.col2-row1,
+  .grid-item.col2-row2 {
+    height: auto;
+    align-self: stretch;
+  }
 }
 </style>
