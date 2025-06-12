@@ -1,17 +1,23 @@
 <template>
-  <div id="app">
-    <h1>🎤 Transcribe Audio</h1>
-
-    <input type="file" @change="handleFile" accept="audio/*" />
-    <button :disabled="!file" @click="uploadAudio">Transcribe</button>
-
-    <div v-if="loading">⏳ Transcribing...</div>
-    <div v-if="result">
-      <h2>📝 Result</h2>
-      <pre>{{ result }}</pre>
+  <div class="grid-container">
+    <div class="grid-item" style="grid-column: 1; grid-row: 1;">
+      <h1>Map</h1>
+    </div>
+    <div class="grid-item" style="grid-column: 1; grid-row: 2;">
+      <h1>History</h1>
+    </div>
+    <div class="grid-item">
+      <h1>Recording</h1>
+    </div>
+    <div class="grid-item">
+      <Transcription/>
     </div>
   </div>
 </template>
+
+<script setup>
+import Transcription from "../src/components/Transcription.vue";
+</script>
 
 <script>
 export default {
@@ -54,13 +60,46 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  padding: 2em;
-  max-width: 600px;
-  margin: auto;
-  text-align: center;
+  font-family: "Roboto Mono";
 }
-input {
-  margin: 1em 0;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr 1fr;
+  gap: 5px;
+  height: calc(100vh - 20px);
+  width: calc(100vw - 20px);
+  box-sizing: border-box;
+  border-width: .5px;
+  border-style: solid;
+  border-color: black;
+  padding: 0;
+  margin: 0;
+}
+
+.grid-item {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: .5px;
+  border-style: solid;
+  border-color: black;
+}
+
+@media (max-width: 900px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    height: 100vh;
+    width: auto;
+  }
 }
 </style>
