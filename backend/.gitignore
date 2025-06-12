@@ -1,0 +1,74 @@
+.DS_Store
+__pycache__
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.pyo
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Environment
+.env
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# Conda
+*.conda
+*.egg-info/
+*.egg
+*.bak
+*.log
+
+# VS Code
+.vscode/
+.history/
+
+
+# Results, outputs, and data
+results/
+output_transcriptions/
+*.wav
+*.m4a
+*.mp3
+
+
+# Model checkpoints and large files
+ckpts/
+*.pth
+*.pt
+*.h5
+
+# Build artifacts
+build/
+dist/
+*.o
+*.a
+*.so
+
+# C/C++/CUDA build
+*.dll
+*.dylib
+*.lib
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Ignore data and cache folders
+data/
+cache/
+__cache__/
+
+# Ignore user-specific config
+*.user
+*.sublime-workspace
+*.sublime-project
