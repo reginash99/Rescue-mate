@@ -18,8 +18,8 @@ First it is recommended to install miniconda on Ubuntu and create a conda virtua
 Then install using conda all the packages in requirements.txt. Be careful to use pysoundfile instead of soundfile and skip argparse, torch and torchaudio. You might also need to install triton 2.2.0 using pip instead of conda. You might also need to downgrade the numpy to 1.26.
 
 Then we need to build the mamba_ssm by running (inside the backend folder): 
-    cd mamba_install
-    pip install .
+1.  cd mamba_install
+2.    pip install .
 
 # Whisper
 We install whisper using: pip install openai-whisper. Then import whisper inside mamba and after mamba is done cleaning up the background noise and before it is saved, we call whisper to transcribe it and save the transcription as a json file. 
