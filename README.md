@@ -15,7 +15,7 @@ WSL, conda is required, Pytorch, Torchaudio, and Cuda are required.
 
 First it is recommended to install miniconda on Ubuntu and create a conda virtual environment with the specified pytorch, torchaudio versions, we used python 3.11, as well as a cuda-toolkit 12.1 and activate it. 
 
-Then install using conda all the packages in requirements.txt. Be careful to use pysoundfile instead of soundfile and skip argparse, torch and torchaudio. You might also need to install triton 2.3.0 using pip instead of conda.
+Then install using conda all the packages in requirements.txt. Be careful to use pysoundfile instead of soundfile and skip argparse, torch and torchaudio. You might also need to install triton 2.2.0 using pip instead of conda. You might also need to downgrade the numpy to 1.26.
 
 Then we need to build the mamba_ssm by running (inside the backend folder): 
     cd mamba_install
