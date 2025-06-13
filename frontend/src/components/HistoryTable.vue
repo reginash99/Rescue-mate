@@ -7,8 +7,8 @@ defineProps<{
 <template>
   <div class="main-table">
     <div class="table_component" role="region" tabindex="0">
+        <h1>History</h1>
         <table>
-            <caption>History</caption>
             <thead>
                 <tr>
                     <th>ID</th>
@@ -64,6 +64,15 @@ defineProps<{
 </template>
 
 <style scoped>
+.main-table {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: 10px;
+    height: 100%;
+}
+
 .table_component {
     width: 100%;
 }

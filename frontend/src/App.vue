@@ -1,13 +1,13 @@
 <template>
   <div class="grid-container">
-    <div class="grid-item" style="grid-column: 1; grid-row: 1;">
+    <div class="grid-item">
       <h1>Map</h1>
-    </div>
-    <div class="grid-item" style="grid-column: 1; grid-row: 2;">
-      <HistoryTable/>
     </div>
     <div class="grid-item">
       <h1>Recording</h1>
+    </div>
+    <div class="grid-item">
+      <HistoryTable/>
     </div>
     <div class="grid-item">
       <Transcription/>
