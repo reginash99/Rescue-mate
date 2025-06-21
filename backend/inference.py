@@ -11,7 +11,13 @@ import soundfile as sf
 import whisper
 import numpy as np
 import scipy.signal as signal
-from scipy.signal import butter, lfilter
+from scipy.signal import butter, sosfiltfilt
+import subprocess
+import shutil
+import librosa
+from transformers import WhisperForConditionalGeneration, WhisperProcessor
+import soundfile as sf
+
 
 from utils.util import (
     load_ckpts, load_optimizer_states, save_checkpoint,
@@ -33,39 +39,63 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-#A minimal bandpass filter to improve speech intelligibility (esp. for radio-style speech):
-def bandpass_filter(audio, lowcut=300.0, highcut=3400.0, fs=16000, order=4):
+#A bandpass filter to improve speech intelligibility (esp. for radio-style speech):
+def bandpass_filter(audio, lowcut=200.0, highcut=4000.0, fs=16000, order=6):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
-    b, a = butter(order, [low, high], btype='band')
-    return lfilter(b, a, audio)
+
+    sos = butter(order, [low, high], btype='bandpass', output='sos')
+    filtered = sosfiltfilt(sos, audio)
+
+    return filtered
+
+#Designed for: post-denoised but still unclear speech, Real-time capable (low CPU/GPU use),Runs as a CLI or via Python wrapper, Open-source + pretrained
+def run_deepfilternet(input_folder, output_folder):
+    subprocess.run(["deepFilter", "-i", input_folder, "-o", output_folder], check=True)
 
 
 # Wiener filter is a classic, lightweight DSP method used in: Telephony, Hearing aids, Old ASR systems. It’s not as smart as NSNet2, but: Works on CPU, Requires no model, Boosts voice quality
-def wiener_filter(audio, sampling_rate):
-    """
-    Apply a basic spectral Wiener filter to enhance speech.
-    """
-    # STFT
-    f, t, Zxx = signal.stft(audio, fs=sampling_rate, nperseg=512)
-    magnitude = np.abs(Zxx)
-    phase = np.angle(Zxx)
+# def wiener_filter(audio, sampling_rate):
+#     """
+#     Apply a basic spectral Wiener filter to enhance speech.
+#     """
+#     # STFT
+#     f, t, Zxx = signal.stft(audio, fs=sampling_rate, nperseg=512)
+#     magnitude = np.abs(Zxx)
+#     phase = np.angle(Zxx)
 
-    # Estimate noise as minimum energy across time
-    noise_est = np.min(magnitude, axis=1, keepdims=True)
+#     # Estimate noise as minimum energy across time
+#     noise_est = np.min(magnitude, axis=1, keepdims=True)
 
-    # Wiener filter formula
-    wiener_gain = np.maximum(1e-5, 1 - (noise_est**2 / (magnitude**2 + 1e-5)))
+#     # Wiener filter formula
+#     wiener_gain = np.maximum(1e-5, 1 - (noise_est**2 / (magnitude**2 + 1e-5)))
 
-    # Apply gain
-    enhanced_mag = magnitude * wiener_gain
-    enhanced_stft = enhanced_mag * np.exp(1j * phase)
+#     # Apply gain
+#     enhanced_mag = magnitude * wiener_gain
+#     enhanced_stft = enhanced_mag * np.exp(1j * phase)
 
-    # Inverse STFT
-    _, enhanced_audio = signal.istft(enhanced_stft, fs=sampling_rate, nperseg=512)
+#     # Inverse STFT
+#     _, enhanced_audio = signal.istft(enhanced_stft, fs=sampling_rate, nperseg=512)
 
-    return enhanced_audio
+#     return enhanced_audio
+
+
+# A better DSP method than Wiener, it: Estimates noise from lowest-energy frames, Subtracts that from the spectrogram, Preserves speech formants better than Wiener, Works well on phone calls + radio
+# def spectral_subtraction(audio, sampling_rate, n_fft=512, hop_length=128):
+#     f, t, Zxx = signal.stft(audio, fs=sampling_rate, nperseg=n_fft, noverlap=n_fft - hop_length)
+#     magnitude = np.abs(Zxx)
+#     phase = np.angle(Zxx)
+
+#     # Estimate noise as 10th percentile across time (adaptive)
+#     noise_est = np.percentile(magnitude, 10, axis=1, keepdims=True)
+#     clean_mag = np.maximum(magnitude - noise_est, 0)
+
+#     cleaned_stft = clean_mag * np.exp(1j * phase)
+#     _, enhanced_audio = signal.istft(cleaned_stft, fs=sampling_rate, nperseg=n_fft, noverlap=n_fft - hop_length)
+
+#     return enhanced_audio
+
 
 def inference(args, device):
     cfg = load_config(args.config)
@@ -97,7 +127,17 @@ def inference(args, device):
         # ---------------------------------------------------- #
         for i, fname in enumerate(os.listdir( args.input_folder )):
             print(fname, args.input_folder)
-            noisy_wav, _ = librosa.load(os.path.join( args.input_folder, fname ), sr=sampling_rate)
+            # Load audio with original sample rate
+            noisy_wav, sr = librosa.load(os.path.join(args.input_folder, fname), sr=None, mono=True)
+            # Resample to 16kHz if needed
+            if sr != 16000:
+                noisy_wav = librosa.resample(noisy_wav, orig_sr=sr, target_sr=16000)
+                sr = 16000
+            # Normalize to -1.0 to 1.0
+            if np.max(np.abs(noisy_wav)) > 0:
+                noisy_wav = noisy_wav / np.max(np.abs(noisy_wav))
+            # Now noisy_wav is always 16kHz, mono, normalized
+            sampling_rate = sr
             noisy_wav = torch.FloatTensor(noisy_wav).to(device)
 
             norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
@@ -107,22 +147,29 @@ def inference(args, device):
             audio_g = mag_phase_istft(amp_g, pha_g, n_fft, hop_size, win_size, compress_factor)
             audio_g = audio_g / norm_factor
 
-            # INSERT ADDITIONAL FILTERS AFTER THIS LINE (the line above: audio_g =...)
+            # INSERT ADDITIONAL FILTERS AFTER THIS LINE (the line: audio_g =...)
 
             # Convert audio to numpy and filter it
             audio_np = audio_g.squeeze().cpu().numpy()
             filtered_audio = bandpass_filter(audio_np, fs=sampling_rate)
-            enhanced_audio = wiener_filter(filtered_audio, sampling_rate)
+            #enhanced_audio = spectral_subtraction(filtered_audio, sampling_rate)
 
             output_file = os.path.join(args.output_folder, fname)
 
             if args.post_processing_PCS == True:
                 #audio_g = cal_pcs(audio_g.squeeze().cpu().numpy())
-                sf.write(output_file, enhanced_audio, sampling_rate, 'PCM_16')
+                audio_g = cal_pcs(filtered_audio)
+                #sf.write(output_file, audio_g, sampling_rate, 'PCM_16')
+                sf.write(output_file, audio_g, sampling_rate, 'PCM_16')
             else:
-                sf.write(output_file, enhanced_audio, sampling_rate, 'PCM_16')
+                sf.write(output_file, filtered_audio, sampling_rate, 'PCM_16')
+                #sf.write(output_file, audio_g.squeeze().cpu().numpy(), sampling_rate, 'PCM_16')
             
-            
+            #deepfilter_out_dir = "dfn_output"
+            #os.makedirs(deepfilter_out_dir, exist_ok=True)
+            # Run DeepFilterNet
+            run_deepfilternet(args.output_folder, "dfn_output")
+
             #Transcribe the audio using Whisper
             print(f"Transcribing {fname}...")
             result = whisper_model.transcribe(output_file, language='de', task='transcribe')
@@ -144,6 +191,7 @@ def main():
     parser.add_argument('--output_folder', default='results')
     parser.add_argument('--config', default='results')
     parser.add_argument('--checkpoint_file', required=True)
+    #parser.add_argument('--whisper_dir',required=True,help="path to your fine-tuned Whisper folder (where you ran trainer.save_model)")
     parser.add_argument('--post_processing_PCS', type=str2bool, default=False)
     args = parser.parse_args()
 

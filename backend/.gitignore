@@ -37,7 +37,9 @@ output_transcriptions/
 *.wav
 *.m4a
 *.mp3
-
+training_dataset/training_audio_wav/
+training_dataset/training_transcriptions/
+finetune_whisper_attempt/my-whisper-small-finetuned/
 
 # Model checkpoints and large files
 ckpts/
