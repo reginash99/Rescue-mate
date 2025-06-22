@@ -1,4 +1,3 @@
-import glob
 import os
 import argparse
 import json
@@ -14,19 +13,11 @@ import scipy.signal as signal
 from scipy.signal import butter, sosfiltfilt
 import subprocess
 import librosa
-from transformers import WhisperForConditionalGeneration, WhisperProcessor
 import soundfile as sf
 import concurrent.futures
 #from deepfilter.filter import DeepFilterNet
 import concurrent.futures
-import glob
-from whisper import DecodingOptions
-
-from utils.util import (
-    load_ckpts, load_optimizer_states, save_checkpoint,
-    build_env, load_config, initialize_seed, 
-    print_gpu_info, log_model_info, initialize_process_group,
-)
+from utils.util import load_config
 
 #os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:16"
 
@@ -91,8 +82,7 @@ def inference(args, device):
     model.eval()
     
     #load the whisper model 
-    whisper_model = whisper.load_model("small", device="cpu")
-    #whisper_model = whisper_model.to(device)
+    whisper_model = whisper.load_model("small", device=device)
 
     with torch.no_grad():
         # You can use data.json instead of input_folder with:
@@ -118,7 +108,7 @@ def inference(args, device):
             wav = bandpass_filter(wav, lowcut=200.0, highcut=4000.0, fs=16000, order=6)
             wav = np.ascontiguousarray(wav)
 
-            # 3) chunk into 10 s pieces and denoise each
+            # 3) chunk into 3 s pieces and denoise each
             max_samples = 16000 * 3
             chunks = [wav[i:i+max_samples] for i in range(0, len(wav), max_samples)]
             clean_chunks = []
@@ -128,9 +118,8 @@ def inference(args, device):
                 x_fp16 = torch.from_numpy(chunk).to(device).unsqueeze(0).half()
 
                 # 1) STFT in float32 so cuFFT accepts your 400-sample frame
-                A_fp32, P_fp32, _ = mag_phase_stft(
-                    x_fp16.float(), n_fft, hop_size, win_size, compress_factor
-                )
+                A_fp32, P_fp32, _ = mag_phase_stft(x_fp16.float(), n_fft, hop_size, win_size, compress_factor)
+                
                 # cast the spectrogram back to half for SEMamba
                 A_fp16, P_fp16 = A_fp32.half(), P_fp32.half()
 
@@ -138,48 +127,40 @@ def inference(args, device):
                 Ag_fp16, Pg_fp16, _ = model(A_fp16, P_fp16)
 
                 # 3) ISTFT in float32 as well, to avoid the same half-precision FFT issue
-                out_fp32 = mag_phase_istft(
-                    Ag_fp16.float(), Pg_fp16.float(), n_fft, hop_size, win_size, compress_factor
-                )
+                out_fp32 = mag_phase_istft(Ag_fp16.float(), Pg_fp16.float(), n_fft, hop_size, win_size, compress_factor)
 
                 # collect the cleaned audio chunk (always in CPU float32 NumPy)
                 clean_chunks.append(out_fp32.squeeze().cpu().detach().numpy())
 
+            # free any stranded tensors
+            torch.cuda.empty_cache()
             audio_np = np.concatenate(clean_chunks)
-            
+
             # 5) optional post-clean DSP
-            #audio_np = audio_clean.squeeze().detach().cpu().numpy()
             if args.post_processing_PCS:
                 audio_np = cal_pcs(audio_np)
 
             ## 7) write the SEMamba-cleaned WAV
-            semamba_out = os.path.join(args.output_folder, fname)
-            sf.write(semamba_out, audio_np, 16000, 'PCM_16')
+            #semamba_out = os.path.join(args.output_folder, fname)
+            #sf.write(semamba_out, audio_np, 16000, 'PCM_16')
             
-            # free any stranded tensors
-            torch.cuda.empty_cache()
-            return semamba_out
+            return audio_np
 
         # run up to 2 files in parallel
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as exe:
             cleaned_paths=list(exe.map(process_file, files))
         
-        for semamba_out in cleaned_paths:
-            base = os.path.splitext(os.path.basename(semamba_out))[0]
-            dfn_dir = "dfn_output"
-            os.makedirs(dfn_dir, exist_ok=True)
-            run_deepfilternet(semamba_out, dfn_dir)
-
-            pattern = os.path.join(dfn_dir, f"{base}*_DeepFilterNet3*.wav")
-            matches = glob.glob(pattern)
-            if not matches:
-                raise FileNotFoundError(f"No DeepFilterNet3 output for {semamba_out}")
-            dfn_file = matches[0]
+        for i, audio_np in enumerate(cleaned_paths):
+            fname = files[i] 
+            base = os.path.splitext(os.path.basename(fname))[0]            
+            results_out_path = os.path.join(args.output_folder, f"{base}_final.wav")
+            
+            sf.write(results_out_path, audio_np, 16000, 'PCM_16')
+            run_deepfilternet(results_out_path, args.output_folder)
 
             # 9) transcribe the DeepFilterNet3 output
-            print(f"Transcribing cleaned file {os.path.basename(dfn_file)}…")
-            result = whisper_model.transcribe(dfn_file, language='de', task='transcribe', no_speech_threshold=0.1, beam_size=5, temperature=0.0)
-
+            print(f"Transcribing cleaned file {os.path.basename(results_out_path)}…")
+            result = whisper_model.transcribe(results_out_path, language='de', task='transcribe', no_speech_threshold=0.1, beam_size=5, temperature=0.0)
 
             print(f"Transcription for {fname}: {result['text']}")
 
