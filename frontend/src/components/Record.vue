@@ -1,63 +1,4 @@
-<!--<style>
-#record_component {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center items horizontally */
-  justify-content: flex-start; /* Start from the top to keep button in place */
-  padding-top: 20px; /* Optional, for spacing */
-  box-sizing: border-box;
-}
 
-/* Fix button width and alignment */
-button.btn.btn-danger {
-  min-width: 150px; 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /* Optional: add fixed height if needed to prevent shifting */
-  height: 40px; 
-  margin-bottom: 10px; /* space below button for consistent layout */
-}
-
-/* Container for the video */
-#recordingVideo {
-  margin-top: 10px; 
-  width: 100%; 
-  display: flex;
-  justify-content: center;
-  /* Optional: set a max width for your video if needed */
-}
-
-/* Optional: prevent container from collapsing when video is not visible */
-#video-wrapper {
-  height: auto; /* or fixed height if needed */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-/*#record_component {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center; 
-  justify-content: center;
-button.btn.btn-danger {
-  min-width: 150px; 
-  display: inline-flex; 
-  align-items: center; 
-  justify-content: center; 
-#recordingVideo {
-  margin-top: 10px; 
-  width: 100%; 
-  display: flex;
-  justify-content: center;
-}
-}*/
-
-</style>-->
 <template>
     <!-- Tap once for start recording, Tap once for stopping -->
     <!--https://getbootstrap.com/docs/4.3/getting-started/introduction/-->
@@ -110,20 +51,69 @@ bottom: 20,
 left: 20,
 };
 const record_component = ref(null)
+let recorder = null;
+let audio = [];
+
+  
 
 function startRecording() {
     isRecording.value = true;
     console.log("Recording started")
+
+    if(recorder.state == "recording") {
+      audio = [];
+        recorder.start();
+    }
+    
+
+    
+    
+    }
+    
+function stopRecording() {   
+  if(recorder.state == "inactive"){
+    recorder.stop();
+  }
+    isRecording.value = false;
+    console.log("Recording stopped")
+    
     
 }
-function stopRecording() {   
-    isRecording.value = false;
-    console.log("Recording stoppen")
+
+
+function sentAudio () {
+    let audio = new Blob(data, {type:audio});
+    let file = new File ([audio], "recording.wav",{type: 'audio/wav'})
 }
+
 
   onMounted(() => {
       if (record_component.value) {
       clientWidth.value = record_component.value.clientWidth;
     }
+
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia(
+        {
+          audio: true
+        }
+      )
+      .then((stream) => {
+        
+        recorder = new MediaRecorder(stream)
+        
+        recorder.ondataavailable  = (event) => {
+                data.push(event.data)
+        }
+
+        recorder.onstop = () => {
+
+        }
+      })
+      .catch((error) => {
+        console.error("Error occured: ",error)
+      })
+    }
+
     });
 </script>
