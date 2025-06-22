@@ -6,9 +6,14 @@
     <div class="grid-item" style="grid-column: 1; grid-row: 2;">
       <h1>History</h1>
     </div>
-    <div class="grid-item">
-      <h1>Recording</h1>
-    </div>
+<div class="grid-item">
+  <h1>Recording</h1>
+  <button @click="startRecording" :disabled="recording">Start Recording</button>
+  <button @click="stopRecording" :disabled="!recording">Stop Recording</button>
+  <button @click="uploadRecording" :disabled="!recordedBlob">Upload & Transcribe</button>
+  <div v-if="loading">⏳ Uploading...</div>
+  <div v-if="result">{{ result }}</div>
+</div>
     <div class="grid-item">
       <Transcription/>
     </div>
@@ -17,34 +22,56 @@
 
 <script setup>
 import Transcription from "../src/components/Transcription.vue";
+
 </script>
 
 <script>
 export default {
   data() {
     return {
-      file: null,
-      result: "",
-      loading: false
+      recording: false,
+      recordedBlob: null,
+      mediaRecorder: null,
+      chunks: [],
+      loading: false,
+      result: ""
     };
   },
   methods: {
-    handleFile(e) {
-      this.file = e.target.files[0];
+    async startRecording() {
+      this.chunks = [];
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        this.mediaRecorder = new MediaRecorder(stream);
+        this.mediaRecorder.ondataavailable = e => this.chunks.push(e.data);
+        this.mediaRecorder.onstop = this.handleStop;
+        this.mediaRecorder.start();
+        this.recording = true;
+      } catch (err) {
+        console.error("Failed to start recording:", err);
+      }
     },
-    async uploadAudio() {
-      if (!this.file) return;
-
+    stopRecording() {
+      if (this.mediaRecorder) {
+        this.mediaRecorder.stop();
+        this.recording = false;
+      }
+    },
+    handleStop() {
+      this.recordedBlob = new Blob(this.chunks, { type: "audio/webm" });
+    },
+    async uploadRecording() {
+      if (!this.recordedBlob) return;
       this.loading = true;
+
       const formData = new FormData();
-      formData.append("file", this.file);
+      formData.append("file", this.recordedBlob, "recording.webm");
 
       try {
         const response = await fetch("http://localhost:8000/transcribe", {
           method: "POST",
           body: formData
         });
-
         const data = await response.json();
         this.result = data.text;
       } catch (error) {
@@ -56,6 +83,7 @@ export default {
     }
   }
 };
+
 </script>
 
 <style>
