@@ -42,8 +42,6 @@ training_dataset/training_transcriptions/
 finetune_whisper_attempt/my-whisper-small-finetuned/
 
 # Model checkpoints and large files
-ckpts/
-*.pth
 *.pt
 *.h5
 
