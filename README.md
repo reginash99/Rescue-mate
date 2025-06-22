@@ -6,7 +6,7 @@ Naming Convention:
 - f_component_something
 - b_component_something
 
-
+## BACKEND
 # Installation
 # SE Mamba
 For SE Mamba (the code is inside the backend folder), a Linux-based system is required, but since we are operating on Windows, we will use WSL on windows and install Ubuntu using it (there are tutorials on how to make this work but it is fairly simple and involves only terminal commands). By doing this, we will be able to use the Ubuntu terminal on our respective windows devices.
@@ -29,4 +29,13 @@ Then we need to build the mamba_ssm by running (inside the backend folder):
 # Whisper
 We install whisper using the command: pip install openai-whisper (still inside the same conda environment). 
 Then we import whisper inside mamba (interface.py) and after mamba is done cleaning up the background noise but before it is saved we call whisper to transcribe it and save the transcription as a json file. 
+
+
+# Filters
+We changed how the interface.py processes audio by making it cut the audio into 3 second chunks, thus improving the speed. We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested. The pipeline so far looks like this: 
+
+
+SEMamba -> Bandpass filter -> deepfilternet3 -> Whisper
+
+
 
