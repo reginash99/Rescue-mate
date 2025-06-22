@@ -88,11 +88,13 @@ html, body {
 .grid-item {
   background: #ffffff;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   border-width: .5px;
   border-style: solid;
   border-color: black;
+  height: 100%;
+  min-height: 0;
 }
 
 @media (max-width: 900px) {

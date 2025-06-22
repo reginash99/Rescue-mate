@@ -5,10 +5,9 @@ defineProps<{
 </script>
 
 <template>
-    <vue-scrolling-table>
         <div class="main-table">
-            <div class="table_component" role="region" tabindex="0">
             <h1>History</h1>
+            <div class="table_component" role="region" tabindex="0">
             <table responsive="True">
                 <thead>
                     <tr>
@@ -176,35 +175,31 @@ defineProps<{
 
 <style scoped>
 .main-table {
-    display: block;
+    display: flex;
     padding: 10px;
+    flex-direction: column;
     height: 100%;
-}
-
-table{
-    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 0;
     width: 100%;
-    height: 100%;
-    max-height: 100%;
-    table-layout: auto;
-    overflow-x: scroll;
-    overflow-y: scroll;
 }
 
-.table_component{
-    max-height: inherit;
-    overflow-y: scroll;
+.table_component {
+    min-height: 0;
+    overflow-y: auto; 
+    border: 1px none #dededf;
+    border-collapse: collapse;
+    border-spacing: 1px;
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+    max-height: 100%;
 }
 
 .table_component table {
-    border: 1px none #dededf;
-    height: 100%;
-    width: 50vw;
+    width: 100%;
     border-collapse: collapse;
-    border-spacing: 1px;
-    text-align: left;
-    overflow-x: scroll;
-    overflow-y: scroll;
+    border-spacing: 0;
 }
 
 .table_component caption {
@@ -213,11 +208,13 @@ table{
 }
 
 .table_component th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
     border: 1px none #dededf;
     background-color: #000000;
     color: #ffffff;
     padding: 5px;
-    word-break: break-word;
 }
 
 .table_component td {
@@ -233,6 +230,12 @@ table{
 .table_component tr:nth-child(odd) td {
     background-color: #ffffff;
     color: #000000;
+}
+
+@media (max-width: 900px) {
+  .table_component th {
+    position: relative;
+  }
 }
 
 .sent {
