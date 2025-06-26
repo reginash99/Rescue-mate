@@ -1,13 +1,13 @@
 <template>
   <div class="grid-container">
-    <div class="grid-item" style="grid-column: 1; grid-row: 1;">
+    <div class="grid-item">
       <h1>Map</h1>
-    </div>
-    <div class="grid-item" style="grid-column: 1; grid-row: 2;">
-      <h1>History</h1>
     </div>
     <div class="grid-item">
       <h1>Recording</h1>
+    </div>
+    <div class="grid-item">
+      <HistoryTable/>
     </div>
     <div class="grid-item">
       <Transcription/>
@@ -17,6 +17,7 @@
 
 <script setup>
 import Transcription from "../src/components/Transcription.vue";
+import HistoryTable from "./components/HistoryTable.vue";
 </script>
 
 <script>
@@ -87,11 +88,13 @@ html, body {
 .grid-item {
   background: #ffffff;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   border-width: .5px;
   border-style: solid;
   border-color: black;
+  height: 100%;
+  min-height: 0;
 }
 
 @media (max-width: 900px) {
