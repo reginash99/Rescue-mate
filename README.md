@@ -26,6 +26,21 @@ Then we need to build the mamba_ssm by running (inside the backend folder):
 2.    pip install .
 
 
+
+If you run into trouble with nvcc run these in the terminal: 
+
+sudo rm /usr/local/cuda/bin/nvcc
+
+export CUDA_HOME=$CONDA_PREFIX
+export PATH="$CUDA_HOME/bin:$PATH"
+export CPLUS_INCLUDE_PATH="$CUDA_HOME/include"
+export C_INCLUDE_PATH="$CUDA_HOME/include"
+
+
+To backup your current environment run: 
+conda list --explicit > env-backup.txt
+
+
 # Whisper
 We install whisper using the command: pip install openai-whisper (still inside the same conda environment). 
 Then we import whisper inside mamba (interface.py) and after mamba is done cleaning up the background noise but before it is saved we call whisper to transcribe it and save the transcription as a json file. 

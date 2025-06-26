@@ -48,7 +48,7 @@ training_cfg:
 stft_cfg:
   sampling_rate: 16000  # Audio sampling rate in Hz.
   n_fft: 400  # FFT components for transforming audio signals.
-  hop_size: 100  # Samples between successive frames.
+  hop_size: 200  # Samples between successive frames.
   win_size: 400  # Window size used in FFT.
 
 # Model Configuration
