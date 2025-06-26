@@ -1,7 +1,7 @@
 <template>
   <div class="grid-container">
     <div class="grid-item">
-      <Map>
+      <Map/>
     </div>
     <div class="grid-item">
       <h1>Recording</h1>
