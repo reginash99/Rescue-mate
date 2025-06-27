@@ -53,6 +53,21 @@ We changed how the interface.py processes audio by making it cut the audio into 
 SEMamba -> Bandpass filter -> deepfilternet3 -> Whisper
 
 
+After testing chunking the audio file, the resulting transcription was of bad quality, so we decided to go back to how originally mamba processed files with a few changes. One change is to use .half() when loading mamba in order to save memory, as the model is large, it saves memory by using half-precision floats. 
+We also changed mamba's model parameter hop_size (they are samples between successive frames) from 100 to 200. 
+
+
+With these changes we managed to make the entire pipeline run in under approximately 30 seconds for a 1 minute audio input, which is a great improvement from the initial 3 minutes that this took.
+
+
+So far we have changed the way files are processed so that only the last added input audio (into the input_audio folder) is processed instead of all of them.
+
+
+We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper. 
+
+
+
+
 ## FRONTEND
 # Map
 

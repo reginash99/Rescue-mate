@@ -8,18 +8,15 @@ from models.generator import SEMamba
 from models.pcs400 import cal_pcs
 import soundfile as sf
 import whisper
+from faster_whisper import WhisperModel
 import numpy as np
 import scipy.signal as signal
 from scipy.signal import butter, sosfiltfilt
 import subprocess
 import librosa
 import soundfile as sf
-import concurrent.futures
-#from deepfilter.filter import DeepFilterNet
-import concurrent.futures
 from utils.util import load_config
-
-#os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:16"
+import datetime
 
 h = None
 device = None 
@@ -51,28 +48,11 @@ def run_deepfilternet(input_folder, output_folder):
     subprocess.run(["deepFilter", "-i", input_folder, "-o", output_folder], check=True)
 
 
-# A better DSP method than Wiener, it: Estimates noise from lowest-energy frames, Subtracts that from the spectrogram, Preserves speech formants better than Wiener, Works well on phone calls + radio
-# def spectral_subtraction(audio, sampling_rate, n_fft=512, hop_length=128):
-#     f, t, Zxx = signal.stft(audio, fs=sampling_rate, nperseg=n_fft, noverlap=n_fft - hop_length)
-#     magnitude = np.abs(Zxx)
-#     phase = np.angle(Zxx)
-
-#     # Estimate noise as 10th percentile across time (adaptive)
-#     noise_est = np.percentile(magnitude, 10, axis=1, keepdims=True)
-#     clean_mag = np.maximum(magnitude - noise_est, 0)
-
-#     cleaned_stft = clean_mag * np.exp(1j * phase)
-#     _, enhanced_audio = signal.istft(cleaned_stft, fs=sampling_rate, nperseg=n_fft, noverlap=n_fft - hop_length)
-
-#     return enhanced_audio
-
-
 def inference(args, device):
     cfg = load_config(args.config)
     n_fft, hop_size, win_size = cfg['stft_cfg']['n_fft'], cfg['stft_cfg']['hop_size'], cfg['stft_cfg']['win_size']
     compress_factor = cfg['model_cfg']['compress_factor']
-    sampling_rate = cfg['stft_cfg']['sampling_rate']
-
+    
     model = SEMamba(cfg).to(device).half()
     state_dict = torch.load(args.checkpoint_file, map_location=device)
     model.load_state_dict(state_dict['generator'])
@@ -83,6 +63,7 @@ def inference(args, device):
     
     #load the whisper model 
     whisper_model = whisper.load_model("small", device=device)
+    #whisper_model = WhisperModel("small", device="cpu")
 
     with torch.no_grad():
         # You can use data.json instead of input_folder with:
@@ -95,77 +76,78 @@ def inference(args, device):
         #     noisy_wav, _ = librosa.load(os.path.join( folder_path, fname ), sr=sampling_rate)
         #     noisy_wav = torch.FloatTensor(noisy_wav).to(device)
         # ---------------------------------------------------- #
-        for i, fname in enumerate(os.listdir( args.input_folder )):
-            print(fname, args.input_folder)
-            files = os.listdir(args.input_folder)
+
+        files = os.listdir(args.input_folder)
+        latest_file = max([os.path.join(args.input_folder, f) for f in files if f.lower().endswith(('.wav', '.mp3', '.flac', '.ogg', '.m4a'))], key=os.path.getmtime)
+
+        latest_fname = os.path.basename(latest_file)
+        print(f"Processing latest file: {latest_fname}")
+
         
         def process_file(fname):
-            # 1) load + resample once
-            wav, sr = librosa.load(os.path.join(args.input_folder, fname), sr=16000, mono=True)
-            wav = wav / np.max(np.abs(wav))
-
-            # 2) light bandpass *before* heavy model
-            wav = bandpass_filter(wav, lowcut=200.0, highcut=4000.0, fs=16000, order=6)
-            wav = np.ascontiguousarray(wav)
-
-            # 3) chunk into 3 s pieces and denoise each
-            max_samples = 16000 * 3
-            chunks = [wav[i:i+max_samples] for i in range(0, len(wav), max_samples)]
-            clean_chunks = []
+            #load + resample once
+            noisy_wav, sr = librosa.load(os.path.join(args.input_folder, fname), sr=None, mono=True)
             
-            for chunk in chunks:
-                # move data to GPU in half precision for the model
-                x_fp16 = torch.from_numpy(chunk).to(device).unsqueeze(0).half()
+            if sr != 16000:
+                noisy_wav = librosa.resample(noisy_wav, orig_sr=sr, target_sr=16000)
+                sr = 16000
+            
+            if np.max(np.abs(noisy_wav)) > 0:
+                noisy_wav = noisy_wav / np.max(np.abs(noisy_wav))
 
-                # 1) STFT in float32 so cuFFT accepts your 400-sample frame
-                A_fp32, P_fp32, _ = mag_phase_stft(x_fp16.float(), n_fft, hop_size, win_size, compress_factor)
-                
-                # cast the spectrogram back to half for SEMamba
-                A_fp16, P_fp16 = A_fp32.half(), P_fp32.half()
+            noisy_wav = torch.FloatTensor(noisy_wav).to(device)
+            norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
+            
+            noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
+            noisy_amp, noisy_pha, noisy_com = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor)
+            
+            noisy_amp = noisy_amp.to(device).half()
+            noisy_pha = noisy_pha.to(device).half()
 
-                # 2) run the SEMamba model in FP16
-                Ag_fp16, Pg_fp16, _ = model(A_fp16, P_fp16)
-
-                # 3) ISTFT in float32 as well, to avoid the same half-precision FFT issue
-                out_fp32 = mag_phase_istft(Ag_fp16.float(), Pg_fp16.float(), n_fft, hop_size, win_size, compress_factor)
-
-                # collect the cleaned audio chunk (always in CPU float32 NumPy)
-                clean_chunks.append(out_fp32.squeeze().cpu().detach().numpy())
-
+            amp_g, pha_g, com_g = model(noisy_amp, noisy_pha)
+            
+            audio_g = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor)
+            
+            audio_g = audio_g / norm_factor
+            
             # free any stranded tensors
             torch.cuda.empty_cache()
-            audio_np = np.concatenate(clean_chunks)
-
-            # 5) optional post-clean DSP
+            
+            audio_np = audio_g.squeeze().cpu().detach().numpy()
+            
+            audio_np = bandpass_filter(audio_np, lowcut=200.0, highcut=4000.0, fs=16000, order=6)
+            
+            #optional post-clean DSP
             if args.post_processing_PCS:
                 audio_np = cal_pcs(audio_np)
 
-            ## 7) write the SEMamba-cleaned WAV
-            #semamba_out = os.path.join(args.output_folder, fname)
-            #sf.write(semamba_out, audio_np, 16000, 'PCM_16')
-            
             return audio_np
 
-        # run up to 2 files in parallel
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as exe:
-            cleaned_paths=list(exe.map(process_file, files))
-        
+        cleaned_paths = [process_file(latest_fname)]
+
         for i, audio_np in enumerate(cleaned_paths):
-            fname = files[i] 
+            fname = latest_fname 
             base = os.path.splitext(os.path.basename(fname))[0]            
             results_out_path = os.path.join(args.output_folder, f"{base}_final.wav")
-            
+
             sf.write(results_out_path, audio_np, 16000, 'PCM_16')
             run_deepfilternet(results_out_path, args.output_folder)
 
-            # 9) transcribe the DeepFilterNet3 output
+            # transcribe the DeepFilterNet3 output
             print(f"Transcribing cleaned file {os.path.basename(results_out_path)}…")
             result = whisper_model.transcribe(results_out_path, language='de', task='transcribe', no_speech_threshold=0.1, beam_size=5, temperature=0.0)
+            #segments,_ = whisper_model.transcribe(results_out_path, vad_filter=True, vad_parameters=dict(min_silence_duration_ms=500))
 
+            # result=""
+            # for segment in segments:
+            #     result+=segment.text
+            
+            #print(f"Transcription for {fname}: {result}")
             print(f"Transcription for {fname}: {result['text']}")
 
-            # 10) save the JSON
-            out_json = os.path.join("output_transcriptions", f"{base}.json")
+            # save the JSON
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            out_json = os.path.join("output_transcriptions", f"{base}_{timestamp}.json")
             os.makedirs(os.path.dirname(out_json), exist_ok=True)
             with open(out_json, 'w', encoding='utf-8') as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
