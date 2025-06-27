@@ -4,10 +4,10 @@
     <!--https://getbootstrap.com/docs/4.3/getting-started/introduction/-->
     <!--#845C5C-->
     <!--https://www.vecteezy.com/video/9863295-audio-spectrum-line-animation-with-2d-concept-and-white-background-->
-    <!--https://app.lottiefiles.com/animation/5f62f69b-8280-4704-96f8-8d500a7c8323?panel=download-->
+   
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     
-<div ref="record_component" :width="clientWidth" :height="clientHeight" :align="left">
+<div ref="record_component" :style="{width: '100%', height: '100%'}" :align="left">
     <button
   type="button"
   class="btn btn-danger"
@@ -28,8 +28,13 @@
      <div >
                 <video id="recordingVideo"
                 src="./media/vecteezy_audio-spectrum-line-animation-with-2d-concept-and-white_9863295_trimmed.mp4"  autoplay loop muted :width="clientWidth-Padding.right" height="250"></video> 
-            </div>
+               
+              </div>
 </div>
+<!--this part is used for checking if the recording was generated successfully-->
+<!--<div>
+  <audio controls :src="audio_url" v-if = "audio_generated"></audio>
+</div>-->
 
     
 
@@ -50,9 +55,12 @@ right: 20,
 bottom: 20,
 left: 20,
 };
-const record_component = ref(null)
+let record_component = ref(null)
 let recorder = null;
 let audio = [];
+let audio_url = ref(null);
+let audio_generated = ref(false)
+let data = []
 
   
 
@@ -60,9 +68,11 @@ function startRecording() {
     isRecording.value = true;
     console.log("Recording started")
 
-    if(recorder.state == "recording") {
-      audio = [];
+    audio = [];
         recorder.start();
+
+    if(recorder.state == "recording") {
+      
     }
     
 
@@ -71,8 +81,10 @@ function startRecording() {
     }
     
 function stopRecording() {   
+  recorder.stop();
+  sentAudio
   if(recorder.state == "inactive"){
-    recorder.stop();
+    
   }
     isRecording.value = false;
     console.log("Recording stopped")
@@ -82,8 +94,18 @@ function stopRecording() {
 
 
 function sentAudio () {
-    let audio = new Blob(data, {type:audio});
+    let audio = new Blob(data, {type:"audio/wav"});
+    console.log(audio)
     let file = new File ([audio], "recording.wav",{type: 'audio/wav'})
+
+    // To check if the audio was generated successfully
+   /* try{
+    audio_url = window.URL.createObjectURL(audio)
+    audio_generated.value = true;
+    }
+    catch (error){
+      console.error("Error creating audio URL: ", error);
+    }*/
 }
 
 
@@ -107,7 +129,7 @@ function sentAudio () {
         }
 
         recorder.onstop = () => {
-
+           sentAudio()
         }
       })
       .catch((error) => {
