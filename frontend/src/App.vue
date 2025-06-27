@@ -4,7 +4,7 @@
       <Map/>
     </div>
     <div class="grid-item">
-      <h1>Recording</h1>
+      <Record/>
     </div>
     <div class="grid-item">
       <HistoryTable/>
@@ -14,9 +14,6 @@
     </div>
   </div>
   
-<div>
-    <Record />
-  </div>
    
 </template>
 
@@ -24,6 +21,7 @@
 import Transcription from "../src/components/Transcription.vue";
 import HistoryTable from "./components/HistoryTable.vue";
 import Map from "./components/Map.vue";
+import Record from "./components/Record.vue";
 </script>
 
 <script>
