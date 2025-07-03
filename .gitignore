@@ -55,15 +55,10 @@ Thumbs.db
 *.egg
 
 # Results, outputs, and data
-backend/results/
-backend/output_transcriptions/
 *.wav
 *.m4a
 *.mp3
-# training_dataset/training_audio_wav/
-# training_dataset/training_transcriptions/
-backend/finetune_whisper_attempt/training_dataset/
-backend/finetune_whisper_attempt/my-whisper-small-finetuned/
+*.ogg
 
 # Model checkpoints and large files
 *.pt
@@ -120,3 +115,7 @@ backend/env/
 backend/Miniconda3-latest-Linux-x86_64.sh
 backend/.wav
 backend/.m4a
+backend/.ogg
+backend/results_with_different_filters/
+backend/finetune_whisper_attempt/training_dataset/
+backend/finetune_whisper_attempt/my-whisper-small-finetuned/

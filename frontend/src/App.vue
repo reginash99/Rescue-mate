@@ -1,31 +1,31 @@
 <template>
   <div class="grid-container">
-    <div class="grid-item" style="grid-column: 1; grid-row: 1;">
-      <h1>Map</h1>
+    <div class="grid-item">
+      <Map/>
     </div>
-    <div class="grid-item" style="grid-column: 1; grid-row: 2;">
-      <h1>History</h1>
+    <div class="grid-item">
+      <Record/>
     </div>
-<div class="grid-item">
-  <h1>Recording</h1>
-  <button @click="startRecording" :disabled="recording">Start Recording</button>
-  <button @click="stopRecording" :disabled="!recording">Stop Recording</button>
-  <button @click="uploadRecording" :disabled="!recordedBlob">Upload & Transcribe</button>
-  <div v-if="loading">⏳ Uploading...</div>
-  <div v-if="result">{{ result }}</div>
-</div>
+    <div class="grid-item">
+      <HistoryTable/>
+    </div>
     <div class="grid-item">
       <Transcription/>
     </div>
   </div>
+  
+   
 </template>
 
 <script setup>
 import Transcription from "../src/components/Transcription.vue";
-
+import HistoryTable from "./components/HistoryTable.vue";
+import Map from "./components/Map.vue";
+import Record from "./components/Record.vue";
 </script>
 
 <script>
+
 export default {
   data() {
     return {
@@ -115,11 +115,13 @@ html, body {
 .grid-item {
   background: #ffffff;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   border-width: .5px;
   border-style: solid;
   border-color: black;
+  height: 100%;
+  min-height: 0;
 }
 
 @media (max-width: 900px) {
