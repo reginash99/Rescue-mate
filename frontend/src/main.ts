@@ -10,4 +10,4 @@ import 'vue-map-ui/dist/style.css';
 import 'vue-map-ui/dist/theme-all.css';
 
 
-createApp(App).mount('#app')
+createApp(App).mount('#app');

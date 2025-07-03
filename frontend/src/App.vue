@@ -24,46 +24,6 @@ import Map from "./components/Map.vue";
 import Record from "./components/Record.vue";
 </script>
 
-<script>
-
-export default {
-  data() {
-    return {
-      file: null,
-      result: "",
-      loading: false
-    };
-  },
-  methods: {
-    handleFile(e) {
-      this.file = e.target.files[0];
-    },
-    async uploadAudio() {
-      if (!this.file) return;
-
-      this.loading = true;
-      const formData = new FormData();
-      formData.append("file", this.file);
-
-      try {
-        const response = await fetch("http://localhost:8000/transcribe", {
-          method: "POST",
-          body: formData
-        });
-
-        const data = await response.json();
-        this.result = data.text;
-      } catch (error) {
-        console.error(error);
-        this.result = "❌ Failed to transcribe.";
-      } finally {
-        this.loading = false;
-      }
-    }
-  }
-};
-</script>
-
 <style>
 #app {
   font-family: "Roboto Mono";

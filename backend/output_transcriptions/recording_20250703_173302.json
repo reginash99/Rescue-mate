@@ -1,0 +1,143 @@
+{
+  "text": " Okay, last time. Okay, go ahead. Tell him. Yes. Tomar, talk shut the tongue. We are good. Sure, the guy.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 2.0,
+      "text": " Okay, last time.",
+      "tokens": [
+        50364,
+        1033,
+        11,
+        1036,
+        565,
+        13,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5248522251210315,
+      "compression_ratio": 1.1304347826086956,
+      "no_speech_prob": 0.15496399998664856
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 2.0,
+      "end": 4.0,
+      "text": " Okay, go ahead.",
+      "tokens": [
+        50464,
+        1033,
+        11,
+        352,
+        2286,
+        13,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5248522251210315,
+      "compression_ratio": 1.1304347826086956,
+      "no_speech_prob": 0.15496399998664856
+    },
+    {
+      "id": 2,
+      "seek": 0,
+      "start": 4.0,
+      "end": 5.0,
+      "text": " Tell him.",
+      "tokens": [
+        50564,
+        5115,
+        796,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5248522251210315,
+      "compression_ratio": 1.1304347826086956,
+      "no_speech_prob": 0.15496399998664856
+    },
+    {
+      "id": 3,
+      "seek": 0,
+      "start": 5.0,
+      "end": 6.0,
+      "text": " Yes.",
+      "tokens": [
+        50614,
+        1079,
+        13,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5248522251210315,
+      "compression_ratio": 1.1304347826086956,
+      "no_speech_prob": 0.15496399998664856
+    },
+    {
+      "id": 4,
+      "seek": 0,
+      "start": 6.0,
+      "end": 7.0,
+      "text": " Tomar, talk shut the tongue.",
+      "tokens": [
+        50664,
+        5041,
+        289,
+        11,
+        751,
+        5309,
+        264,
+        10601,
+        13,
+        50714
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5248522251210315,
+      "compression_ratio": 1.1304347826086956,
+      "no_speech_prob": 0.15496399998664856
+    },
+    {
+      "id": 5,
+      "seek": 0,
+      "start": 7.0,
+      "end": 8.0,
+      "text": " We are good.",
+      "tokens": [
+        50714,
+        492,
+        366,
+        665,
+        13,
+        50764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5248522251210315,
+      "compression_ratio": 1.1304347826086956,
+      "no_speech_prob": 0.15496399998664856
+    },
+    {
+      "id": 6,
+      "seek": 0,
+      "start": 8.0,
+      "end": 9.0,
+      "text": " Sure, the guy.",
+      "tokens": [
+        50764,
+        4894,
+        11,
+        264,
+        2146,
+        13,
+        50814
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5248522251210315,
+      "compression_ratio": 1.1304347826086956,
+      "no_speech_prob": 0.15496399998664856
+    }
+  ],
+  "language": "de"
+}

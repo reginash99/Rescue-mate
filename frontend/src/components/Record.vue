@@ -104,20 +104,40 @@ function stopRecording() {
 
 }
 
+async function sendAudioToBackend(file) {
+  const formData = new FormData();
+  formData.append('file', file);
 
-function sentAudio() {
+  const response = await fetch('http://localhost:8000/transcribe-audio/', {
+    method: 'POST',
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to get transcription');
+  }
+  const data = await response.json();
+  // data.transcription contains the transcription JSON as a string
+  return data.transcription;
+}
+
+async function sentAudio() {
   let audio = new Blob(data, { type: "audio/wav" });
   console.log(audio)
   let file = new File([audio], "recording.wav", { type: 'audio/wav' })
 
   // To check if the audio was generated successfully
-   /*try{
-   audio_url = window.URL.createObjectURL(audio)
-   audio_generated.value = true;
+   try{
+  //  audio_url = window.URL.createObjectURL(audio)
+  //  audio_generated.value = true;
+    const transcription = await sendAudioToBackend(file);
+
+    console.log("Transcription received: ", transcription);
+
    }
    catch (error){
      console.error("Error creating audio URL: ", error);
-   }*/
+   }
 }
 
 

@@ -1,0 +1,53 @@
+{
+  "text": " Okay, let's hope that was only. Let's hope, let's pray.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 3.0,
+      "text": " Okay, let's hope that was only.",
+      "tokens": [
+        50364,
+        1033,
+        11,
+        718,
+        311,
+        1454,
+        300,
+        390,
+        787,
+        13,
+        50514
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.4231448173522949,
+      "compression_ratio": 1.1,
+      "no_speech_prob": 0.07185898721218109
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 3.0,
+      "end": 5.0,
+      "text": " Let's hope, let's pray.",
+      "tokens": [
+        50514,
+        961,
+        311,
+        1454,
+        11,
+        718,
+        311,
+        3690,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.4231448173522949,
+      "compression_ratio": 1.1,
+      "no_speech_prob": 0.07185898721218109
+    }
+  ],
+  "language": "de"
+}
