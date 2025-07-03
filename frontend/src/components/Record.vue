@@ -12,7 +12,7 @@
       :style="{ width: '100%', height: '50%', position: 'relative', display: 'flex', alignItems: 'last baseline', justifyContent: 'center' }">
 
       <button type="button" class="btn btn-danger" @click="isRecording ? stopRecording() : startRecording()">
-
+        <div :style="{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }">
         <svg v-if="!isRecording" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
           class="bi bi-mic" viewBox="0 0 16 16">
           <path
@@ -25,9 +25,10 @@
           <path
             d="M3.5 5A1.5 1.5 0 0 1 5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11zM5 4.5a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5z" />
         </svg>
+        <div>
         {{ isRecording ? 'Stop recording' : 'Start recording' }}
-
-
+        </div>
+        </div>
       </button>
 
     </div>
@@ -110,7 +111,7 @@ function sentAudio() {
   let file = new File([audio], "recording.wav", { type: 'audio/wav' })
 
   // To check if the audio was generated successfully
-  /* try{
+   /*try{
    audio_url = window.URL.createObjectURL(audio)
    audio_generated.value = true;
    }
