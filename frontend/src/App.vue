@@ -24,68 +24,6 @@ import Map from "./components/Map.vue";
 import Record from "./components/Record.vue";
 </script>
 
-<script>
-
-export default {
-  data() {
-    return {
-      recording: false,
-      recordedBlob: null,
-      mediaRecorder: null,
-      chunks: [],
-      loading: false,
-      result: ""
-    };
-  },
-  methods: {
-    async startRecording() {
-      this.chunks = [];
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        this.mediaRecorder = new MediaRecorder(stream);
-        this.mediaRecorder.ondataavailable = e => this.chunks.push(e.data);
-        this.mediaRecorder.onstop = this.handleStop;
-        this.mediaRecorder.start();
-        this.recording = true;
-      } catch (err) {
-        console.error("Failed to start recording:", err);
-      }
-    },
-    stopRecording() {
-      if (this.mediaRecorder) {
-        this.mediaRecorder.stop();
-        this.recording = false;
-      }
-    },
-    handleStop() {
-      this.recordedBlob = new Blob(this.chunks, { type: "audio/webm" });
-    },
-    async uploadRecording() {
-      if (!this.recordedBlob) return;
-      this.loading = true;
-
-      const formData = new FormData();
-      formData.append("file", this.recordedBlob, "recording.webm");
-
-      try {
-        const response = await fetch("http://localhost:8000/transcribe", {
-          method: "POST",
-          body: formData
-        });
-        const data = await response.json();
-        this.result = data.text;
-      } catch (error) {
-        console.error(error);
-        this.result = "❌ Failed to transcribe.";
-      } finally {
-        this.loading = false;
-      }
-    }
-  }
-};
-
-</script>
-
 <style>
 #app {
   font-family: "Roboto Mono";
