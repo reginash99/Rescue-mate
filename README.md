@@ -67,6 +67,18 @@ We tried faster-whisper as well, but the resulting transcription was not that mu
 
 
 
+# FASTAPI
+In order for the api to work, you need to run these commands (all of these inside your conda environment): 
+
+conda install fastapi
+conda install uvicorn
+conda install python-multipart
+
+
+Then run this on the WSL ubuntu: uvicorn api_server:app --reload. This is how to start the backend server. 
+
+Keep in mind that it needs to be encoded in CRLF. Look at the bottom right of your screen, next to the UTF-8.
+
 
 ## FRONTEND
 # Map
