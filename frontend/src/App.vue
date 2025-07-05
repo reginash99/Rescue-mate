@@ -7,7 +7,7 @@
       <Record @transcription="handleData"/>
     </div>
     <div class="grid-item">
-      <HistoryTable :data="transcriptionData"/>
+      <HistoryTable :history="history"/>
     </div>
     <div class="grid-item">
       <Transcription :data="transcriptionData"/>
@@ -25,9 +25,19 @@ import Map from "./components/Map.vue";
 import Record from "./components/Record.vue";
 
 const transcriptionData = ref(null);
+const history = ref([])
 
 function handleData(data) {
+  sendTranscription(data)
+  addHistoryEntry(data)
+}
+
+function sendTranscription(data) {
   transcriptionData.value = data
+}
+
+function addHistoryEntry(data) {
+  history.value.push(data)
 }
 </script>
 

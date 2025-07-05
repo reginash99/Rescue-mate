@@ -11,13 +11,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>101</td>
-                        <td>26.04.2025 16:56:03</td>
+                    <tr v-for="(item, idx) in history" :key="idx">
+                        <td>{{ idx + 1 }}</td>
+                        <td>{{ item.timestamp ? item.timestamp : '' }}</td>
                         <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
+                            <div :class="item.text && item.text.trim() !== '' ? 'sent' : 'fail'">
+                                {{ item.text && item.text.trim() !== '' ? 'Success' : 'Failed' }}
+                                <i :class="item.text && item.text.trim() !== '' ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                             </div>
                         </td>
                     </tr>
@@ -29,7 +29,10 @@
 
 <script setup>
 defineProps({
-  data: Object
+  history: {
+    type: Array,
+    default: () => []
+  }
 })
 </script>
 
