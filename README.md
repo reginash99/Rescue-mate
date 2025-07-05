@@ -7,7 +7,6 @@ Naming Convention:
 - b_component_something
 
 ## BACKEND
-# Installation
 # SE Mamba
 For SE Mamba (the code is inside the backend folder), a Linux-based system is required, but since we are operating on Windows, we will use WSL on windows and install Ubuntu using it (there are tutorials on how to make this work but it is fairly simple and involves only terminal commands). By doing this, we will be able to use the Ubuntu terminal on our respective windows devices.
 
@@ -77,7 +76,7 @@ conda install python-multipart
 
 Then run this on the WSL ubuntu: uvicorn api_server:app --reload. This is how to start the backend server. 
 
-Keep in mind that it needs to be encoded in CRLF. Look at the bottom right of your screen, next to the UTF-8.
+Keep in mind that pretrained.sh needs to be encoded in CRLF. Look at the bottom right of your screen, next to the UTF-8 while you are in the file pretrained.sh. Being inside the file pretrained.sh is important, the encoding does not work for the entire project, it is file dependant. After you change the encoding to CRLF it will appear as if you have made changes to the pretrained.sh, this is fine. 
 
 
 ## FRONTEND
