@@ -28,10 +28,7 @@ const transcriptionData = ref(null)
 
 function handleData(data) {
   const parsed_transcription = JSON.parse(data)
-  const latestSegment = parsed_transcription.segments.reduce((max, curr) =>
-    curr.id > max.id ? curr : max
-  )
-  transcriptionData.value = latestSegment
+  transcriptionData.value = parsed_transcription
 }
 </script>
 

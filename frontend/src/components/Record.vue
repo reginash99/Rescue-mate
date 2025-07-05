@@ -82,6 +82,7 @@ function startRecording() {
   console.log("Recording started")
 
   audio = [];
+  data = []; // Clear previous data
   recorder.start();
 
   if (recorder.state == "recording") {
@@ -91,7 +92,7 @@ function startRecording() {
 
 function stopRecording() {
   recorder.stop();
-  sentAudio
+  sentAudio();
   if (recorder.state == "inactive") {
 
   }
