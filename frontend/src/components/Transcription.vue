@@ -4,7 +4,8 @@
     <h1>Transcription</h1>
     <div class="transcription">
       <div v-if="data">
-        <p> {{ data["text"] }}</p>
+        <p v-if="data['text'] && data['text'].trim() !== ''">{{ data["text"] }}</p>
+        <p v-else>No transcription available.</p>
       </div>
   <p v-else>No data received yet.</p>
     </div>

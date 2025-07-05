@@ -7,7 +7,7 @@
       <Record @transcription="handleData"/>
     </div>
     <div class="grid-item">
-      <HistoryTable/>
+      <HistoryTable :data="transcriptionData"/>
     </div>
     <div class="grid-item">
       <Transcription :data="transcriptionData"/>
@@ -24,11 +24,10 @@ import HistoryTable from "./components/HistoryTable.vue";
 import Map from "./components/Map.vue";
 import Record from "./components/Record.vue";
 
-const transcriptionData = ref(null)
+const transcriptionData = ref(null);
 
 function handleData(data) {
-  const parsed_transcription = JSON.parse(data)
-  transcriptionData.value = parsed_transcription
+  transcriptionData.value = data
 }
 </script>
 

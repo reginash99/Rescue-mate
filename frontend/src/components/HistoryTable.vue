@@ -1,9 +1,3 @@
-<script setup lang="ts">
-defineProps<{
-  msg: string
-}>()
-</script>
-
 <template>
         <div class="main-table">
             <h1>History</h1>
@@ -27,151 +21,17 @@ defineProps<{
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td>102</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="fail">
-                                Failed
-                                <i class="fa fa-times-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>103</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>104</td>
-                        <td>26.04.2025 16:56:03</td>
-                        <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
             </div>
         </div>
 </template>
+
+<script setup>
+defineProps({
+  data: Object
+})
+</script>
 
 <style scoped>
 .main-table {

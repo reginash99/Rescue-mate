@@ -70,12 +70,22 @@ const Padding = {
   left: 20,
 };
 
+const timestamp_format = {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit'
+}
+
 let record_component = ref(null)
 let recorder = null;
 let audio = [];
 let audio_url = ref(null);
 let audio_generated = ref(false)
 let data = []
+let rec_timestamp = ref(null);
 
 function startRecording() {
   isRecording.value = true;
@@ -86,7 +96,7 @@ function startRecording() {
   recorder.start();
 
   if (recorder.state == "recording") {
-
+    rec_timestamp = new Date().toLocaleString('de-DE', timestamp_format)
   }
 }
 
@@ -125,9 +135,14 @@ async function sentAudio() {
    try{
   //  audio_url = window.URL.createObjectURL(audio)
   //  audio_generated.value = true;
-    const transcription = await sendAudioToBackend(file);
+    const backend_response = await sendAudioToBackend(file);
 
-    console.log("Transcription received: ", transcription);
+    console.log("Transcription received: ", backend_response);
+    const parsed_transcription = JSON.parse(backend_response)
+    const transcription = {
+      text: parsed_transcription['text'],
+      timestamp: rec_timestamp
+    }
     emit('transcription', transcription)
     data = []; // Clear data after sending
    }
