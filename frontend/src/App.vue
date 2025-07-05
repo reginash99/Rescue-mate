@@ -4,13 +4,13 @@
       <Map/>
     </div>
     <div class="grid-item">
-      <Record/>
+      <Record @transcription="handleData"/>
     </div>
     <div class="grid-item">
       <HistoryTable/>
     </div>
     <div class="grid-item">
-      <Transcription/>
+      <Transcription :data="transcriptionData"/>
     </div>
   </div>
   
@@ -18,10 +18,18 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import Transcription from "../src/components/Transcription.vue";
 import HistoryTable from "./components/HistoryTable.vue";
 import Map from "./components/Map.vue";
 import Record from "./components/Record.vue";
+
+const transcriptionData = ref(null)
+
+function handleData(data) {
+  const parsed_transcription = JSON.parse(data)
+  transcriptionData.value = parsed_transcription
+}
 </script>
 
 <style>

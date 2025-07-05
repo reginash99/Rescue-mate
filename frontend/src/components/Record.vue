@@ -57,7 +57,9 @@
 
 
 import { ref, onMounted } from 'vue';
+import { defineEmits } from 'vue'
 
+const emit = defineEmits(['transcription'])
 const isRecording = ref(false)
 const clientWidth = ref(800);
 const clientHeight = ref(800);
@@ -67,14 +69,13 @@ const Padding = {
   bottom: 20,
   left: 20,
 };
+
 let record_component = ref(null)
 let recorder = null;
 let audio = [];
 let audio_url = ref(null);
 let audio_generated = ref(false)
 let data = []
-
-
 
 function startRecording() {
   isRecording.value = true;
@@ -86,10 +87,6 @@ function startRecording() {
   if (recorder.state == "recording") {
 
   }
-
-
-
-
 }
 
 function stopRecording() {
@@ -100,8 +97,6 @@ function stopRecording() {
   }
   isRecording.value = false;
   console.log("Recording stopped")
-
-
 }
 
 async function sendAudioToBackend(file) {
@@ -133,13 +128,12 @@ async function sentAudio() {
     const transcription = await sendAudioToBackend(file);
 
     console.log("Transcription received: ", transcription);
-
+    emit('transcription', transcription)
    }
    catch (error){
      console.error("Error creating audio URL: ", error);
    }
 }
-
 
 onMounted(() => {
   if (record_component.value) {

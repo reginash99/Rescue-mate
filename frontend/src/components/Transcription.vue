@@ -1,17 +1,21 @@
-<script setup lang="ts">
-defineProps<{
-  msg: string
-}>()
-</script>
 
 <template>
   <div class="transcription-main">
     <h1>Transcription</h1>
     <div class="transcription">
-        <p>Transcribing...</p>
+      <div v-if="data">
+        <p> {{ data["text"] }}</p>
+      </div>
+  <p v-else>No data received yet.</p>
     </div>
   </div>
 </template>
+
+<script setup>
+defineProps({
+  data: Object
+})
+</script>
 
 <style scoped>
 .transcription-main {
