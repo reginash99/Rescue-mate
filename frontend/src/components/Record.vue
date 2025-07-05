@@ -92,7 +92,7 @@ function startRecording() {
 
 function stopRecording() {
   recorder.stop();
-  sentAudio();
+  //sentAudio();
   if (recorder.state == "inactive") {
 
   }
@@ -130,6 +130,7 @@ async function sentAudio() {
 
     console.log("Transcription received: ", transcription);
     emit('transcription', transcription)
+    data = []; // Clear data after sending
    }
    catch (error){
      console.error("Error creating audio URL: ", error);
