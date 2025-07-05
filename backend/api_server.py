@@ -3,6 +3,8 @@ from fastapi.responses import FileResponse, JSONResponse
 import os
 import subprocess
 import glob
+import datetime
+import uuid
 
 UPLOAD_DIR = "./input_audio/"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -22,15 +24,21 @@ app.add_middleware(
 
 @app.post("/transcribe-audio/")
 async def upload_audio(file: UploadFile = File(...)):
-    file_location = os.path.join(UPLOAD_DIR, file.filename)
+     # Generate a unique filename
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_id = uuid.uuid4().hex[:8]
+    base, ext = os.path.splitext(file.filename)
+    unique_filename = f"{base}_{timestamp}_{unique_id}{ext}"
+    file_location = os.path.join(UPLOAD_DIR, unique_filename)
+    
     with open(file_location, "wb") as f:
         f.write(await file.read())
 
-
     backend_dir = os.path.abspath(os.path.dirname(__file__))
 
-    # Run the inference pipeline
-    subprocess.run(["sh", "pretrained.sh"], cwd=backend_dir, check=True)
+    # Run the inference pipeline, passing the unique file as input
+    # (You may need to modify pretrained.sh and inference.py to accept a specific file)
+    subprocess.run(["sh", "pretrained.sh", unique_filename], cwd=backend_dir, check=True)
 
     # Find the latest JSON transcription
     transcription_files = glob.glob("./output_transcriptions/*.json")

@@ -77,15 +77,22 @@ def inference(args, device):
         #     noisy_wav = torch.FloatTensor(noisy_wav).to(device)
         # ---------------------------------------------------- #
 
-        files = os.listdir(args.input_folder)
-        latest_file = max([os.path.join(args.input_folder, f) for f in files if f.lower().endswith(('.wav', '.mp3', '.flac', '.ogg', '.m4a'))], key=os.path.getmtime)
-
-        latest_fname = os.path.basename(latest_file)
-        print(f"Processing latest file: {latest_fname}")
+        if args.file is not None:
+            latest_fname = args.file
+            print(f"Processing specified file: {latest_fname}")
+        else:
+            files = os.listdir(args.input_folder)
+            latest_file = max([os.path.join(args.input_folder, f) for f in files if f.lower().endswith(('.wav', '.mp3', '.flac', '.ogg', '.m4a'))], key=os.path.getmtime)
+            latest_fname = os.path.basename(latest_file)
+            print(f"Processing latest file: {latest_fname}")
 
         
         def process_file(fname):
-            #load + resample once
+            
+            full_path = os.path.join(args.input_folder, fname)
+            if not os.path.isfile(full_path):
+                raise ValueError(f"{full_path} is not a valid file!")
+
             noisy_wav, sr = librosa.load(os.path.join(args.input_folder, fname), sr=None, mono=True)
             
             if sr != 16000:
@@ -135,7 +142,7 @@ def inference(args, device):
 
             # transcribe the DeepFilterNet3 output
             print(f"Transcribing cleaned file {os.path.basename(results_out_path)}…")
-            result = whisper_model.transcribe(results_out_path, language='de', task='transcribe', no_speech_threshold=0.1, beam_size=5, temperature=0.0)
+            result = whisper_model.transcribe(results_out_path, task='transcribe', no_speech_threshold=0.1, beam_size=5, temperature=0.0)
             #segments,_ = whisper_model.transcribe(results_out_path, vad_filter=True, vad_parameters=dict(min_silence_duration_ms=500))
 
             # result=""
@@ -162,6 +169,7 @@ def main():
     parser.add_argument('--checkpoint_file', required=True)
     #parser.add_argument('--whisper_dir',required=True,help="path to your fine-tuned Whisper folder (where you ran trainer.save_model)")
     parser.add_argument('--post_processing_PCS', type=str2bool, default=False)
+    parser.add_argument('--file', type=str, default=None, help='Specific file to process')
     args = parser.parse_args()
 
     global device

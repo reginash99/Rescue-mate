@@ -92,7 +92,6 @@ function startRecording() {
 
 function stopRecording() {
   recorder.stop();
-  //sentAudio();
   if (recorder.state == "inactive") {
 
   }
