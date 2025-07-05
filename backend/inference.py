@@ -8,7 +8,7 @@ from models.generator import SEMamba
 from models.pcs400 import cal_pcs
 import soundfile as sf
 import whisper
-from faster_whisper import WhisperModel
+# from faster_whisper import WhisperModel
 import numpy as np
 import scipy.signal as signal
 from scipy.signal import butter, sosfiltfilt
