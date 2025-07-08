@@ -128,7 +128,7 @@ Attention: It is necessary to give permisson to use the microphone of your devic
 
 The icons are provided by bootstrap. While recording the audio, a video is shown representing that a recording is ongoing displaying the waves of a voice wave. But it doesn't represent the actual data. The clip is used from vecteezy.com and was cropped to have a smaller aspect ratio.
 
-To display the transcription received from the backend, it is put together with a timestamp in an object and emitted. The timestamp is recorded when the recording starts. Upon emission, a handleData function is triggered which send this object to the trancription component and the history component. 
+To display the transcription received from the backend, it is put together with a timestamp in an object and emitted. The timestamp is recorded when the recording starts. Upon emission, a handleData function is triggered which sends this object to the trancription component and the history component. 
 
 # Transcription
 
