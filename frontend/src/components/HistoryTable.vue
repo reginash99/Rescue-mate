@@ -1,7 +1,7 @@
 <template>
-        <div class="main-table">
-            <h1>History</h1>
-            <div class="table_component" role="region" tabindex="0">
+    <div class="main-table">
+        <h1>History</h1>
+        <div class="table_component" role="region" tabindex="0">
             <table responsive="True">
                 <thead>
                     <tr>
@@ -23,8 +23,8 @@
                     </tr>
                 </tbody>
             </table>
-            </div>
         </div>
+    </div>
 </template>
 
 <script setup>
