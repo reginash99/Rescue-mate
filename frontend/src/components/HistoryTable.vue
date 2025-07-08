@@ -15,6 +15,7 @@
                         <td>{{ idx + 1 }}</td>
                         <td>{{ item.timestamp ? item.timestamp : '' }}</td>
                         <td>
+                            <!-- Success/sent if string is not empty, fail if string is empty -->
                             <div :class="item.text && item.text.trim() !== '' ? 'sent' : 'fail'">
                                 {{ item.text && item.text.trim() !== '' ? 'Success' : 'Failed' }}
                                 <i :class="item.text && item.text.trim() !== '' ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>

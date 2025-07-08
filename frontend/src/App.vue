@@ -28,6 +28,9 @@ const transcriptionData = ref(null);
 const history = ref([])
 
 function handleData(data) {
+  // This function is called when the Record component emits data
+  // It sends the transcription to the Transcription component
+  // and pushes it to the HistoryTable component as a new entry
   sendTranscription(data)
   addHistoryEntry(data)
 }
