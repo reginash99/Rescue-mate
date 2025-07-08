@@ -139,6 +139,8 @@ async function sentAudio() {
 
     console.log("Transcription received: ", backend_response);
     const parsed_transcription = JSON.parse(backend_response)
+
+    // Putting transcription and timestamp into an object to emit
     const transcription = {
       text: parsed_transcription['text'],
       timestamp: rec_timestamp

@@ -127,3 +127,14 @@ To record the incomming audio, we used MediaStream Recording API. Incorporating 
 Attention: It is necessary to give permisson to use the microphone of your device. It may happen that some browsers deny this per default. 
 
 The icons are provided by bootstrap. While recording the audio, a video is shown representing that a recording is ongoing displaying the waves of a voice wave. But it doesn't represent the actual data. The clip is used from vecteezy.com and was cropped to have a smaller aspect ratio.
+
+To display the transcription received from the backend, it is put together with a timestamp in an object and emitted. The timestamp is recorded when the recording starts. Upon emission, a handleData function is triggered which sends this object to the trancription component and the history component. 
+
+# Transcription
+
+The text "No data received yet." is displyed by default and the text "No transcription available." is displayed in case the received transcription is empty. Otherwise, the transcription is displayed as is.
+
+
+# History
+
+To show a history of transcriptions, a table with unique IDs, a timestamp, and a status (successful - not empty transcription, fail - empty transcription) is displayed.

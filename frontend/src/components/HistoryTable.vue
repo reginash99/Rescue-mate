@@ -1,7 +1,7 @@
 <template>
-        <div class="main-table">
-            <h1>History</h1>
-            <div class="table_component" role="region" tabindex="0">
+    <div class="main-table">
+        <h1>History</h1>
+        <div class="table_component" role="region" tabindex="0">
             <table responsive="True">
                 <thead>
                     <tr>
@@ -11,25 +11,29 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>101</td>
-                        <td>26.04.2025 16:56:03</td>
+                    <tr v-for="(item, idx) in history" :key="idx">
+                        <td>{{ idx + 1 }}</td>
+                        <td>{{ item.timestamp ? item.timestamp : '' }}</td>
                         <td>
-                            <div class="sent">
-                                Sent
-                                <i class="fa fa-check-circle"></i>
+                            <!-- Success/sent if string is not empty, fail if string is empty -->
+                            <div :class="item.text && item.text.trim() !== '' ? 'sent' : 'fail'">
+                                {{ item.text && item.text.trim() !== '' ? 'Success' : 'Failed' }}
+                                <i :class="item.text && item.text.trim() !== '' ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            </div>
         </div>
+    </div>
 </template>
 
 <script setup>
 defineProps({
-  data: Object
+  history: {
+    type: Array,
+    default: () => []
+  }
 })
 </script>
 
