@@ -37,6 +37,8 @@ defineProps({
   background-color: #EEEEEE;
   box-sizing: border-box;
   margin: 15px;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
 h1 {
