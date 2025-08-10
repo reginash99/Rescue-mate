@@ -127,10 +127,7 @@ else{
    await createRecorder();
     console.log("Recorder has to be created first")
     recorder.start();
-  
-  if (recorder.state == "recording") {
-    rec_timestamp = new Date().toLocaleString('de-DE', timestamp_format)
-  }
+
   }
   catch (error){
     console.error("Error creating recorder: ", error);
