@@ -180,6 +180,7 @@ def inference(args, device):
 
             # save the JSON
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            result["timestamp"] = timestamp
             out_json = os.path.join("output_transcriptions", f"{base}_{timestamp}.json")
             os.makedirs(os.path.dirname(out_json), exist_ok=True)
             with open(out_json, 'w', encoding='utf-8') as f:

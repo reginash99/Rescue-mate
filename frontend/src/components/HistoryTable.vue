@@ -13,7 +13,7 @@
                 <tbody>
                     <tr v-for="(item, idx) in history" :key="idx">
                         <td>{{ idx + 1 }}</td>
-                        <td>{{ item.timestamp ? item.timestamp : '' }}</td>
+                        <td>{{ item.timestamp ? formatTimestamp(item.timestamp) : item.timestamp }}</td>
                         <td>
                             <!-- Success/sent if string is not empty, fail if string is empty -->
                             <div :class="item.text && item.text.trim() !== '' ? 'sent' : 'fail'">
@@ -35,6 +35,18 @@ defineProps({
     default: () => []
   }
 })
+
+function formatTimestamp(ts) {
+  if (!ts || ts.length < 15) return ts || '';
+  // Example: "20250810_145850"
+  const year = ts.slice(0, 4);
+  const month = ts.slice(4, 6);
+  const day = ts.slice(6, 8);
+  const hour = ts.slice(9, 11);
+  const minute = ts.slice(11, 13);
+  const second = ts.slice(13, 15);
+  return `${day}.${month}.${year}  ${hour}:${minute}:${second}`;
+}
 </script>
 
 <style scoped>

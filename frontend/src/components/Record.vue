@@ -97,7 +97,7 @@ let audio = [];
 let audio_url = ref(null);
 let audio_generated = ref(false)
 let data = []
-let rec_timestamp = ref(null);
+//let rec_timestamp = ref(null);
 
 function startRecording() {
   isRecording.value = true;
@@ -107,9 +107,9 @@ function startRecording() {
   data = []; // Clear previous data
   recorder.start();
 
-  if (recorder.state == "recording") {
-    rec_timestamp = new Date().toLocaleString('de-DE', timestamp_format)
-  }
+//  if (recorder.state == "recording") {
+//    rec_timestamp = new Date().toLocaleString('de-DE', timestamp_format)
+//  }
 }
 
 function stopRecording() {
@@ -156,7 +156,7 @@ async function sentAudio() {
     // Putting transcription and timestamp into an object to emit
     const transcription = {
       text: parsed_transcription['text'],
-      timestamp: rec_timestamp
+      timestamp: parsed_transcription['timestamp']
     }
     emit('transcription', transcription)
     waitingForRecording.value = false;

@@ -13,8 +13,6 @@
       <Transcription :data="transcriptionData"/>
     </div>
   </div>
-  
-   
 </template>
 
 <script setup>
