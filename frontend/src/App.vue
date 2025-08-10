@@ -4,13 +4,13 @@
       <Map/>
     </div>
     <div class="grid-item">
-      <Record @transcription="handleData"/>
+      <Record @transcription="handleData" @waitingForRecording ="indicateRecordingStatus"/>
     </div>
     <div class="grid-item">
       <HistoryTable :history="history"/>
     </div>
     <div class="grid-item">
-      <Transcription :data="transcriptionData"/>
+      <Transcription :data="transcriptionData" :status="waitingForRecording"/>
     </div>
   </div>
 </template>
@@ -24,6 +24,13 @@ import Record from "./components/Record.vue";
 
 const transcriptionData = ref(null);
 const history = ref([])
+const waitingForRecording = ref(false);
+
+function indicateRecordingStatus(status) {
+  // This function can be used to indicate the recording status
+  // In this case, if the recording is processing or done processing
+  waitingForRecording.value = !!status;
+}
 
 function handleData(data) {
   // This function is called when the Record component emits data
