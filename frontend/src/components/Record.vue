@@ -11,23 +11,32 @@
     <div ref="record_component"
       :style="{ width: '100%', height: '50%', position: 'relative', display: 'flex', alignItems: 'last baseline', justifyContent: 'center' }">
 
-      <button type="button" class="btn btn-danger" @click="isRecording ? stopRecording() : startRecording()">
+      <button type="button" :class="{'btn btn-danger': !waitingForRecording, 'btn btn-secondary': waitingForRecording}" @click="isRecording ? stopRecording() : startRecording()" :disabled="waitingForRecording">
         <div :style="{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }">
-        <svg v-if="!isRecording" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-          class="bi bi-mic" viewBox="0 0 16 16">
-          <path
-            d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5" />
-          <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3" />
-        </svg>
+          <svg v-if="!isRecording && !waitingForRecording" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+            class="bi bi-mic" viewBox="0 0 16 16">
+            <path
+              d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5" />
+            <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3" />
+          </svg>
 
-        <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stop"
-          viewBox="0 0 16 16">
-          <path
-            d="M3.5 5A1.5 1.5 0 0 1 5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11zM5 4.5a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5z" />
-        </svg>
-        <div>
-        {{ isRecording ? 'Stop recording' : 'Start recording' }}
-        </div>
+          <svg v-else-if="isRecording && !waitingForRecording" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stop"
+            viewBox="0 0 16 16">
+            <path
+              d="M3.5 5A1.5 1.5 0 0 1 5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11zM5 4.5a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5z" />
+          </svg>
+          <svg v-else width="16" height="16">  
+          </svg>          
+          
+          <div v-if="isRecording">
+            Stop recording
+          </div>
+          <div v-else-if="!isRecording && waitingForRecording"> 
+            Recording... 
+          </div>
+          <div v-else>
+            Start recording
+          </div>
         </div>
       </button>
 
@@ -42,6 +51,8 @@
         
 
       </div>
+
+      
     </div>
     <!--this part is used for checking if the recording was generated successfully-->
     <!--<div>
@@ -61,6 +72,7 @@ import { defineEmits } from 'vue'
 
 const emit = defineEmits(['transcription'])
 const isRecording = ref(false)
+const waitingForRecording = ref(false);
 const clientWidth = ref(800);
 const clientHeight = ref(800);
 const Padding = {
@@ -127,6 +139,8 @@ async function sendAudioToBackend(file) {
 }
 
 async function sentAudio() {
+  waitingForRecording.value = true;
+  console.log("Sending audio to backend")
   let audio = new Blob(data, { type: "audio/wav" });
   console.log(audio)
   let file = new File([audio], "recording.wav", { type: 'audio/wav' })
@@ -146,9 +160,11 @@ async function sentAudio() {
       timestamp: rec_timestamp
     }
     emit('transcription', transcription)
+    waitingForRecording.value = false;
     data = []; // Clear data after sending
    }
    catch (error){
+     waitingForRecording.value = false;
      console.error("Error creating audio URL: ", error);
    }
 }
