@@ -141,9 +141,8 @@ async function sendAudioToBackend(file) {
 async function sentAudio() {
   waitingForRecording.value = true;
   console.log("Sending audio to backend")
-  let audio = new Blob(data, { type: "audio/wav" });
-  console.log(audio)
-  let file = new File([audio], "recording.wav", { type: 'audio/wav' })
+  let audio = new Blob(data, { type: "audio/webm;codecs=opus" });
+  let file = new File([audio], "recording.webm", { type: "audio/webm" });
 
   // To check if the audio was generated successfully
    try{
@@ -182,7 +181,11 @@ onMounted(() => {
     )
       .then((stream) => {
 
-        recorder = new MediaRecorder(stream)
+        let options = { mimeType: "audio/webm;codecs=opus" };
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+          options = { mimeType: "" };
+        }
+        recorder = new MediaRecorder(stream, options);
 
         recorder.ondataavailable = (event) => {
           data.push(event.data)

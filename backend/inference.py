@@ -43,9 +43,33 @@ def bandpass_filter(audio, lowcut=200.0, highcut=4000.0, fs=16000, order=6):
 
     return filtered
 
-#Designed for: post-denoised but still unclear speech, Real-time capable (low CPU/GPU use),Runs as a CLI or via Python wrapper, Open-source + pretrained
+
+# has not been used in the current code, but can be useful for enhancing consonants
+# To further enhance consonants that Whisper needs (like "s", "t", "sh"), use it after bandpass
+def pre_emphasis(audio, coeff=0.97):
+    return np.append(audio[0], audio[1:] - coeff * audio[:-1])
+
+
+#Designed for: post-denoised but still unclear speech, Real-time capable (low CPU/GPU use),Runs as a CLI or via Python wrapper, Open-source + pretrained.
 def run_deepfilternet(input_folder, output_folder):
     subprocess.run(["deepFilter", "-i", input_folder, "-o", output_folder], check=True)
+
+
+def estimate_snr(audio, frame_length=2048, hop_length=512, threshold=0.01):
+    # Calculate short-term energy
+    energies = [
+        np.sum(audio[i:i+frame_length]**2)
+        for i in range(0, len(audio)-frame_length, hop_length)
+    ]
+    energies = np.array(energies)
+    # Assume lowest 10% energy frames are noise
+    noise_energy = np.percentile(energies, 10)
+    # Assume highest 10% are signal
+    signal_energy = np.percentile(energies, 90)
+    if noise_energy == 0:
+        return float('inf')
+    snr_db = 10 * np.log10(signal_energy / noise_energy)
+    return snr_db
 
 
 def inference(args, device):
@@ -64,6 +88,8 @@ def inference(args, device):
     #load the whisper model 
     whisper_model = whisper.load_model("small", device=device)
     #whisper_model = WhisperModel("small", device="cpu")
+    apply_bandpass = True
+    apply_deepfilternet = True
 
     with torch.no_grad():
         # You can use data.json instead of input_folder with:
