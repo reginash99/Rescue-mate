@@ -9,18 +9,19 @@
         <!-- Displaying the following string otherwise -->
         <p v-else>No transcription available.</p>
       </div>
-  <p v-else>No data received yet.</p>
+       <p v-else >No data received yet.</p>
     </div>
   </div>
 </template>
 
 <script setup>
 defineProps({
-  data: Object
+  data: Object,
 })
 </script>
 
 <style scoped>
+
 .transcription-main {
   display: flex;
   flex-direction: column;
