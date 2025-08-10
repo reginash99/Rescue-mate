@@ -75,12 +75,10 @@
 
 
 <script setup>
-
-
 import { ref, onMounted } from 'vue';
 import { defineEmits } from 'vue'
 
-const emit = defineEmits(['transcription'])
+const emit = defineEmits(['transcription', 'waitingForRecording'])
 const isRecording = ref(false)
 const waitingForRecording = ref(false);
 const error_message = ref(null);
@@ -108,7 +106,7 @@ let audio = [];
 let audio_url = ref(null);
 let audio_generated = ref(false)
 let data = []
-let rec_timestamp = ref(null);
+//let rec_timestamp = ref(null);
 
 async function startRecording() {
 
@@ -120,9 +118,9 @@ async function startRecording() {
   if(recorder){
   recorder.start();
   
-  if (recorder.state == "recording") {
-    rec_timestamp = new Date().toLocaleString('de-DE', timestamp_format)
-  }
+  //if (recorder.state == "recording") {
+   // rec_timestamp = new Date().toLocaleString('de-DE', timestamp_format)
+  //}
 }
 else{
   try{
@@ -139,6 +137,10 @@ else{
     error_message.value = "Error creating recorder. Please check your microphone settings."
   }
 }
+
+//  if (recorder.state == "recording") {
+//    rec_timestamp = new Date().toLocaleString('de-DE', timestamp_format)
+//  }
 }
 
 function stopRecording() {
@@ -169,6 +171,7 @@ async function sendAudioToBackend(file) {
 
 async function sentAudio() {
   waitingForRecording.value = true;
+  emit('waitingForRecording', true)
   console.log("Sending audio to backend")
   let audio = new Blob(data, { type: "audio/webm;codecs=opus" });
   let file = new File([audio], "recording.webm", { type: "audio/webm" });
@@ -185,14 +188,16 @@ async function sentAudio() {
     // Putting transcription and timestamp into an object to emit
     const transcription = {
       text: parsed_transcription['text'],
-      timestamp: rec_timestamp
+      timestamp: parsed_transcription['timestamp']
     }
     emit('transcription', transcription)
+    emit('waitingForRecording', false)
     waitingForRecording.value = false;
     data = []; // Clear data after sending
    }
    catch (error){
      waitingForRecording.value = false;
+     emit('waitingForRecording', false)
      console.error("Error creating audio URL: ", error);
    }
 }
