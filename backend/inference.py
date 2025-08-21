@@ -17,6 +17,7 @@ import librosa
 import soundfile as sf
 from utils.util import load_config
 import datetime
+import webrtcvad
 
 h = None
 device = None 
@@ -33,7 +34,7 @@ def str2bool(v):
 
 
 #A bandpass filter to improve speech intelligibility (esp. for radio-style speech):
-def bandpass_filter(audio, lowcut=200.0, highcut=4000.0, fs=16000, order=6):
+def bandpass_filter(audio, lowcut=200.0, highcut=5000.0, fs=16000, order=6):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
@@ -54,22 +55,79 @@ def pre_emphasis(audio, coeff=0.97):
 def run_deepfilternet(input_folder, output_folder):
     subprocess.run(["deepFilter", "-i", input_folder, "-o", output_folder], check=True)
 
+def is_muffled(audio, sr=16000, threshold=0.2):
+    S = np.abs(librosa.stft(audio))
+    flatness = librosa.feature.spectral_flatness(S=S).mean()
+    return flatness < threshold
 
-def estimate_snr(audio, frame_length=2048, hop_length=512, threshold=0.01):
+#signal-to-noise ratio estimation to determine if audio is clean enough
+def estimate_snr(audio, frame_length=2048, hop_length=512):
     # Calculate short-term energy
-    energies = [
+    energies = np.array([
         np.sum(audio[i:i+frame_length]**2)
         for i in range(0, len(audio)-frame_length, hop_length)
-    ]
-    energies = np.array(energies)
-    # Assume lowest 10% energy frames are noise
-    noise_energy = np.percentile(energies, 10)
-    # Assume highest 10% are signal
-    signal_energy = np.percentile(energies, 90)
-    if noise_energy == 0:
+    ])
+    n = len(energies)
+    if n < 10:
+        return 0  # Not enough data
+
+    # Use lowest 10% as noise, highest 10% as signal
+    n10 = max(1, int(0.1 * n))
+    sorted_indices = np.argsort(energies)
+    noise_indices = sorted_indices[:n10]
+    signal_indices = sorted_indices[-n10:]
+
+    noise_samples = np.concatenate([
+        audio[i*hop_length:i*hop_length+frame_length] for i in noise_indices
+    ])
+    signal_samples = np.concatenate([
+        audio[i*hop_length:i*hop_length+frame_length] for i in signal_indices
+    ])
+
+    noise_power = np.mean(noise_samples**2)
+    signal_power = np.mean(signal_samples**2)
+    if noise_power == 0:
         return float('inf')
-    snr_db = 10 * np.log10(signal_energy / noise_energy)
+    snr_db = 10 * np.log10(signal_power / noise_power)
     return snr_db
+
+#use a VAD (voice activity detector) to separate speech and noise (for best results, but more complex)
+def estimate_snr_vad(audio, sr=16000, frame_ms=30):
+    # Convert to 16-bit PCM for VAD
+    audio_pcm = (audio * 32767).astype(np.int16)
+    vad = webrtcvad.Vad(2)  # 0-3, 3=most aggressive
+
+    frame_len = int(sr * frame_ms / 1000)
+    n_frames = len(audio_pcm) // frame_len
+
+    speech_frames = []
+    noise_frames = []
+
+    for i in range(n_frames):
+        start = i * frame_len
+        stop = start + frame_len
+        frame = audio_pcm[start:stop]
+        if len(frame) < frame_len:
+            continue
+        is_speech = vad.is_speech(frame.tobytes(), sr)
+        if is_speech:
+            speech_frames.append(frame)
+        else:
+            noise_frames.append(frame)
+
+    if not noise_frames or not speech_frames:
+        # fallback to energy-based if VAD fails
+        return estimate_snr(audio)
+
+    noise = np.concatenate(noise_frames)
+    speech = np.concatenate(speech_frames)
+    noise_power = np.mean(noise.astype(np.float32)**2)
+    speech_power = np.mean(speech.astype(np.float32)**2)
+    if noise_power == 0:
+        return float('inf')
+    snr_db = 10 * np.log10(speech_power / noise_power)
+    return snr_db
+
 
 
 def inference(args, device):
@@ -120,7 +178,7 @@ def inference(args, device):
                 raise ValueError(f"{full_path} is not a valid file!")
 
             noisy_wav, sr = librosa.load(os.path.join(args.input_folder, fname), sr=None, mono=True)
-            
+
             if sr != 16000:
                 noisy_wav = librosa.resample(noisy_wav, orig_sr=sr, target_sr=16000)
                 sr = 16000
@@ -128,33 +186,61 @@ def inference(args, device):
             if np.max(np.abs(noisy_wav)) > 0:
                 noisy_wav = noisy_wav / np.max(np.abs(noisy_wav))
 
-            noisy_wav = torch.FloatTensor(noisy_wav).to(device)
-            norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
-            
-            noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
-            noisy_amp, noisy_pha, noisy_com = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor)
-            
-            noisy_amp = noisy_amp.to(device).half()
-            noisy_pha = noisy_pha.to(device).half()
 
-            amp_g, pha_g, com_g = model(noisy_amp, noisy_pha)
-            
-            audio_g = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor)
-            
-            audio_g = audio_g / norm_factor
-            
-            # free any stranded tensors
-            torch.cuda.empty_cache()
-            
-            audio_np = audio_g.squeeze().cpu().detach().numpy()
-            
-            audio_np = bandpass_filter(audio_np, lowcut=200.0, highcut=4000.0, fs=16000, order=6)
-            
-            #optional post-clean DSP
-            if args.post_processing_PCS:
-                audio_np = cal_pcs(audio_np)
+            # Estimate SNR
+            snr_db = estimate_snr_vad(noisy_wav, sr=sr)
+            print(f"SNR for {fname}: {snr_db:.2f} dB")
 
-            return audio_np
+             # Decide if audio is clean
+            CLEAN_SNR_THRESHOLD = 15 #Adjust this value as needed
+            LIGHT_DENOISE_THRESHOLD = 11  # optional
+
+            if snr_db > CLEAN_SNR_THRESHOLD and not is_muffled(noisy_wav, sr=sr):
+                print("Audio is clean, skipping denoising steps.")
+                return noisy_wav
+            
+            elif snr_db > LIGHT_DENOISE_THRESHOLD and not is_muffled(noisy_wav, sr=sr):
+                print("Audio is moderately noisy, applying only bandpass.")
+                audio_np = bandpass_filter(noisy_wav, lowcut=200.0, highcut=5000, fs=16000, order=6)
+                return audio_np
+
+            else:
+            # --- Denoising pipeline below ---
+                print("Audio is  noisy, applying denoising steps.")
+                noisy_wav = torch.FloatTensor(noisy_wav).to(device)
+                norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
+                
+                noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
+                noisy_amp, noisy_pha, noisy_com = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor)
+                
+                noisy_amp = noisy_amp.to(device).half()
+                noisy_pha = noisy_pha.to(device).half()
+
+                amp_g, pha_g, com_g = model(noisy_amp, noisy_pha)
+                
+                audio_g = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor)
+                
+                audio_g = audio_g / norm_factor
+                
+                # free any stranded tensors
+                torch.cuda.empty_cache()
+                
+                audio_np = audio_g.squeeze().cpu().detach().numpy()
+
+
+                FLATNESS_THRESHOLD = 0.01
+                flatness = librosa.feature.spectral_flatness(S=np.abs(librosa.stft(audio_np))).mean()
+                if snr_db > CLEAN_SNR_THRESHOLD and flatness > FLATNESS_THRESHOLD:
+                    print("Speech is clear after Mamba, skipping bandpass.")
+                else:
+                    print("Speech still not clear, applying bandpass.")
+                    audio_np = bandpass_filter(audio_np, lowcut=200.0, highcut=5000.0, fs=16000, order=6)
+                
+                #optional post-clean DSP
+                if args.post_processing_PCS:
+                    audio_np = cal_pcs(audio_np)
+
+                return audio_np
 
         cleaned_paths = [process_file(latest_fname)]
 
@@ -164,9 +250,25 @@ def inference(args, device):
             results_out_path = os.path.join(args.output_folder, f"{base}_final.wav")
 
             sf.write(results_out_path, audio_np, 16000, 'PCM_16')
-            run_deepfilternet(results_out_path, args.output_folder)
+            
+            #check if DeepFilterNet3 is needed
+            CLEAN_SNR_THRESHOLD = 15
+            FLATNESS_THRESHOLD = 0.01
+            
+            audio_for_check, sr_check = librosa.load(results_out_path, sr=16000, mono=True)
+            snr_post = estimate_snr_vad(audio_for_check, sr=sr_check)
+            flatness_post = librosa.feature.spectral_flatness(S=np.abs(librosa.stft(audio_for_check))).mean()
+            
+            print(f"Post-processing SNR: {snr_post:.2f} dB, Flatness: {flatness_post:.2f}")
 
-            # transcribe the DeepFilterNet3 output
+            if snr_post > CLEAN_SNR_THRESHOLD and flatness_post > FLATNESS_THRESHOLD:
+                print("Speech is clear after Mamba+bandpass, skipping DeepFilterNet.")
+            else:
+                print("Speech still not clear, applying DeepFilterNet.")
+                run_deepfilternet(results_out_path, args.output_folder)
+
+
+            # transcribe the output
             print(f"Transcribing cleaned file {os.path.basename(results_out_path)}…")
             result = whisper_model.transcribe(results_out_path, task='transcribe', no_speech_threshold=0.1, beam_size=5, temperature=0.0)
             #segments,_ = whisper_model.transcribe(results_out_path, vad_filter=True, vad_parameters=dict(min_silence_duration_ms=500))

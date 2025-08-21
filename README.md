@@ -75,14 +75,16 @@ conda install uvicorn
 conda install python-multipart
 
 
-Then run this on the WSL ubuntu: 
+This is how to start the backend server (run it on wsl ubuntu, inside the backend folder): uvicorn api_server:app --reload. 
 
-
-uvicorn api_server:app --reload. 
-
-This is how to start the backend server. 
 
 Keep in mind that pretrained.sh needs to be encoded in CRLF. Look at the bottom right of your screen, next to the UTF-8 while you are in the file pretrained.sh. Being inside the file pretrained.sh is important, the encoding does not work for the entire project, it is file dependant. After you change the encoding to CRLF it will appear as if you have made changes to the pretrained.sh, this is fine. If you still get errors, try changing it back to LF, then save then try again. Change between them (LF and CRLF) and save when you face errors. 
+
+
+# Checks for filters 
+
+We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. To fix this issue, we implemented several checks/functions that calculate the noise and quality of the input audio, if it reaches a certain level and is deemed as clean, we skip one, two or all the filters and go directly to whisper. Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
+
 
 
 ## FRONTEND
