@@ -76,7 +76,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { defineEmits } from 'vue'
 
 const emit = defineEmits(['transcription', 'waitingForRecording'])
 const isRecording = ref(false)

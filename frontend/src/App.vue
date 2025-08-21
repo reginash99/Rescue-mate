@@ -1,10 +1,10 @@
 <template>
   <div class="grid-container">
     <div class="grid-item">
-      <Map/>
+      <Record @transcription="handleData" @waitingForRecording ="indicateRecordingStatus"/>
     </div>
     <div class="grid-item">
-      <Record @transcription="handleData" @waitingForRecording ="indicateRecordingStatus"/>
+      <Map/>
     </div>
     <div class="grid-item">
       <HistoryTable :history="history"/>
@@ -51,7 +51,7 @@ function addHistoryEntry(data) {
 
 <style>
 #app {
-  font-family: "Roboto Mono";
+  font-family: "Figtree";
 }
 
 html, body {
@@ -62,17 +62,13 @@ html, body {
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1.2fr 2fr;
   grid-template-rows: 1fr 1fr;
-  gap: 5px;
+  gap: 10px;
   height: calc(100vh - 20px);
   width: calc(100vw - 20px);
   box-sizing: border-box;
-  border-width: .5px;
-  border-style: solid;
-  border-color: black;
-  padding: 0;
-  margin: 0;
+  padding: 10;
 }
 
 .grid-item {
@@ -82,9 +78,11 @@ html, body {
   justify-content: stretch;
   border-width: .5px;
   border-style: solid;
-  border-color: black;
   height: 100%;
   min-height: 0;
+  border-radius: 25px;
+  box-shadow: 0 7px 10px rgba(0, 0, 0, 0.356);
+  overflow: hidden;
 }
 
 @media (max-width: 900px) {

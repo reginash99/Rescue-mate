@@ -139,4 +139,6 @@ The text "No data received yet." is displyed by default and the text "No transcr
 
 # History
 
-To show a history of transcriptions, a table with unique IDs, a timestamp, and a status (successful - not empty transcription, fail - empty transcription) is displayed.
+To show a history of transcriptions, a table with unique IDs, a timestamp, and a status is displayed. The status and the critea are as follows:
+- Successful if the transcription text in the received json is not empty
+- Fail if the transcription text in the received json is empty

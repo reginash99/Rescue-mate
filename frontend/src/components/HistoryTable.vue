@@ -11,17 +11,118 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, idx) in history" :key="idx">
-                        <td>{{ idx + 1 }}</td>
-                        <td>{{ item.timestamp ? formatTimestamp(item.timestamp) : item.timestamp }}</td>
+                    <tr>
                         <td>
-                            <!-- Success/sent if string is not empty, fail if string is empty -->
+                            01
+                        </td>
+                        <td>
+                            10.10.2025  12:00:00
+                        </td>
+                        <td>
+                            <div class="sent">
+                                Success
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            01
+                        </td>
+                        <td>
+                            10.10.2025  12:00:00
+                        </td>
+                        <td>
+                            <div class="sent">
+                                Success
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            01
+                        </td>
+                        <td>
+                            10.10.2025  12:00:00
+                        </td>
+                        <td>
+                            <div class="sent">
+                                Success
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            01
+                        </td>
+                        <td>
+                            10.10.2025  12:00:00
+                        </td>
+                        <td>
+                            <div class="sent">
+                                Success
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            01
+                        </td>
+                        <td>
+                            10-10-2025  12:00:00
+                        </td>
+                        <td>
+                            <div class="sent">
+                                Success
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            01
+                        </td>
+                        <td>
+                            10/10/2025  12:00:00
+                        </td>
+                        <td>
+                            <div class="sent">
+                                Success
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            01
+                        </td>
+                        <td>
+                            10.10.2025  12:00:00
+                        </td>
+                        <td>
+                            <div class="sent">
+                                Success
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- <tr v-for="(item, idx) in history" :key="idx">
+                        <td>
+                            {{ idx + 1 }}
+                        </td>
+                        <td>
+                            {{ item.timestamp ? formatTimestamp(item.timestamp) : item.timestamp }}
+                        </td>
+                        <td>
                             <div :class="item.text && item.text.trim() !== '' ? 'sent' : 'fail'">
                                 {{ item.text && item.text.trim() !== '' ? 'Success' : 'Failed' }}
                                 <i :class="item.text && item.text.trim() !== '' ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                             </div>
                         </td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
         </div>
@@ -45,11 +146,16 @@ function formatTimestamp(ts) {
   const hour = ts.slice(9, 11);
   const minute = ts.slice(11, 13);
   const second = ts.slice(13, 15);
-  return `${day}.${month}.${year}  ${hour}:${minute}:${second}`;
+  return `${day}/${month}/${year}  ${hour}:${minute}:${second}`;
 }
 </script>
 
 <style scoped>
+
+h1 {
+    text-align: center;
+}
+
 .main-table {
     display: flex;
     padding: 10px;
@@ -75,7 +181,6 @@ function formatTimestamp(ts) {
 .table_component table {
     width: 100%;
     border-collapse: collapse;
-    border-spacing: 0;
 }
 
 .table_component caption {
@@ -96,6 +201,7 @@ function formatTimestamp(ts) {
 .table_component td {
     border: 1px none #dededf;
     padding: 5px;
+    font-size: large;
 }
 
 .table_component tr:nth-child(even) td {
@@ -109,9 +215,31 @@ function formatTimestamp(ts) {
 }
 
 @media (max-width: 900px) {
-  .table_component th {
-    position: relative;
-  }
+    .table_component th {
+        position: relative;
+    }
+}
+
+.table_component tr td:first-child {
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+    padding-left: 13px !important;
+}
+
+.table_component tr td:last-child {
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+.table_component th:first-child {
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
+  padding-left: 13px !important;
+}
+
+.table_component th:last-child {
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
 }
 
 .sent {
