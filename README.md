@@ -85,7 +85,35 @@ Keep in mind that pretrained.sh needs to be encoded in CRLF. Look at the bottom 
 
 We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. To fix this issue, we implemented several checks/functions that calculate the noise and quality of the input audio, if it reaches a certain level and is deemed as clean, we skip one, two or all the filters and go directly to whisper. Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
 
+# database
 
+We use posgresql 17.6 for our database system, which means you have to [install](https://www.postgresql.org/download/) it.
+Additionally, the python library psycopg has to be installed:
+
+```
+npm install psycopg
+```
+the database is called rescue_mate and can be installed within a terminal
+
+```
+createdb -p 8000 myprojectdb
+```
+
+there is one table called transcription which can be installed within a terminal
+(the schema lies in migration folder of the project):
+
+(Linux/MacOS)
+```
+psql -p 8000 -d myprojectdb -f migrations/schema.sql
+```
+(Windows)
+
+```
+psql -U postgres -p 8000 -d myprojectdb -f migrations/schema.sql
+```
+we have two transcations that interact with the DB
+insert_record(timestamp, transcription)
+delete_records() (all records are deleted that are older than 24h)
 
 ## FRONTEND
 # Map
