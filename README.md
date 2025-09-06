@@ -96,7 +96,7 @@ npm install psycopg
 the database is called rescue_mate and can be installed within a terminal
 
 ```
-createdb -p 8000 myprojectdb
+createdb -p 8000 rescue_mate
 ```
 
 there is one table called transcription which can be installed within a terminal
@@ -104,12 +104,12 @@ there is one table called transcription which can be installed within a terminal
 
 (Linux/MacOS)
 ```
-psql -p 8000 -d myprojectdb -f migrations/schema.sql
+psql -p 8000 -d rescue_mate -f migrations/schema.sql
 ```
 (Windows)
 
 ```
-psql -U postgres -p 8000 -d myprojectdb -f migrations/schema.sql
+psql -U postgres -p 8000 -d rescue_mate -f migrations/schema.sql
 ```
 we have two transcations that interact with the DB
 insert_record(timestamp, transcription)
