@@ -73,7 +73,7 @@ async def upload_audio(file: UploadFile = File(...)):
 
 @app.get("/get-history/")
 async def get_history(): 
-    records = json.dumps(select_records())
+    records = select_records()
     return JSONResponse(content={"history": records})
 
 # @app.get("/get-audio/{filename}")
