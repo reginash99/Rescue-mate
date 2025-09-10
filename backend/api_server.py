@@ -5,6 +5,8 @@ import subprocess
 import glob
 import datetime
 import uuid
+import json
+from db import insert_record, delete_records, select_records
 
 UPLOAD_DIR = "./input_audio/"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -58,10 +60,21 @@ async def upload_audio(file: UploadFile = File(...)):
     latest_transcription = max(transcription_files, key=os.path.getmtime)
     with open(latest_transcription, "r", encoding="utf-8") as f:
         transcription_data = f.read()
+        transcription_data_json = json.loads(transcription_data)
+        
+    # Insert record into the database
+    #insert_record(transcription_data['timestamp'], transcription_data['text'])
+    insert_record(datetime.datetime.now(), transcription_data_json['text'])
+
+    # delete all records older that 24 hours
+    delete_records()
 
     return JSONResponse(content={"transcription": transcription_data})
 
-
+@app.get("/get-history/")
+async def get_history(): 
+    records = json.dumps(select_records())
+    return JSONResponse(content={"history": records})
 
 # @app.get("/get-audio/{filename}")
 # async def get_audio(filename: str):
