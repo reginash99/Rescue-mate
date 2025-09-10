@@ -17,6 +17,8 @@ from utils.util import load_config
 import datetime
 import webrtcvad
 from collections import Counter
+from sentence_transformers import SentenceTransformer, util
+
 
 h = None
 device = None 
@@ -171,6 +173,15 @@ def classify_audio_quality(audio, sr=16000, snr_clean_thr=30, snr_light_thr=15, 
 # Transcript comparison logic
 # ------------------------------
 
+
+# load a multilingual model (works for German + English)
+semantic_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+
+def semantic_similarity(text1, text2):
+    emb1 = semantic_model.encode(text1, convert_to_tensor=True)
+    emb2 = semantic_model.encode(text2, convert_to_tensor=True)
+    return float(util.cos_sim(emb1, emb2))
+
 #Return a penalty if text is highly repetitive
 def repetition_score(text: str, max_ngram=4) -> float:
     words = text.strip().split()
@@ -225,21 +236,32 @@ def score_transcript(result, baseline_len=None):
     return score
 
 
-def compare_and_update(old_result, new_result, stage_name):
+def compare_and_update(old_result, new_result, stage_name, semantic_weight=0.5):
     if old_result is None:
         return new_result
 
-    baseline_len = len(old_result.get("text", "").split())
+    old_text = old_result.get("text", "").strip()
+    new_text = new_result.get("text", "").strip()
+    baseline_len = len(old_text.split())
+
     old_score = score_transcript(old_result, baseline_len)
     new_score = score_transcript(new_result, baseline_len)
 
-    print(f"[COMPARE] {stage_name}: old={old_score:.3f}, new={new_score:.3f}")
+    # semantic similarity boost
+    sim = semantic_similarity(new_text, old_text)
 
-    if new_score > old_score:
-        print("New transcript is better, replacing old one.")
+    combined_new = new_score + semantic_weight * sim
+    combined_old = old_score + semantic_weight * 1.0  # self-similarity
+
+    print(f"[COMPARE] {stage_name}: old={combined_old:.3f}, new={combined_new:.3f}, sim={sim:.2f}")
+    print(f"[OLD TEXT] {old_text}")
+    print(f"[NEW TEXT] {new_text}")
+
+    if combined_new > combined_old:
+        print("→ New transcript is better, replacing old one.\n")
         return new_result
     else:
-        print("Old transcript is better, keeping it.")
+        print("→ Old transcript is better, keeping it.\n")
         return old_result
 
 
@@ -389,9 +411,6 @@ def inference(args, device):
             noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
             noisy_amp, noisy_pha, _ = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor)
             
-            #noisy_amp = noisy_amp.to(device).half()
-            #noisy_pha = noisy_pha.to(device).half()
-
             noisy_amp = noisy_amp.to(device)
             noisy_pha = noisy_pha.to(device)
 

@@ -42,19 +42,17 @@ conda list --explicit > env-backup.txt
 
 # Whisper
 We install whisper using the command: pip install openai-whisper (still inside the same conda environment). 
-Then we import whisper inside mamba (interface.py) and after mamba is done cleaning up the background noise but before it is saved we call whisper to transcribe it and save the transcription as a json file. 
+Then we import whisper inside mamba (interface.py).  After each check and subsequent filter combo is deemed appropriate, whisper is used to transcribe. The transcription from whisper is used by several functions to calculate a score that validates how 'correct' it is, this score is then used to compare this script with the next one to determine which is best, in the end, only the best one is written/saved
+Whisper is also fine tuned with parameters and a prompt in german (the prompt might still need work)
+Extra functions are also implemented to ensure the repetition of words or sentences whisper does sometimes doesnt happen again.
+
 
 
 # Filters
-We changed how the interface.py processes audio by making it cut the audio into 3 second chunks, thus improving the speed. We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: pip install deepfilternet. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested. The pipeline so far looks like this: 
+We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: pip install deepfilternet. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
 
 
-SEMamba -> Bandpass filter -> deepfilternet3 -> Whisper
-
-
-After testing chunking the audio file, the resulting transcription was of bad quality, so we decided to go back to how originally mamba processed files with a few changes. One change is to use .half() when loading mamba in order to save memory, as the model is large, it saves memory by using half-precision floats. 
-We also changed mamba's model parameter hop_size (they are samples between successive frames) from 100 to 200. 
-
+We  changed mamba's model parameter hop_size (they are samples between successive frames) from 100 to 200. 
 
 With these changes we managed to make the entire pipeline run in under approximately 30 seconds for a 1 minute audio input, which is a great improvement from the initial 3 minutes that this took.
 
@@ -83,7 +81,7 @@ Keep in mind that pretrained.sh needs to be encoded in CRLF. Look at the bottom 
 
 # Checks for filters 
 
-We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. To fix this issue, we implemented several checks/functions that calculate the noise and quality of the input audio, if it reaches a certain level and is deemed as clean, we skip one, two or all the filters and go directly to whisper. Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
+We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. To fix this issue, we implemented several functions that calculate the noise and quality of the input audio, if it reaches certain levels, then only certain filters are applied.  Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
 
 
 
