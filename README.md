@@ -115,10 +115,10 @@ psql -U postgres -p 5433 -d rescue_mate -f migrations/schema.sql
 
 for the connection to the database, an .env file in the backend folder is required with the following structure:
 
-DB_NAME="DB_NAME_PLACEHOLDER"
-USER="USER_PLACEHOLDER"
-PASSWORD="PASSWORD_PLACEHOLDER"
-HOST="HOST_PLACEHOLDER"
+DB_NAME="DB_NAME_PLACEHOLDER" <br>
+USER="USER_PLACEHOLDER" <br>
+PASSWORD="PASSWORD_PLACEHOLDER" <br>
+HOST="HOST_PLACEHOLDER"<br>
 PORT="PORT_PLACEHOLDER"
 
 Usually, in postgresql the default port is 5432 and the default user is postgres.
