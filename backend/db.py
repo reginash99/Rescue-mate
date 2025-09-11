@@ -1,12 +1,17 @@
 import psycopg
+import dotenv
+import os
+
+dotenv.load_dotenv(dotenv_path="./.env")
+
 
 def insert_record(timestamp, transcription):
     with psycopg.connect(
-        dbname="rescue_mate",
-        user="postgres",
-        password="PLACEHOLDER_PASSWORD",
-        host="localhost",
-        port="8000"
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASSWORD"),
+        host=os.getenv("HOST"),
+        port=os.getenv("PORT")
     ) as conn:
 
         with conn.cursor() as cur:
@@ -28,11 +33,11 @@ def insert_record(timestamp, transcription):
 
 def delete_records():
     with psycopg.connect(
-        dbname="rescue_mate",
-        user="postgres",
-        password="PLACEHOLDER_PASSWORD",
-        host="localhost",
-        port="8000"
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASSWORD"),
+        host=os.getenv("HOST"),
+        port=os.getenv("PORT")
     ) as conn:
         
         with conn.cursor() as cur:
@@ -51,11 +56,11 @@ def delete_records():
 
 def select_records():
     with psycopg.connect(
-        dbname="rescue_mate",
-        user="postgres",
-        password="PLACEHOLDER_PASSWORD",
-        host="localhost",
-        port="8000"
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASSWORD"),
+        host=os.getenv("HOST"),
+        port=os.getenv("PORT")
     ) as conn:
 
         with conn.cursor() as cur:

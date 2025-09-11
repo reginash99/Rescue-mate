@@ -12,13 +12,13 @@
                 </thead>
                 <tbody>
                     <tr v-for="(item, idx) in history" :key="idx">
-                        <td>{{ idx + 1 }}</td>
-                        <td>{{ item.timestamp ? formatTimestamp(item.timestamp) : item.timestamp }}</td>
+                        <td>{{ item.id}}</td>
+                        <td>{{ item.timestamp }}</td>
                         <td>
                             <!-- Success/sent if string is not empty, fail if string is empty -->
-                            <div :class="item.text && item.text.trim() !== '' ? 'sent' : 'fail'">
-                                {{ item.text && item.text.trim() !== '' ? 'Success' : 'Failed' }}
-                                <i :class="item.text && item.text.trim() !== '' ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
+                            <div :class="item.transcription && item.transcription.trim() !== '' ? 'sent' : 'fail'">
+                                {{ item.transcription && item.transcription.trim() !== '' ? 'Success' : 'Failed' }}
+                                <i :class="item.transcription && item.transcription.trim() !== '' ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                             </div>
                         </td>
                     </tr>
@@ -29,12 +29,18 @@
 </template>
 
 <script setup>
-defineProps({
+import { onMounted,ref } from 'vue';
+
+/*defineProps({
   history: {
     type: Array,
     default: () => []
   }
-})
+})*/
+
+const history = ref([])
+
+
 
 function formatTimestamp(ts) {
   if (!ts || ts.length < 15) return ts || '';
@@ -47,6 +53,25 @@ function formatTimestamp(ts) {
   const second = ts.slice(13, 15);
   return `${day}.${month}.${year}  ${hour}:${minute}:${second}`;
 }
+
+onMounted(async() =>
+{
+    try {
+    const response = await fetch('http://localhost:8000/get-history')
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    const result = await response.json()
+    console.log(result.history)
+    history.value = result.history
+    console.log(history.value)
+    //const json_res = await response.json()
+    //console.log(json_res.history)
+  } catch (error) {
+    console.error('Fetch error:', error)
+  }
+}
+)
 </script>
 
 <style scoped>

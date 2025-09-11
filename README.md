@@ -89,14 +89,15 @@ We noticed that when a "clean" audio was recorded and passed through the filters
 
 We use posgresql 17.6 for our database system, which means you have to [install](https://www.postgresql.org/download/) it.
 Additionally, the python library psycopg has to be installed:
+In the following installation instruction examples, the database is called rescue_mate and it is listening on port 5433 but the values can be adjusted.
 
 ```
 npm install psycopg
 ```
-the database is called rescue_mate and can be installed within a terminal
+the database can be installed within a terminal 
 
 ```
-createdb -p 8000 rescue_mate
+createdb -p 5433 rescue_mate
 ```
 
 there is one table called transcription which can be installed within a terminal
@@ -104,16 +105,35 @@ there is one table called transcription which can be installed within a terminal
 
 (Linux/MacOS)
 ```
-psql -p 8000 -d rescue_mate -f migrations/schema.sql
+psql -p 5433 -d rescue_mate -f migrations/schema.sql
 ```
 (Windows)
 
 ```
-psql -U postgres -p 8000 -d rescue_mate -f migrations/schema.sql
+psql -U postgres -p 5433 -d rescue_mate -f migrations/schema.sql
 ```
-we have two transcations that interact with the DB
+
+for the connection to the database, an .env file in the backend folder is required with the following structure:
+
+DB_NAME="DB_NAME_PLACEHOLDER"
+USER="USER_PLACEHOLDER"
+PASSWORD="PASSWORD_PLACEHOLDER"
+HOST="HOST_PLACEHOLDER"
+PORT="PORT_PLACEHOLDER"
+
+Usually, in postgresql the default port is 5432 and the default user is postgres.
+Important is that the port is not listening to other running processes.
+
+to read the .env file, the following package has to be installed:
+
+```
+pip install python-dotenv
+```
+
+we have three transcations that interact with the DB
 insert_record(timestamp, transcription)
 delete_records() (all records are deleted that are older than 24h)
+select_records() 
 
 ## FRONTEND
 # Map

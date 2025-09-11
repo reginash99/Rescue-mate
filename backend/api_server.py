@@ -7,6 +7,10 @@ import datetime
 import uuid
 import json
 from db import insert_record, delete_records, select_records
+import dotenv
+import os
+
+dotenv.load_dotenv(dotenv_path="./env")
 
 UPLOAD_DIR = "./input_audio/"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -63,8 +67,8 @@ async def upload_audio(file: UploadFile = File(...)):
         transcription_data_json = json.loads(transcription_data)
         
     # Insert record into the database
-    #insert_record(transcription_data['timestamp'], transcription_data['text'])
-    insert_record(datetime.datetime.now(), transcription_data_json['text'])
+    insert_record(transcription_data['timestamp'], transcription_data['text'])
+    #insert_record(datetime.datetime.now(), transcription_data_json['text'])
 
     # delete all records older that 24 hours
     delete_records()
