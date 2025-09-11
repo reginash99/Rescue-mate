@@ -47,6 +47,8 @@ Whisper is also fine tuned with parameters and a prompt in german (the prompt mi
 Extra functions are also implemented to ensure the repetition of words or sentences whisper does sometimes doesnt happen again.
 
 
+We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper. 
+
 
 # Filters
 We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: pip install deepfilternet. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
@@ -59,8 +61,6 @@ With these changes we managed to make the entire pipeline run in under approxima
 
 So far we have changed the way files are processed so that only the last added input audio (into the input_audio folder) is processed instead of all of them.
 
-
-We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper. 
 
 
 
@@ -81,8 +81,17 @@ Keep in mind that pretrained.sh needs to be encoded in CRLF. Look at the bottom 
 
 # Checks for filters 
 
-We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. To fix this issue, we implemented several functions that calculate the noise and quality of the input audio, if it reaches certain levels, then only certain filters are applied.  Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
+We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. 
+To fix this issue, we implemented several functions that calculate the noise and quality of the input audio, if it reaches certain levels, then only certain filters are applied.  Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
 
+
+The functions we used are: 
+
+
+1. Signal to Noise Ratio (SNR) to measure how strong the desired signal (speech) is compared to background noise, higher SNR means clearer speech; 
+2. Voice Activity Detector (VAD) to separate speech and non-speech segments and calculate SNR using only the speech frames as signal and the non-speech frames as noise;
+3. Spectral Flatness to measure how noise-like or tone-like a signal is;
+4. Background RMS (root mean square) which measures the average energy (loudness) of the background (non-speech) portions of audio to detect if the background is quiet or noisy.
 
 
 ## FRONTEND
