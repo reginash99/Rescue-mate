@@ -121,7 +121,7 @@ PASSWORD="PASSWORD_PLACEHOLDER" <br>
 HOST="HOST_PLACEHOLDER"<br>
 PORT="PORT_PLACEHOLDER"
 
-Usually, in postgresql the default port is 5432 and the default user is postgres.
+Usually, in postgresql the default port is 5432 and the default user is postgres. <br>
 Important is that the port is not listening to other running processes.
 
 to read the .env file, the following package has to be installed:

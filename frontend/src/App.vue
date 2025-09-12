@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
 import Transcription from "../src/components/Transcription.vue";
 import HistoryTable from "./components/HistoryTable.vue";
 import Map from "./components/Map.vue";
@@ -37,17 +37,39 @@ function handleData(data) {
   // It sends the transcription to the Transcription component
   // and pushes it to the HistoryTable component as a new entry
   sendTranscription(data)
-  addHistoryEntry(data)
+  addHistoryEntry()
 }
 
 function sendTranscription(data) {
   transcriptionData.value = data
 }
 
-function addHistoryEntry(data) {
-  history.value.push(data)
+async function addHistoryEntry() {
+  await get_records()
+}
+
+onMounted(async() =>
+{
+    await get_records()
+}
+)
+
+async function get_records() {
+    try {
+    const response = await fetch('http://localhost:8000/get-history')
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    const result = await response.json()
+   
+    history.value = result.history
+
+  } catch (error) {
+    console.error('Fetch error:', error)
+  }
 }
 </script>
+
 
 <style>
 #app {

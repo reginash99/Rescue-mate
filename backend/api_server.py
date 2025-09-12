@@ -6,11 +6,10 @@ import glob
 import datetime
 import uuid
 import json
-from db import insert_record, delete_records, select_records
+from db import insert_record, delete_records, select_records, get_id
 import dotenv
-import os
 
-dotenv.load_dotenv(dotenv_path="./env")
+dotenv.load_dotenv()
 
 UPLOAD_DIR = "./input_audio/"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -28,7 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def convert_webm_to_wav(webm_path, wav_path):
+'''def convert_webm_to_wav(webm_path, wav_path):
     subprocess.run([
         "ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path
     ], check=True)
@@ -65,20 +64,47 @@ async def upload_audio(file: UploadFile = File(...)):
     with open(latest_transcription, "r", encoding="utf-8") as f:
         transcription_data = f.read()
         transcription_data_json = json.loads(transcription_data)
-        
+
+    #flag_status =  '1' if transcription_data_json['status'] !== '' else '0'
+    flag_status = False # placeholder until status is added to json structure    
     # Insert record into the database
-    insert_record(transcription_data['timestamp'], transcription_data['text'])
+    insert_record(transcription_data_json['timestamp'], transcription_data_json['text'], flag_status)
     #insert_record(datetime.datetime.now(), transcription_data_json['text'])
+    current_id = get_id(transcription_data_json['timestamp'], transcription_data_json['text'],flag_status)
 
     # delete all records older that 24 hours
     delete_records()
 
-    return JSONResponse(content={"transcription": transcription_data})
+    return JSONResponse(content={"transcription": transcription_data_json})'''
 
 @app.get("/get-history/")
 async def get_history(): 
+    #delete_records()
     records = select_records()
     return JSONResponse(content={"history": records})
+
+# temporary endpoint to simulate transcription insertion
+@app.post("/transcribe-audio/")
+async def placeholder_recording():
+    transcription_files = glob.glob(r".\Polizei_10-short_20250626_182826.json")
+    latest_transcription = max(transcription_files, key=os.path.getmtime)
+    with open(latest_transcription, "r", encoding="utf-8") as f:
+        transcription_data = f.read()
+        transcription_data_json = json.loads(transcription_data)
+    #print("json ", transcription_data)
+    #flag_status =  '1' if transcription_data_json['status'] !== '' else '0'
+    flag_status = False # placeholder until status is added to json structure    
+    # Insert record into the database
+    datetime_ = datetime.datetime.now()
+    insert_record(datetime_, transcription_data_json['text'],flag_status)
+    current_id = get_id(datetime_, transcription_data_json['text'],flag_status)
+    transcription_data_json['timestamp'] = datetime_.strftime("%d.%m.%Y  %H:%M:%S")
+    transcription_data_json['status'] = flag_status
+    transcription_data_json['id'] = current_id
+    print(datetime_, transcription_data_json['text'],flag_status)
+    print(current_id)
+    return JSONResponse(content={"transcription": transcription_data_json})
+
 
 # @app.get("/get-audio/{filename}")
 # async def get_audio(filename: str):

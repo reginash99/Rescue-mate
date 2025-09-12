@@ -180,12 +180,14 @@ async function sentAudio() {
     const backend_response = await sendAudioToBackend(file);
 
     console.log("Transcription received: ", backend_response);
-    const parsed_transcription = JSON.parse(backend_response)
+    const parsed_transcription = backend_response//JSON.parse(backend_response)
 
-    // Putting transcription and timestamp into an object to emit
+    // Putting transcription, timestamp and status into an object to emit
     const transcription = {
-      text: parsed_transcription['text'],
-      timestamp: parsed_transcription['timestamp']
+      transcription: parsed_transcription['text'],
+      timestamp: parsed_transcription['timestamp'],
+      status: parsed_transcription['status'],
+      id: parsed_transcription['id']
     }
     emit('transcription', transcription)
     emit('waitingForRecording', false)

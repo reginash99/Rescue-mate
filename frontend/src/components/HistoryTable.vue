@@ -16,9 +16,9 @@
                         <td>{{ item.timestamp }}</td>
                         <td>
                             <!-- Success/sent if string is not empty, fail if string is empty -->
-                            <div :class="item.transcription && item.transcription.trim() !== '' ? 'sent' : 'fail'">
-                                {{ item.transcription && item.transcription.trim() !== '' ? 'Success' : 'Failed' }}
-                                <i :class="item.transcription && item.transcription.trim() !== '' ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
+                            <div :class="item.status ? 'sent' : 'fail'">
+                                {{ item.status ? 'Success' : 'Failed' }}
+                                <i :class="item.status  ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                             </div>
                         </td>
                     </tr>
@@ -31,14 +31,14 @@
 <script setup>
 import { onMounted,ref } from 'vue';
 
-/*defineProps({
+
+defineProps({
   history: {
     type: Array,
     default: () => []
   }
-})*/
+})
 
-const history = ref([])
 
 
 
@@ -54,24 +54,6 @@ function formatTimestamp(ts) {
   return `${day}.${month}.${year}  ${hour}:${minute}:${second}`;
 }
 
-onMounted(async() =>
-{
-    try {
-    const response = await fetch('http://localhost:8000/get-history')
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-    const result = await response.json()
-    console.log(result.history)
-    history.value = result.history
-    console.log(history.value)
-    //const json_res = await response.json()
-    //console.log(json_res.history)
-  } catch (error) {
-    console.error('Fetch error:', error)
-  }
-}
-)
 </script>
 
 <style scoped>
