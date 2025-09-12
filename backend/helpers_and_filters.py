@@ -4,7 +4,6 @@ import numpy as np
 from scipy.signal import butter, sosfiltfilt
 import subprocess
 
-
 def str2bool(v):
     if isinstance(v, bool):
         return v
