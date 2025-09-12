@@ -71,7 +71,7 @@ def estimate_snr_vad(audio, sr=16000, frame_ms=30):
     return snr_db
 
 #Decide if audio is clean, moderate, noisy, or muffled using SNR + spectral cues.
-def classify_audio_quality(audio, sr=16000, snr_clean_thr=30, snr_light_thr=15, flatness_thr=0.06, hf_ratio_thr=0.05):
+def classify_audio_quality(audio, sr=16000, snr_clean_thr=30, snr_light_thr=15, flatness_thr=0.08, hf_ratio_thr=0.05):
     """Decide if audio is clean, moderate, or noisy using SNR + spectral flatness."""
     
     snr_db = estimate_snr(audio)

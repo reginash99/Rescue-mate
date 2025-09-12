@@ -150,3 +150,16 @@ The text "No data received yet." is displyed by default and the text "No transcr
 # History
 
 To show a history of transcriptions, a table with unique IDs, a timestamp, and a status (successful - not empty transcription, fail - empty transcription) is displayed.
+
+
+## Citation
+
+Citing Mamba:
+```
+@article{mamba,
+  title={Mamba: Linear-Time Sequence Modeling with Selective State Spaces},
+  author={Gu, Albert and Dao, Tri},
+  journal={arXiv preprint arXiv:2312.00752},
+  year={2023}
+}
+```

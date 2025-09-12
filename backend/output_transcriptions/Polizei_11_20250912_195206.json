@@ -1,0 +1,531 @@
+{
+  "text": "Die Erde 52 und Erde 35 wie auf dem einen Seite bleiben. Erde 52 verstanden. Erde 33 wie aufgestanden. Anlieger von LB3 in Vampel. Anlieger hört. Von LB3, eine Abschlusmeldung, die Victoria im harten Ortkarten wieder festverkauft, Person nicht verlässt, keine Betriebsstoffe ausgetreten. Das hat mir überstanden. Einsatz Ende.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 4.06,
+      "text": " Die Erde 52 und Erde 35 wie auf dem einen Seite bleiben.",
+      "tokens": [
+        50364,
+        3229,
+        43720,
+        18079,
+        674,
+        43720,
+        6976,
+        3355,
+        2501,
+        1371,
+        4891,
+        19748,
+        24912,
+        13,
+        50574
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.7779937386512756,
+      "compression_ratio": 1.3076923076923077,
+      "no_speech_prob": 0.06905613839626312,
+      "words": [
+        {
+          "word": " Die",
+          "start": 0.0,
+          "end": 1.28,
+          "probability": 0.7081749439239502
+        },
+        {
+          "word": " Erde",
+          "start": 1.28,
+          "end": 1.44,
+          "probability": 0.09317291527986526
+        },
+        {
+          "word": " 52",
+          "start": 1.44,
+          "end": 1.98,
+          "probability": 0.9188226461410522
+        },
+        {
+          "word": " und",
+          "start": 1.98,
+          "end": 2.32,
+          "probability": 0.2184470146894455
+        },
+        {
+          "word": " Erde",
+          "start": 2.32,
+          "end": 2.5,
+          "probability": 0.7249870300292969
+        },
+        {
+          "word": " 35",
+          "start": 2.5,
+          "end": 2.92,
+          "probability": 0.9429730176925659
+        },
+        {
+          "word": " wie",
+          "start": 2.92,
+          "end": 3.14,
+          "probability": 0.5504376888275146
+        },
+        {
+          "word": " auf",
+          "start": 3.14,
+          "end": 3.3,
+          "probability": 0.7119320631027222
+        },
+        {
+          "word": " dem",
+          "start": 3.3,
+          "end": 3.42,
+          "probability": 0.8378351330757141
+        },
+        {
+          "word": " einen",
+          "start": 3.42,
+          "end": 3.58,
+          "probability": 0.31501105427742004
+        },
+        {
+          "word": " Seite",
+          "start": 3.58,
+          "end": 3.7,
+          "probability": 0.048093874007463455
+        },
+        {
+          "word": " bleiben.",
+          "start": 3.7,
+          "end": 4.06,
+          "probability": 0.10439103841781616
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 6.84,
+      "end": 8.42,
+      "text": " Erde 52 verstanden.",
+      "tokens": [
+        50724,
+        43720,
+        18079,
+        1306,
+        33946,
+        13,
+        50799
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.7779937386512756,
+      "compression_ratio": 1.3076923076923077,
+      "no_speech_prob": 0.06905613839626312,
+      "words": [
+        {
+          "word": " Erde",
+          "start": 6.84,
+          "end": 7.56,
+          "probability": 0.8718860149383545
+        },
+        {
+          "word": " 52",
+          "start": 7.56,
+          "end": 7.92,
+          "probability": 0.32735204696655273
+        },
+        {
+          "word": " verstanden.",
+          "start": 7.92,
+          "end": 8.42,
+          "probability": 0.6814347505569458
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "seek": 0,
+      "start": 10.34,
+      "end": 12.12,
+      "text": " Erde 33 wie aufgestanden.",
+      "tokens": [
+        50899,
+        43720,
+        11816,
+        3355,
+        2501,
+        2629,
+        28762,
+        13,
+        50999
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.7779937386512756,
+      "compression_ratio": 1.3076923076923077,
+      "no_speech_prob": 0.06905613839626312,
+      "words": [
+        {
+          "word": " Erde",
+          "start": 10.34,
+          "end": 11.06,
+          "probability": 0.9315515756607056
+        },
+        {
+          "word": " 33",
+          "start": 11.06,
+          "end": 11.4,
+          "probability": 0.8101314902305603
+        },
+        {
+          "word": " wie",
+          "start": 11.4,
+          "end": 11.72,
+          "probability": 0.302608847618103
+        },
+        {
+          "word": " aufgestanden.",
+          "start": 11.72,
+          "end": 12.12,
+          "probability": 0.8861242930094401
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "seek": 3000,
+      "start": 42.120000000000005,
+      "end": 43.96,
+      "text": " Anlieger von LB3 in Vampel.",
+      "tokens": [
+        50364,
+        1107,
+        6302,
+        1321,
+        2957,
+        441,
+        33,
+        18,
+        294,
+        38796,
+        338,
+        13,
+        51064
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.8269365750826322,
+      "compression_ratio": 1.1327433628318584,
+      "no_speech_prob": 0.50350421667099,
+      "words": [
+        {
+          "word": " Anlieger",
+          "start": 42.120000000000005,
+          "end": 42.96,
+          "probability": 0.5645281175772349
+        },
+        {
+          "word": " von",
+          "start": 42.96,
+          "end": 43.1,
+          "probability": 0.7070865631103516
+        },
+        {
+          "word": " LB3",
+          "start": 43.1,
+          "end": 43.48,
+          "probability": 0.3574073811372121
+        },
+        {
+          "word": " in",
+          "start": 43.48,
+          "end": 43.64,
+          "probability": 0.2252291440963745
+        },
+        {
+          "word": " Vampel.",
+          "start": 43.64,
+          "end": 43.96,
+          "probability": 0.39835555851459503
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "seek": 3000,
+      "start": 46.540000000000006,
+      "end": 47.72,
+      "text": " Anlieger hört.",
+      "tokens": [
+        51064,
+        1107,
+        6302,
+        1321,
+        42243,
+        13,
+        51264
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.8269365750826322,
+      "compression_ratio": 1.1327433628318584,
+      "no_speech_prob": 0.50350421667099,
+      "words": [
+        {
+          "word": " Anlieger",
+          "start": 46.540000000000006,
+          "end": 47.38,
+          "probability": 0.7126940339803696
+        },
+        {
+          "word": " hört.",
+          "start": 47.38,
+          "end": 47.72,
+          "probability": 0.840160608291626
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "seek": 3000,
+      "start": 50.34,
+      "end": 55.66,
+      "text": " Von LB3, eine Abschlusmeldung, die Victoria im harten Ortkarten wieder festverkauft,",
+      "tokens": [
+        51264,
+        20700,
+        441,
+        33,
+        18,
+        11,
+        3018,
+        5813,
+        339,
+        3063,
+        76,
+        5957,
+        1063,
+        11,
+        978,
+        16656,
+        566,
+        276,
+        11719,
+        22921,
+        74,
+        11719,
+        6216,
+        6633,
+        331,
+        74,
+        1459,
+        844,
+        11,
+        51664
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.8269365750826322,
+      "compression_ratio": 1.1327433628318584,
+      "no_speech_prob": 0.50350421667099,
+      "words": [
+        {
+          "word": " Von",
+          "start": 50.34,
+          "end": 51.18,
+          "probability": 0.4649701714515686
+        },
+        {
+          "word": " LB3,",
+          "start": 51.18,
+          "end": 51.6,
+          "probability": 0.9691578348477682
+        },
+        {
+          "word": " eine",
+          "start": 51.84,
+          "end": 52.14,
+          "probability": 0.10140886902809143
+        },
+        {
+          "word": " Abschlusmeldung,",
+          "start": 52.14,
+          "end": 52.86,
+          "probability": 0.5493451183040937
+        },
+        {
+          "word": " die",
+          "start": 53.04,
+          "end": 53.1,
+          "probability": 0.769197940826416
+        },
+        {
+          "word": " Victoria",
+          "start": 53.1,
+          "end": 53.52,
+          "probability": 0.3540622889995575
+        },
+        {
+          "word": " im",
+          "start": 53.52,
+          "end": 53.96,
+          "probability": 0.9002612233161926
+        },
+        {
+          "word": " harten",
+          "start": 53.96,
+          "end": 54.28,
+          "probability": 0.8673595786094666
+        },
+        {
+          "word": " Ortkarten",
+          "start": 54.28,
+          "end": 54.72,
+          "probability": 0.5093602389097214
+        },
+        {
+          "word": " wieder",
+          "start": 54.72,
+          "end": 54.9,
+          "probability": 0.8015658855438232
+        },
+        {
+          "word": " festverkauft,",
+          "start": 54.9,
+          "end": 55.66,
+          "probability": 0.5311281830072403
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "seek": 5566,
+      "start": 55.66,
+      "end": 59.54,
+      "text": " Person nicht verlässt, keine Betriebsstoffe ausgetreten.",
+      "tokens": [
+        50364,
+        8443,
+        1979,
+        19441,
+        13555,
+        372,
+        11,
+        9252,
+        6279,
+        5469,
+        929,
+        23636,
+        68,
+        3437,
+        847,
+        35383,
+        13,
+        50564
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.4796641985575358,
+      "compression_ratio": 1.043010752688172,
+      "no_speech_prob": 0.2848760187625885,
+      "words": [
+        {
+          "word": " Person",
+          "start": 55.66,
+          "end": 56.92,
+          "probability": 0.2587979733943939
+        },
+        {
+          "word": " nicht",
+          "start": 56.92,
+          "end": 57.2,
+          "probability": 0.829333484172821
+        },
+        {
+          "word": " verlässt,",
+          "start": 57.2,
+          "end": 57.88,
+          "probability": 0.7762540777524313
+        },
+        {
+          "word": " keine",
+          "start": 57.9,
+          "end": 58.12,
+          "probability": 0.6513906121253967
+        },
+        {
+          "word": " Betriebsstoffe",
+          "start": 58.12,
+          "end": 58.94,
+          "probability": 0.9416053295135498
+        },
+        {
+          "word": " ausgetreten.",
+          "start": 58.94,
+          "end": 59.54,
+          "probability": 0.8390381733576456
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "seek": 5566,
+      "start": 62.480000000000004,
+      "end": 64.94,
+      "text": " Das hat mir überstanden. Einsatz Ende.",
+      "tokens": [
+        50564,
+        2846,
+        2385,
+        3149,
+        4502,
+        33946,
+        13,
+        38474,
+        15152,
+        13,
+        50864
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.4796641985575358,
+      "compression_ratio": 1.043010752688172,
+      "no_speech_prob": 0.2848760187625885,
+      "words": [
+        {
+          "word": " Das",
+          "start": 62.480000000000004,
+          "end": 63.36,
+          "probability": 0.8145312666893005
+        },
+        {
+          "word": " hat",
+          "start": 63.36,
+          "end": 63.52,
+          "probability": 0.849467933177948
+        },
+        {
+          "word": " mir",
+          "start": 63.52,
+          "end": 63.64,
+          "probability": 0.515291690826416
+        },
+        {
+          "word": " überstanden.",
+          "start": 63.64,
+          "end": 64.1,
+          "probability": 0.9430660307407379
+        },
+        {
+          "word": " Einsatz",
+          "start": 64.52,
+          "end": 64.72,
+          "probability": 0.7412803173065186
+        },
+        {
+          "word": " Ende.",
+          "start": 64.72,
+          "end": 64.94,
+          "probability": 0.32077446579933167
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250912_195206"
+}
