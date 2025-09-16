@@ -1,52 +1,51 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --vt-c-white: #ffffff;
-  --vt-c-white-soft: #f8f8f8;
-  --vt-c-white-mute: #f2f2f2;
+  /* light theme */
+  --vt-c-white-soft: #f5f3f3;
+  --vt-c-text-light-1: rgb(0,0,0);
+  --vt-c-grid-border-light: rgb(233, 233, 233);
+  --vt-c-grid-background-light: rgb(255, 255, 255);
+  --vt-c-secondary-background-light: rgb(230, 230, 230);
+  --vt-c-ternary-background-light: rgb(0, 0, 0);
+  --shadow-light: rgb(180, 180, 180);
+  --scrollbar-light: rgb(0,0,0);
+  
+  /* Dark theme */
+  --vt-c-black-soft: #181818;
+  --vt-c-grid-background-dark: rgb(46, 46, 46);
+  --vt-c-grid-border-dark: rgb(46, 46, 46);
+  --vt-c-text-dark-1: rgb(231, 231, 231);
+  --vt-c-secondary-background-dark: rgb(102, 102, 102);
+  --shadow-dark: rgb(0, 0, 0);
+  --scrollbar-dark: rgb(228, 228, 228);
 
-  --vt-c-black: #181818;
-  --vt-c-black-soft: #222222;
-  --vt-c-black-mute: #282828;
-
-  --vt-c-indigo: #2c3e50;
-
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
-  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
-
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-  --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+  --color-text-2: rgb(255, 255, 255);
 }
 
 /* semantic color variables for this project */
 :root {
-  --color-background: var(--vt-c-black);
-  --color-background-soft: var(--vt-c-black);
-  --color-background-mute: var(--vt-c-black);
-
-  --color-border: var(--vt-c-divider-light-2);
-  --color-border-hover: var(--vt-c-divider-light-1);
-
-  --color-heading: var(--vt-c-text-light-1);
+  --color-background: var(--vt-c-white-soft);
+  --grid-item-backgound-color: var(--vt-c-grid-background-light);
+  --grid-item-border: var(--vt-c-grid-border-light);
+  --secondary-background: var(--vt-c-secondary-background-light);
+  --ternary-background: var(--vt-c-ternary-background-light);
+  --shadow-color: var(--shadow-light);
   --color-text: var(--vt-c-text-light-1);
+  --scrollbar-color: var(--scrollbar-light);
 
   --section-gap: 160px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-background: var(--vt-c-black);
-    --color-background-soft: var(--vt-c-black);
-    --color-background-mute: var(--vt-c-black);
-
-    --color-border: var(--vt-c-divider-dark-2);
-    --color-border-hover: var(--vt-c-divider-dark-1);
-
-    --color-heading: var(--vt-c-text-dark-1);
-    --color-text: var(--vt-c-text-dark-2);
+    --color-background: var(--vt-c-black-soft);
+    --grid-item-backgound-color: var(--vt-c-grid-background-dark);
+    --grid-item-border: var(--vt-c-grid-border-dark);
+    --secondary-background: var(--vt-c-secondary-background-dark);
+    --ternary-background: var(--vt-c-black-soft);
+    --shadow-color: var(--shadow-dark);
+    --color-text: var(--vt-c-text-dark-1);
+    --scrollbar-color: var(--scrollbar-dark);
   }
 }
 
@@ -59,8 +58,9 @@
 }
 
 body {
-  color: var(--color-text);
+  color: var(--color-text) !important;
   background: var(--color-background) !important;
+  scrollbar-color: var(--scrollbar-color) transparent;
   transition:
     color 0.5s,
     background-color 0.5s;
@@ -77,6 +77,7 @@ body {
     'Fira Sans',
     'Droid Sans',
     'Helvetica Neue',
+    'Figtree',
     sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;
