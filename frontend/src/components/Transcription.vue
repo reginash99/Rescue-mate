@@ -162,7 +162,6 @@ const panelOpen = ref(false)
   border-radius: 0 15px 15px 0;
   background-color: var(--color-background);
   overflow: visible;
-  color: var(--color-text-2);
   padding: 15px;
   display: flex;
   transition: opacity 0.3s;
