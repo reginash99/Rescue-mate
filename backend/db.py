@@ -20,7 +20,7 @@ def insert_record(timestamp, transcription,status):
      
             if cur.fetchone()[0]:
                 print("table exists")
-                cur.execute("insert into transcription (timestamp,transcription,status) values (%s,%s,%s);",(timestamp, transcription,status,))
+                cur.execute("insert into transcription (timestamp,final_transcription,successful_transcription) values (%s,%s,%s);",(timestamp, transcription,status,))
                 conn.commit()
                 print("inserted")
             else:
@@ -28,8 +28,6 @@ def insert_record(timestamp, transcription,status):
                 
 
           
-
-
 def delete_records():
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
@@ -69,7 +67,7 @@ def select_records():
      
             if cur.fetchone()[0]:
                 print("table exists")
-                cur.execute("select id, timestamp,transcription,status from transcription order by id desc;")
+                cur.execute("select id, timestamp,final_transcription,successful_transcription from transcription order by id desc;")
                 conn.commit()
 
                 records = cur.fetchall()
@@ -133,7 +131,7 @@ def get_id(timestamp, transcription,status):
      
             if cur.fetchone()[0]:
                 print("table exists")
-                cur.execute("select id from transcription where timestamp = %s and transcription = %s and status = %s;", (timestamp, transcription,status,))
+                cur.execute("select id from transcription where timestamp = %s and final_transcription = %s and successful_transcription = %s;", (timestamp, transcription,status,))
                 conn.commit()
 
                 id = cur.fetchall()
@@ -178,16 +176,18 @@ def insert_intermediate_record(transcription, column_index,id):
             cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
 
             match column_index:
+                case 0:
+                    cur.execute("update transcription set final_transcription = %s                      where id = %s", (transcription,id,))
                 case 1:
-                    cur.execute("update transcription set raw_transcr = %s where id = %s", (transcription,id,))
+                    cur.execute("update transcription set raw_transcr = %s                              where id = %s", (transcription,id,))
                 case 2:
-                    cur.execute("update transcription set bp_preemp_transcr = %s where id = (select max(id) from transcription);", (transcription,))
+                    cur.execute("update transcription set bp_preemp_transcr = %s                        where id = %s", (transcription,id,))
                 case 3:
-                    cur.execute("update transcription set mamba_bp_transcr  = %s where id = (select max(id) from transcription);", (transcription,))
+                    cur.execute("update transcription set mamba_bp_transcr  = %s                        where id = %s", (transcription,id,))
                 case 4:
-                    cur.execute("update transcription set mamba_bp_preemp_transcr = %s where id = (select max(id) from transcription);", (transcription,))
+                    cur.execute("update transcription set mamba_bp_preemp_transcr = %s                  where id = %s", (transcription,id,))
                 case 5:
-                    cur.execute("update transcription set mamba_bp_preemp_deepfilternet_transcrp = %s where id = (select max(id) from transcription);", (transcription,))
+                    cur.execute("update transcription set mamba_bp_preemp_deepfilternet_transcrp = %s   where id = %s", (transcription,id,))
                 case _:
                     print("No valid column index provided.")
                     return

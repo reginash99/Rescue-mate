@@ -101,7 +101,7 @@ createdb -p 5433 rescue_mate
 ```
 
 there is one table called transcription which can be installed within a terminal
-(the schema lies in migration folder of the project):
+(the schema lies in migration folder of the project, the respective command has to be executed in the backend folder, otherwise adjust the path to the sql file):
 
 (Linux/MacOS)
 ```
