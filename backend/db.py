@@ -103,16 +103,18 @@ def select_record(id):
                 conn.commit()
 
                 records = cur.fetchall()
-
+                row = records[0]
                 #create json from records
-                json_data = []
-                for row in records:
-                    json_data.append({
+
+                if not records:
+                    return {}
+                
+                json_data = {
                         'id': row[0],
                         'timestamp': row[1].strftime("%d.%m.%Y  %H:%M:%S"),
                         'transcription': row[2],
                         'status': row[3]
-                    })
+                    }
     return json_data
 
 def get_id(timestamp, transcription,status):
@@ -191,6 +193,37 @@ def insert_intermediate_record(transcription, column_index,id):
                 case _:
                     print("No valid column index provided.")
                     return
+                
+def create_new_record():
+    with psycopg.connect(
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASSWORD"),
+        host=os.getenv("HOST"),
+        port=os.getenv("PORT")
+    ) as conn:
+         with conn.cursor() as cur:
+            table_name = 'transcription'
+            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
+
+            cur.execute("insert into transcription (timestamp) values (now());")
+            conn.commit()
+
+# status is boolean: Either True or False
+def set_success_status(id,status):
+    print("status ", status)
+    with psycopg.connect(
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("USER"),
+        password=os.getenv("PASSWORD"),
+        host=os.getenv("HOST"),
+        port=os.getenv("PORT")
+    ) as conn:
+         with conn.cursor() as cur:
+            table_name = 'transcription'
+            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
+
+            cur.execute("update transcription set successful_transcription = %s where id = %s", (status,id,))
 #insert_record('2025-09-07 00:12:00', 'This is a test transcription.',False) # just a test that the inserting function works
 #delete_records()
 

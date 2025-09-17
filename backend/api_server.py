@@ -6,7 +6,7 @@ import glob
 import datetime
 import uuid
 import json
-from db import insert_record, delete_records, select_records, get_id
+from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record,create_new_record, insert_intermediate_record,set_success_status
 import dotenv
 
 dotenv.load_dotenv()
@@ -86,7 +86,7 @@ async def get_history():
 # temporary endpoint to simulate transcription insertion -- mocking the current transcription process
 @app.post("/transcribe-audio/")
 async def placeholder_recording():
-    transcription_files = glob.glob(r".\Polizei_10_20250913_140821.json")
+    '''transcription_files = glob.glob(r".\Polizei_10_20250913_140821.json")
     latest_transcription = max(transcription_files, key=os.path.getmtime)
     with open(latest_transcription, "r", encoding="utf-8") as f:
         transcription_data = f.read()
@@ -102,8 +102,15 @@ async def placeholder_recording():
     transcription_data_json['timestamp'] = datetime_.strftime("%d.%m.%Y  %H:%M:%S")
     transcription_data_json['status'] = flag_status
     transcription_data_json['id'] = current_id
+    print(transcription_data_json)'''
+    create_new_record()
+    latest_id = get_latest_id()
+    insert_intermediate_record("testing",1,latest_id)
+    set_success_status(latest_id,True)
+    json_data = select_record(latest_id)
+    print(json_data)
 
-    return JSONResponse(content={"transcription": transcription_data_json})
+    return JSONResponse(content={"transcription": json_data})
 
 
 # @app.get("/get-audio/{filename}")

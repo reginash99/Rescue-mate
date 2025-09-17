@@ -184,7 +184,7 @@ async function sentAudio() {
 
     // Putting transcription, timestamp and status into an object to emit
     const transcription = {
-      transcription: parsed_transcription['text'],
+      transcription: parsed_transcription['transcription'], //transciption instead of text - to be consistent with db
       timestamp: parsed_transcription['timestamp'],
       status: parsed_transcription['status'],
       id: parsed_transcription['id']

@@ -4,7 +4,7 @@
     <div class="transcription">
       <div v-if="data">
         <!-- Displaying the transcription text if not empty -->
-        <p v-if="data['transcription']">{{ data["transcription"] }}</p>
+        <p v-if="data['transcription'] && data['status']">{{ data["transcription"] }}</p>
         <!-- Displaying the following string otherwise -->
         <p v-else>No transcription available.</p>
       </div>
