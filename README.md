@@ -14,12 +14,25 @@ For SE Mamba (the code is inside the backend folder), a Linux-based system is re
 WSL, conda, Pytorch, Torchaudio, and Cuda are required. 
 
 
-First it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use conda to install pytorch, torchaudio versions 2.2.2 as said in the requirements.txt inside the project root folder, torchvision, as well as cuda-toolkit (or pytorch-cuda, or both) version 12.1.
+First it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use these commands one by one:  
+
+`conda install pytorch=2.2.2 -c conda-forge -c pytorch -c nvidia`
+`conda install torchaudio=2.2.2 torchvision -c conda-forge -c pytorch -c nvidia`
+`conda install cuda-toolkit=12.1 -c conda-forge -c pytorch -c nvidia`
+
+As stated in the requirements.txt file inside the project root folder (as well as cuda-toolkit (or pytorch-cuda, or both), version 12.1)
 
 
-Then install all the packages in requirements.txt (again, the one inside the project root folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26.
+Then, install all the packages listed in requirements.txt (located inside the project root folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26.
+Use the commands: 
 
-We are also using the package webrtcvad to determine whether the audio contains speech. To install this, run the command `conda install -c conda-forge webrtcvad`
+`conda install openai-whisper fastapi uvicorn -c conda-forge -c pytorch -c nvidia`
+`conda install python-multipart packaging librosa pysoundfile pyyaml tensorboard pesq einops -c conda-forge -c pytorch -c nvidia`
+
+Sometimes when installing them in a single command it may cause issues. If this happens, try to install them separately, for example: conda install python-multipart -c conda-forge -c pytorch -c nvidia, conda install packaging -c conda-forge -c pytorch -c nvidia etc.
+
+
+We are also using the package webrtcvad to determine whether the audio contains speech. To install this, run the command: `conda install -c conda-forge webrtcvad`
 
 
 Then we need to build the mamba_ssm by running (inside the backend folder): 
@@ -50,7 +63,7 @@ Whisper is also fine tuned with parameters and a prompt in german (the prompt mi
 Extra functions are also implemented to ensure the repetition of words or sentences whisper does sometimes doesnt happen again.
 
 
-We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper. 
+We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper so we decided not to use it. 
 
 
 # Filters
