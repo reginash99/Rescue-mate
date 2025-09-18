@@ -53,9 +53,13 @@ If you run into trouble with nvcc run these in the terminal:
 
 sudo rm /usr/local/cuda/bin/nvcc
 
+
 export CUDA_HOME=$CONDA_PREFIX
+
 export PATH="$CUDA_HOME/bin:$PATH"
+
 export CPLUS_INCLUDE_PATH="$CUDA_HOME/include"
+
 export C_INCLUDE_PATH="$CUDA_HOME/include"
 
 
