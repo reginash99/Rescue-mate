@@ -17,7 +17,7 @@ WSL, conda, Pytorch, Torchaudio, and Cuda are required.
 First it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use these commands one by one:  
 
 
-`conda install pytorch=2.2.2 -c conda-forge -c pytorch -c nvidia`
+'''conda install pytorch=2.2.2 -c conda-forge -c pytorch -c nvidia'''
 
 `conda install torchaudio=2.2.2 torchvision -c conda-forge -c pytorch -c nvidia`
 
