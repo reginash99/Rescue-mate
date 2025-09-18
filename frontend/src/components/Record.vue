@@ -54,12 +54,21 @@
 
     <div id="recording" :style="{ visibility: isRecording ? 'visible' : 'hidden', width: '100%', height: '50%' }">
 
-      <div :style="{ width: '100%', height: '100%', display:'flex', alignItems:'baseline',justifyContent:'center' }">
+      <div :style="{ width: '100%', height: '100%', display:'flex', alignItems:'center', justifyContent:'center' }">
 
-        <video id="recordingVideo"
+        <!-- <video id="recordingVideo"
           src="./media/record_video_cropped.mp4" autoplay
           loop muted :style="{maxWidth: '100%', height:'100%', objectFit:'fill'}">
-        </video>
+        </video> -->
+
+        <div class="audio_spectrum">
+          <div
+            v-for="n in 35"
+            :key="n"
+            :class="`wave${n - 1 }`"
+          ></div>
+
+      </div>
 
       </div>
     </div>
@@ -73,6 +82,66 @@
 
 </template>
 
+<style>
+
+:root {
+  --m: 17.5;
+  --wavefreq: calc(100ms * var(--m));
+}
+
+.wave0, .wave32 { --wavefreq: calc(100ms * var(--m)); }
+.wave1, .wave31, .wave33 { --wavefreq: calc(200ms * var(--m)); }
+.wave2, .wave30, .wave34 { --wavefreq: calc(300ms * var(--m)); }
+.wave3, .wave29 { --wavefreq: calc(400ms * var(--m)); }
+.wave4, .wave20, .wave28 { --wavefreq: calc(500ms * var(--m)); }
+.wave5, .wave21, .wave27 { --wavefreq: calc(600ms * var(--m)); }
+.wave6, .wave10, .wave22, .wave26 { --wavefreq: calc(700ms * var(--m)); }
+.wave7, .wave9, .wave23, .wave25 { --wavefreq: calc(800ms * var(--m)); }
+.wave8, .wave24 { --wavefreq: calc(900ms * var(--m)); }
+.wave11 { --wavefreq: calc(670ms * var(--m)); }
+.wave12 { --wavefreq: calc(570ms * var(--m)); }
+.wave13 { --wavefreq: calc(470ms * var(--m)); }
+.wave14 { --wavefreq: calc(370ms * var(--m)); }
+.wave15 { --wavefreq: calc(270ms * var(--m)); }
+.wave16 { --wavefreq: calc(170ms * var(--m)); }
+.wave17 { --wavefreq: calc(270ms * var(--m)); }
+.wave18 { --wavefreq: calc(370ms * var(--m)); }
+.wave19 { --wavefreq: calc(470ms * var(--m)); }
+
+.audio_spectrum {
+  display: flex;
+  justify-content: center;
+  align-items: center !important;
+  width: 100%;
+  max-width: '100%';
+  height:'100%';
+}
+[class*='wave'] {
+  aspect-ratio: .125/1;
+  /*This can all be written on one line:*/
+  animation: waveform var(--wavefreq)
+             ease-in-out infinite
+             forwards;
+  background-color: var(--scrollbar-color);
+  border-radius: 15px;
+  width: 5px;
+  margin: 2px;
+}
+
+@keyframes waveform {
+  0% {
+    transform: scaleY(.5);
+  }
+  50% {
+    transform: scaleY(1.5);
+  }
+  100% {
+    transform: scaleY(.5);
+  }
+}
+
+
+</style>
 
 <script setup>
 import { ref, onMounted } from 'vue';
