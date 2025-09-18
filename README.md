@@ -19,7 +19,7 @@ First it is recommended to install miniconda on Ubuntu. Then create a conda virt
 
 Then install all the packages in requirements.txt (again, the one inside the project root folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26.
 
-We are also using the package webrtcvad to determine whether the audio contains speech. To install this, run the command pip `install -c conda-forge webrtcvad`
+We are also using the package webrtcvad to determine whether the audio contains speech. To install this, run the command `conda install -c conda-forge webrtcvad`
 
 
 Then we need to build the mamba_ssm by running (inside the backend folder): 
