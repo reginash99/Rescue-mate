@@ -51,16 +51,16 @@ Then we need to build the mamba_ssm by running (inside the backend folder):
 
 If you run into trouble with nvcc run these in the terminal: 
 
-sudo rm /usr/local/cuda/bin/nvcc
+`sudo rm /usr/local/cuda/bin/nvcc`
 
 
-export CUDA_HOME=$CONDA_PREFIX
+`export CUDA_HOME=$CONDA_PREFIX`
 
-export PATH="$CUDA_HOME/bin:$PATH"
+`export PATH="$CUDA_HOME/bin:$PATH"`
 
-export CPLUS_INCLUDE_PATH="$CUDA_HOME/include"
+`export CPLUS_INCLUDE_PATH="$CUDA_HOME/include"`
 
-export C_INCLUDE_PATH="$CUDA_HOME/include"
+`export C_INCLUDE_PATH="$CUDA_HOME/include"`
 
 
 To backup your current environment run: 
