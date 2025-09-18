@@ -1,15 +1,15 @@
 <template>
   <div class="grid-container">
-    <div class="grid-item">
-      <Record @transcription="handleData" @waitingForRecording ="indicateRecordingStatus"/>
-    </div>
-    <div class="grid-item">
+    <div class="grid-item record">
+        <Record @transcription="handleData" @waitingForRecording ="indicateRecordingStatus"/>
+      </div>
+    <div class="grid-item transcript">
       <Transcription :data="transcriptionData" :status="waitingForRecording"/>
     </div>
-    <div class="grid-item">
+    <div class="grid-item history">
       <HistoryTable :history="history"/>
     </div>
-    <div class="grid-item">
+    <div class="grid-item map">
       <Map/>
     </div>
   </div>
@@ -50,6 +50,7 @@ function addHistoryEntry(data) {
 </script>
 
 <style>
+
 #app {
   font-family: "Figtree";
 }
@@ -58,24 +59,23 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  
 }
 
 .grid-container {
   display: grid;
-  grid-template-columns: 1.2fr 2fr;
+  grid-template-columns: 1fr 2fr;
   grid-template-rows: 1fr 1fr;
   gap: 10px;
   height: calc(100vh - 20px);
   width: calc(100vw - 20px);
   box-sizing: border-box;
   padding: 10;
+  overflow: auto;
 }
 
 .grid-item {
   background: var(--grid-item-backgound-color);
-  display: flex;
-  align-items: stretch;
+  display: grid;
   justify-content: stretch;
   border-width: .5px;
   border-style: solid;
@@ -87,6 +87,16 @@ html, body {
   overflow: hidden;
 }
 
+.record {
+  resize: horizontal;
+  min-width: calc(100vw - 65vw);
+  max-width: calc(100vw - 35vw);
+}
+.transcript, .map {
+  min-width: calc(100vw - 70vw);
+  max-width: calc(100vw - 30vw);
+}
+
 @media (max-width: 900px) {
   .grid-container {
     grid-template-columns: 1fr;
@@ -94,5 +104,28 @@ html, body {
     height: 100vh;
     width: auto;
   }
+
+  .grid-item {
+    max-width: 100%;
+    min-width: 100%;
+    border-radius: 0;
+    resize: none;
+  }
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+  width: 7px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color);
+  border-radius: 12px;
+  border: 2px solid var(--grid-item-backgound-color);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 </style>

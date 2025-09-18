@@ -8,7 +8,8 @@
           <p v-else>No transcription available.</p>
         </div>
         <div v-else>
-          <p>Transcription will appear here...
+          <p>Transcription will appear here... Lorem ipsum dolor, sit amet consectetur adipisicing elit. Adipisci minus quas voluptatum. Quo at aliquam itaque recusandae mollitia, amet atque eum consectetur consequatur nulla quisquam blanditiis perspiciatis totam in? Voluptates. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum eligendi expedita deleniti blanditiis voluptate id quisquam facere corrupti, molestias quaerat? Rerum, veniam. Laborum consectetur dignissimos debitis, odit nulla quos deleniti!
+
           </p>
         </div>
         <div v-if="status" class="overlay">
@@ -16,11 +17,8 @@
           <div class="overlay-text">Processing…</div>
         </div>
       </div>
-      <div class="side-panel-overlay" v-if="panelOpen">
-        <div class="side-panel-content">
-          <p>Updated transcription..
-          </p>
-        </div>
+      <div class="side-panel" v-if="panelOpen">
+          <p>Updated transcription...</p>
       </div>
     </div>
     <button class="btn floating-btn" @click="panelOpen = !panelOpen">
@@ -67,7 +65,7 @@ const panelOpen = ref(false)
   margin: 15px;
   border-radius: 15px;
   box-shadow: 0 8px 8px var(--shadow-color);
-  overflow-y: auto;
+  overflow: auto;
   align-items: stretch;
 }
 
@@ -77,7 +75,6 @@ const panelOpen = ref(false)
 }
 
 .transcription-text {
-  transition: width 0.3s, max-width 0.3s;
   color: var(--color-text);
   width: 100%;
   max-width: 100%;
@@ -91,14 +88,13 @@ const panelOpen = ref(false)
 }
 
 /* Floating Button */
-
 .floating-btn {
   position: absolute;
   bottom: 24px;
   right: 24px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: auto;
+  height: auto;
+  border-radius: 18px;
   background-color: rgb(0, 192, 6);
   color: white;
   border: none;
@@ -152,22 +148,24 @@ const panelOpen = ref(false)
   color: var(--color-text-2) !important;
 }
 
-/* Side Panel */
-.side-panel-overlay {
-  top: 0;
-  right: 0;
-  width: 50%;
-  height: 100%;
-  position: absolute;
-  border-radius: 0 15px 15px 0;
-  background-color: var(--color-background);
-  overflow: visible;
-  padding: 15px;
-  display: flex;
-  transition: opacity 0.3s;
-}
-
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* Side Panel */
+.side-panel {
+  top: 0;
+  right: 0;
+  width: 50%;
+  min-height: 100%;
+  position: absolute;
+  border-radius: 0 15px 15px 0;
+  background-color: var(--ternary-background);
+  transition: opacity 0.3s;
+  color: var(--color-text-2) !important;
+  overflow-y: auto;
+  padding: 15px;
+  flex: 1;
+}
+
 </style>

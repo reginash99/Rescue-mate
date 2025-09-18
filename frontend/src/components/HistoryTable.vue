@@ -98,6 +98,7 @@ h1 {
 }
 
 .table_component {
+    overflow: hidden;
     min-height: 0;
     overflow-y: auto; 
     border: 1px none #dededf;
@@ -125,6 +126,7 @@ h1 {
     z-index: 2;
     background-color: var(--ternary-background);
     padding: 5px;
+    font-size: large;
     color: var(--color-text-2);
 }
 
