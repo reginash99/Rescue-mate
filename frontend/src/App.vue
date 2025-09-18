@@ -1,16 +1,16 @@
 <template>
   <div class="grid-container">
     <div class="grid-item">
-      <Map/>
+      <Record @transcription="handleData" @waitingForRecording ="indicateRecordingStatus"/>
     </div>
     <div class="grid-item">
-      <Record @transcription="handleData" @waitingForRecording ="indicateRecordingStatus"/>
+      <Transcription :data="transcriptionData" :status="waitingForRecording"/>
     </div>
     <div class="grid-item">
       <HistoryTable :history="history"/>
     </div>
     <div class="grid-item">
-      <Transcription :data="transcriptionData" :status="waitingForRecording"/>
+      <Map/>
     </div>
   </div>
 </template>
@@ -73,40 +73,40 @@ async function get_records() {
 
 <style>
 #app {
-  font-family: "Roboto Mono";
+  font-family: "Figtree";
 }
 
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  
 }
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1.2fr 2fr;
   grid-template-rows: 1fr 1fr;
-  gap: 5px;
+  gap: 10px;
   height: calc(100vh - 20px);
   width: calc(100vw - 20px);
   box-sizing: border-box;
-  border-width: .5px;
-  border-style: solid;
-  border-color: black;
-  padding: 0;
-  margin: 0;
+  padding: 10;
 }
 
 .grid-item {
-  background: #ffffff;
+  background: var(--grid-item-backgound-color);
   display: flex;
   align-items: stretch;
   justify-content: stretch;
   border-width: .5px;
   border-style: solid;
-  border-color: black;
   height: 100%;
   min-height: 0;
+  border-radius: 25px;
+  box-shadow: 0 7px 10px var(--shadow-color);
+  border-color: var(--grid-item-border);
+  overflow: hidden;
 }
 
 @media (max-width: 900px) {

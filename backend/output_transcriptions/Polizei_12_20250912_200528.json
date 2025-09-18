@@ -1,0 +1,1609 @@
+{
+  "text": "Dieter 43a, Dieter 33a. Dieter 43a hört. Sonst Dieter 43a, wie geht es einmal zum Schwenktor? Schon stehe ich gehabt gleich. und aufdecken kann Verhinwaltzahren, die in Wasser waren, schon soviel. Und das hat er 43 einverstanden. Peter 43, die zu, führt Peter 43. Peter 30, die zu, kommt Peter 43. für Wiediebel zum Gleichkilometer 11,3 und Gleichkilometer 11,4. Dort aufdeckt mehr Hinweis habe, Speergebiet, gemäß Maserwarte 04. Das hat der 3,02 verstanden. Peter 43, Peter 43, Peter 43, für Sie gibt es zum alten Gammer Hauptdeich ankringeldeich Kilometer zwischen 0,6 und 0,6 durch aufwärtsende Hinwaltszapel in Stärke bieg. Das hat der Kedadren 43L verstanden. Peter, 21. 03. Peter, 41. 03. Peter, 41. Peter, 41. Peter, 41.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 6.0,
+      "text": " Dieter 43a, Dieter 33a.",
+      "tokens": [
+        50364,
+        29606,
+        260,
+        17914,
+        64,
+        11,
+        29606,
+        260,
+        11816,
+        64,
+        13,
+        50664
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.7011383056640625,
+      "compression_ratio": 1.2135922330097086,
+      "no_speech_prob": 0.2856839895248413,
+      "words": [
+        {
+          "word": " Dieter",
+          "start": 0.0,
+          "end": 2.32,
+          "probability": 0.49726919550448656
+        },
+        {
+          "word": " 43a,",
+          "start": 2.32,
+          "end": 3.74,
+          "probability": 0.36404584534466267
+        },
+        {
+          "word": " Dieter",
+          "start": 3.9,
+          "end": 4.54,
+          "probability": 0.5930245220661163
+        },
+        {
+          "word": " 33a.",
+          "start": 4.54,
+          "end": 6.0,
+          "probability": 0.49001064896583557
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 8.280000000000001,
+      "end": 10.8,
+      "text": " Dieter 43a hört.",
+      "tokens": [
+        50764,
+        29606,
+        260,
+        17914,
+        64,
+        42243,
+        13,
+        50964
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.7011383056640625,
+      "compression_ratio": 1.2135922330097086,
+      "no_speech_prob": 0.2856839895248413,
+      "words": [
+        {
+          "word": " Dieter",
+          "start": 8.280000000000001,
+          "end": 9.66,
+          "probability": 0.7237022370100021
+        },
+        {
+          "word": " 43a",
+          "start": 9.66,
+          "end": 10.46,
+          "probability": 0.9694832265377045
+        },
+        {
+          "word": " hört.",
+          "start": 10.46,
+          "end": 10.8,
+          "probability": 0.19595377147197723
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "seek": 0,
+      "start": 16.0,
+      "end": 20.32,
+      "text": " Sonst Dieter 43a, wie geht es einmal zum Schwenktor?",
+      "tokens": [
+        51164,
+        318,
+        4068,
+        29606,
+        260,
+        17914,
+        64,
+        11,
+        3355,
+        7095,
+        785,
+        11078,
+        5919,
+        2065,
+        15615,
+        2320,
+        284,
+        30,
+        51464
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.7011383056640625,
+      "compression_ratio": 1.2135922330097086,
+      "no_speech_prob": 0.2856839895248413,
+      "words": [
+        {
+          "word": " Sonst",
+          "start": 15.930000000000001,
+          "end": 16.62,
+          "probability": 0.6951600164175034
+        },
+        {
+          "word": " Dieter",
+          "start": 16.62,
+          "end": 16.98,
+          "probability": 0.7049960047006607
+        },
+        {
+          "word": " 43a,",
+          "start": 16.98,
+          "end": 17.72,
+          "probability": 0.5626381933689117
+        },
+        {
+          "word": " wie",
+          "start": 17.72,
+          "end": 17.94,
+          "probability": 0.9336857199668884
+        },
+        {
+          "word": " geht",
+          "start": 17.94,
+          "end": 18.1,
+          "probability": 0.9536929726600647
+        },
+        {
+          "word": " es",
+          "start": 18.1,
+          "end": 18.3,
+          "probability": 0.8108834028244019
+        },
+        {
+          "word": " einmal",
+          "start": 18.3,
+          "end": 18.58,
+          "probability": 0.5602385997772217
+        },
+        {
+          "word": " zum",
+          "start": 18.58,
+          "end": 19.06,
+          "probability": 0.7251518368721008
+        },
+        {
+          "word": " Schwenktor?",
+          "start": 19.06,
+          "end": 20.32,
+          "probability": 0.8168708011507988
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "seek": 0,
+      "start": 22.54,
+      "end": 24.3,
+      "text": " Schon stehe ich gehabt gleich.",
+      "tokens": [
+        51514,
+        46049,
+        2126,
+        675,
+        1893,
+        37092,
+        11699,
+        13,
+        51614
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.7011383056640625,
+      "compression_ratio": 1.2135922330097086,
+      "no_speech_prob": 0.2856839895248413,
+      "words": [
+        {
+          "word": " Schon",
+          "start": 22.54,
+          "end": 23.36,
+          "probability": 0.7562203407287598
+        },
+        {
+          "word": " stehe",
+          "start": 23.36,
+          "end": 23.6,
+          "probability": 0.3638496994972229
+        },
+        {
+          "word": " ich",
+          "start": 23.6,
+          "end": 23.9,
+          "probability": 0.7762671709060669
+        },
+        {
+          "word": " gehabt",
+          "start": 23.9,
+          "end": 23.9,
+          "probability": 0.12163329869508743
+        },
+        {
+          "word": " gleich.",
+          "start": 23.9,
+          "end": 24.3,
+          "probability": 0.7206228971481323
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "seek": 2430,
+      "start": 25.62,
+      "end": 29.88,
+      "text": " und aufdecken kann Verhinwaltzahren, die in Wasser waren, schon soviel.",
+      "tokens": [
+        50364,
+        674,
+        2501,
+        1479,
+        13029,
+        4028,
+        4281,
+        71,
+        259,
+        86,
+        3198,
+        89,
+        545,
+        1095,
+        11,
+        978,
+        294,
+        17351,
+        11931,
+        11,
+        4981,
+        370,
+        85,
+        1187,
+        13,
+        50714
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.8164178786739227,
+      "compression_ratio": 1.373015873015873,
+      "no_speech_prob": 0.6951992511749268,
+      "words": [
+        {
+          "word": " und",
+          "start": 25.62,
+          "end": 26.14,
+          "probability": 0.05166023224592209
+        },
+        {
+          "word": " aufdecken",
+          "start": 26.14,
+          "end": 26.66,
+          "probability": 0.6405481596787771
+        },
+        {
+          "word": " kann",
+          "start": 26.66,
+          "end": 26.86,
+          "probability": 0.8502394556999207
+        },
+        {
+          "word": " Verhinwaltzahren,",
+          "start": 26.86,
+          "end": 27.92,
+          "probability": 0.24034172715619206
+        },
+        {
+          "word": " die",
+          "start": 28.16,
+          "end": 28.36,
+          "probability": 0.7903833985328674
+        },
+        {
+          "word": " in",
+          "start": 28.36,
+          "end": 28.56,
+          "probability": 0.06634005904197693
+        },
+        {
+          "word": " Wasser",
+          "start": 28.56,
+          "end": 29.06,
+          "probability": 0.8682128190994263
+        },
+        {
+          "word": " waren,",
+          "start": 29.06,
+          "end": 29.3,
+          "probability": 0.8510395288467407
+        },
+        {
+          "word": " schon",
+          "start": 29.4,
+          "end": 29.5,
+          "probability": 0.5270123481750488
+        },
+        {
+          "word": " soviel.",
+          "start": 29.5,
+          "end": 29.88,
+          "probability": 0.742775579293569
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "seek": 2430,
+      "start": 32.3,
+      "end": 34.74,
+      "text": " Und das hat er 43 einverstanden.",
+      "tokens": [
+        50714,
+        2719,
+        1482,
+        2385,
+        1189,
+        17914,
+        1343,
+        331,
+        33946,
+        13,
+        50914
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.8164178786739227,
+      "compression_ratio": 1.373015873015873,
+      "no_speech_prob": 0.6951992511749268,
+      "words": [
+        {
+          "word": " Und",
+          "start": 32.3,
+          "end": 32.82,
+          "probability": 0.7259858846664429
+        },
+        {
+          "word": " das",
+          "start": 32.82,
+          "end": 32.98,
+          "probability": 0.5628798007965088
+        },
+        {
+          "word": " hat",
+          "start": 32.98,
+          "end": 33.16,
+          "probability": 0.9478635787963867
+        },
+        {
+          "word": " er",
+          "start": 33.16,
+          "end": 33.34,
+          "probability": 0.6552221775054932
+        },
+        {
+          "word": " 43",
+          "start": 33.34,
+          "end": 34.0,
+          "probability": 0.5978423953056335
+        },
+        {
+          "word": " einverstanden.",
+          "start": 34.0,
+          "end": 34.74,
+          "probability": 0.5741538206736246
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "seek": 2430,
+      "start": 42.760000000000005,
+      "end": 45.16,
+      "text": " Peter 43, die zu, führt Peter 43.",
+      "tokens": [
+        51264,
+        6508,
+        17914,
+        11,
+        978,
+        2164,
+        11,
+        39671,
+        6508,
+        17914,
+        13,
+        51414
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.8164178786739227,
+      "compression_ratio": 1.373015873015873,
+      "no_speech_prob": 0.6951992511749268,
+      "words": [
+        {
+          "word": " Peter",
+          "start": 42.760000000000005,
+          "end": 43.28,
+          "probability": 0.48498111963272095
+        },
+        {
+          "word": " 43,",
+          "start": 43.28,
+          "end": 43.74,
+          "probability": 0.5113441944122314
+        },
+        {
+          "word": " die",
+          "start": 43.88,
+          "end": 44.0,
+          "probability": 0.13284046947956085
+        },
+        {
+          "word": " zu,",
+          "start": 44.0,
+          "end": 44.22,
+          "probability": 0.4285619258880615
+        },
+        {
+          "word": " führt",
+          "start": 44.48,
+          "end": 44.68,
+          "probability": 0.39633917808532715
+        },
+        {
+          "word": " Peter",
+          "start": 44.68,
+          "end": 44.92,
+          "probability": 0.6995640397071838
+        },
+        {
+          "word": " 43.",
+          "start": 44.92,
+          "end": 45.16,
+          "probability": 0.9421746730804443
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "seek": 2430,
+      "start": 48.980000000000004,
+      "end": 54.02,
+      "text": " Peter 30, die zu, kommt Peter 43.",
+      "tokens": [
+        51564,
+        6508,
+        2217,
+        11,
+        978,
+        2164,
+        11,
+        10047,
+        6508,
+        17914,
+        13,
+        51814
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.8164178786739227,
+      "compression_ratio": 1.373015873015873,
+      "no_speech_prob": 0.6951992511749268,
+      "words": [
+        {
+          "word": " Peter",
+          "start": 48.980000000000004,
+          "end": 49.5,
+          "probability": 0.971264123916626
+        },
+        {
+          "word": " 30,",
+          "start": 49.5,
+          "end": 49.96,
+          "probability": 0.39054107666015625
+        },
+        {
+          "word": " die",
+          "start": 50.12,
+          "end": 50.14,
+          "probability": 0.9521543383598328
+        },
+        {
+          "word": " zu,",
+          "start": 50.14,
+          "end": 50.4,
+          "probability": 0.9856573939323425
+        },
+        {
+          "word": " kommt",
+          "start": 50.7,
+          "end": 53.34,
+          "probability": 0.8767672181129456
+        },
+        {
+          "word": " Peter",
+          "start": 53.34,
+          "end": 53.58,
+          "probability": 0.980383574962616
+        },
+        {
+          "word": " 43.",
+          "start": 53.58,
+          "end": 54.02,
+          "probability": 0.9685670137405396
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "seek": 5430,
+      "start": 54.3,
+      "end": 59.62,
+      "text": " für Wiediebel zum Gleichkilometer 11,3 und Gleichkilometer 11,4.",
+      "tokens": [
+        50364,
+        2959,
+        343,
+        1091,
+        414,
+        5390,
+        5919,
+        33858,
+        33534,
+        13606,
+        2975,
+        11,
+        18,
+        674,
+        33858,
+        33534,
+        13606,
+        2975,
+        11,
+        19,
+        13,
+        50664
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.6871775610972259,
+      "compression_ratio": 1.2074074074074075,
+      "no_speech_prob": 0.22030256688594818,
+      "words": [
+        {
+          "word": " für",
+          "start": 54.3,
+          "end": 54.52,
+          "probability": 0.24629639089107513
+        },
+        {
+          "word": " Wiediebel",
+          "start": 54.52,
+          "end": 55.2,
+          "probability": 0.4904482550919056
+        },
+        {
+          "word": " zum",
+          "start": 55.2,
+          "end": 55.7,
+          "probability": 0.16358226537704468
+        },
+        {
+          "word": " Gleichkilometer",
+          "start": 55.7,
+          "end": 56.46,
+          "probability": 0.48288897673288983
+        },
+        {
+          "word": " 11",
+          "start": 56.46,
+          "end": 56.94,
+          "probability": 0.9829937219619751
+        },
+        {
+          "word": ",3",
+          "start": 56.94,
+          "end": 57.5,
+          "probability": 0.9574867188930511
+        },
+        {
+          "word": " und",
+          "start": 57.5,
+          "end": 57.86,
+          "probability": 0.9130027294158936
+        },
+        {
+          "word": " Gleichkilometer",
+          "start": 57.86,
+          "end": 58.68,
+          "probability": 0.8579505880673727
+        },
+        {
+          "word": " 11",
+          "start": 58.68,
+          "end": 59.06,
+          "probability": 0.9944496154785156
+        },
+        {
+          "word": ",4.",
+          "start": 59.06,
+          "end": 59.62,
+          "probability": 0.9966374039649963
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "seek": 5430,
+      "start": 60.26,
+      "end": 65.62,
+      "text": " Dort aufdeckt mehr Hinweis habe, Speergebiet, gemäß Maserwarte 04.",
+      "tokens": [
+        50664,
+        32308,
+        2501,
+        1479,
+        19951,
+        5417,
+        29571,
+        35033,
+        6015,
+        11,
+        3550,
+        260,
+        10848,
+        1684,
+        11,
+        7173,
+        737,
+        2536,
+        5224,
+        260,
+        86,
+        11026,
+        50022,
+        13,
+        50964
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.6871775610972259,
+      "compression_ratio": 1.2074074074074075,
+      "no_speech_prob": 0.22030256688594818,
+      "words": [
+        {
+          "word": " Dort",
+          "start": 60.26,
+          "end": 60.72,
+          "probability": 0.974043071269989
+        },
+        {
+          "word": " aufdeckt",
+          "start": 60.72,
+          "end": 61.54,
+          "probability": 0.6605399449666342
+        },
+        {
+          "word": " mehr",
+          "start": 61.54,
+          "end": 61.7,
+          "probability": 0.6118621230125427
+        },
+        {
+          "word": " Hinweis",
+          "start": 61.7,
+          "end": 62.0,
+          "probability": 0.505604937672615
+        },
+        {
+          "word": " habe,",
+          "start": 62.0,
+          "end": 62.42,
+          "probability": 0.3023810386657715
+        },
+        {
+          "word": " Speergebiet,",
+          "start": 62.76,
+          "end": 63.44,
+          "probability": 0.8865833133459091
+        },
+        {
+          "word": " gemäß",
+          "start": 63.98,
+          "end": 64.5,
+          "probability": 0.7494184672832489
+        },
+        {
+          "word": " Maserwarte",
+          "start": 64.5,
+          "end": 65.3,
+          "probability": 0.20040674414485693
+        },
+        {
+          "word": " 04.",
+          "start": 65.3,
+          "end": 65.62,
+          "probability": 0.2908083498477936
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "seek": 5430,
+      "start": 68.3,
+      "end": 70.48,
+      "text": " Das hat der 3,02 verstanden.",
+      "tokens": [
+        51064,
+        2846,
+        2385,
+        1163,
+        805,
+        11,
+        12756,
+        1306,
+        33946,
+        13,
+        51214
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.6871775610972259,
+      "compression_ratio": 1.2074074074074075,
+      "no_speech_prob": 0.22030256688594818,
+      "words": [
+        {
+          "word": " Das",
+          "start": 68.25,
+          "end": 68.76,
+          "probability": 0.7844584584236145
+        },
+        {
+          "word": " hat",
+          "start": 68.76,
+          "end": 68.92,
+          "probability": 0.9581677317619324
+        },
+        {
+          "word": " der",
+          "start": 68.92,
+          "end": 69.04,
+          "probability": 0.36156702041625977
+        },
+        {
+          "word": " 3",
+          "start": 69.04,
+          "end": 69.36,
+          "probability": 0.3979363739490509
+        },
+        {
+          "word": ",02",
+          "start": 69.36,
+          "end": 69.76,
+          "probability": 0.26436353474855423
+        },
+        {
+          "word": " verstanden.",
+          "start": 69.76,
+          "end": 70.48,
+          "probability": 0.977500706911087
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "seek": 8430,
+      "start": 95.32000000000001,
+      "end": 112.68,
+      "text": " Peter 43, Peter 43, Peter 43, für Sie gibt es zum alten Gammer Hauptdeich ankringeldeich Kilometer",
+      "tokens": [
+        50364,
+        6508,
+        17914,
+        11,
+        6508,
+        17914,
+        11,
+        6508,
+        17914,
+        11,
+        2959,
+        3559,
+        6089,
+        785,
+        5919,
+        41217,
+        24723,
+        936,
+        30573,
+        1479,
+        480,
+        364,
+        74,
+        2937,
+        338,
+        1479,
+        480,
+        23912,
+        13606,
+        51800
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.6698664426803589,
+      "compression_ratio": 1.1927710843373494,
+      "no_speech_prob": 0.6034985184669495,
+      "words": [
+        {
+          "word": " Peter",
+          "start": 95.32000000000001,
+          "end": 96.34,
+          "probability": 0.32462450861930847
+        },
+        {
+          "word": " 43,",
+          "start": 96.34,
+          "end": 96.88,
+          "probability": 0.8854817748069763
+        },
+        {
+          "word": " Peter",
+          "start": 97.16,
+          "end": 97.6,
+          "probability": 0.6631457209587097
+        },
+        {
+          "word": " 43,",
+          "start": 97.6,
+          "end": 98.32,
+          "probability": 0.9753870964050293
+        },
+        {
+          "word": " Peter",
+          "start": 99.1,
+          "end": 101.6,
+          "probability": 0.9122879505157471
+        },
+        {
+          "word": " 43,",
+          "start": 101.6,
+          "end": 106.26,
+          "probability": 0.9640368223190308
+        },
+        {
+          "word": " für",
+          "start": 106.26,
+          "end": 106.46,
+          "probability": 0.08950670808553696
+        },
+        {
+          "word": " Sie",
+          "start": 106.46,
+          "end": 108.18,
+          "probability": 0.883452832698822
+        },
+        {
+          "word": " gibt",
+          "start": 108.18,
+          "end": 108.38,
+          "probability": 0.5005779266357422
+        },
+        {
+          "word": " es",
+          "start": 108.38,
+          "end": 108.54,
+          "probability": 0.9807326197624207
+        },
+        {
+          "word": " zum",
+          "start": 108.54,
+          "end": 108.72,
+          "probability": 0.5285080671310425
+        },
+        {
+          "word": " alten",
+          "start": 108.72,
+          "end": 109.04,
+          "probability": 0.8269995450973511
+        },
+        {
+          "word": " Gammer",
+          "start": 109.04,
+          "end": 109.52,
+          "probability": 0.671457439661026
+        },
+        {
+          "word": " Hauptdeich",
+          "start": 109.52,
+          "end": 110.14,
+          "probability": 0.5896223684151968
+        },
+        {
+          "word": " ankringeldeich",
+          "start": 110.14,
+          "end": 112.22,
+          "probability": 0.4808060924212138
+        },
+        {
+          "word": " Kilometer",
+          "start": 112.22,
+          "end": 112.68,
+          "probability": 0.9451102316379547
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "seek": 11268,
+      "start": 112.68,
+      "end": 119.16,
+      "text": " zwischen 0,6 und 0,6 durch aufwärtsende Hinwaltszapel in Stärke bieg.",
+      "tokens": [
+        50364,
+        19875,
+        1958,
+        11,
+        21,
+        674,
+        1958,
+        11,
+        21,
+        7131,
+        2501,
+        86,
+        2713,
+        1373,
+        5445,
+        29571,
+        29530,
+        1373,
+        89,
+        569,
+        338,
+        294,
+        745,
+        37355,
+        272,
+        20408,
+        13,
+        50714
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.797290890715843,
+      "compression_ratio": 1.0,
+      "no_speech_prob": 0.2651247978210449,
+      "words": [
+        {
+          "word": " zwischen",
+          "start": 112.68,
+          "end": 113.22,
+          "probability": 0.44378483295440674
+        },
+        {
+          "word": " 0",
+          "start": 113.22,
+          "end": 113.72,
+          "probability": 0.9792942404747009
+        },
+        {
+          "word": ",6",
+          "start": 113.72,
+          "end": 114.2,
+          "probability": 0.9593527317047119
+        },
+        {
+          "word": " und",
+          "start": 114.2,
+          "end": 114.58,
+          "probability": 0.9740012288093567
+        },
+        {
+          "word": " 0",
+          "start": 114.58,
+          "end": 114.84,
+          "probability": 0.9547390937805176
+        },
+        {
+          "word": ",6",
+          "start": 114.84,
+          "end": 115.3,
+          "probability": 0.6187031716108322
+        },
+        {
+          "word": " durch",
+          "start": 115.3,
+          "end": 116.26,
+          "probability": 0.3995497524738312
+        },
+        {
+          "word": " aufwärtsende",
+          "start": 116.26,
+          "end": 117.28,
+          "probability": 0.5449722662568093
+        },
+        {
+          "word": " Hinwaltszapel",
+          "start": 117.28,
+          "end": 118.02,
+          "probability": 0.5398817708094915
+        },
+        {
+          "word": " in",
+          "start": 118.02,
+          "end": 118.34,
+          "probability": 0.07652274519205093
+        },
+        {
+          "word": " Stärke",
+          "start": 118.34,
+          "end": 118.46,
+          "probability": 0.5419378578662872
+        },
+        {
+          "word": " bieg.",
+          "start": 118.46,
+          "end": 119.16,
+          "probability": 0.3813321739435196
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "seek": 11268,
+      "start": 122.38,
+      "end": 125.38,
+      "text": " Das hat der Kedadren 43L verstanden.",
+      "tokens": [
+        50864,
+        2846,
+        2385,
+        1163,
+        591,
+        292,
+        345,
+        1095,
+        17914,
+        43,
+        1306,
+        33946,
+        13,
+        51014
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.797290890715843,
+      "compression_ratio": 1.0,
+      "no_speech_prob": 0.2651247978210449,
+      "words": [
+        {
+          "word": " Das",
+          "start": 122.38,
+          "end": 123.36,
+          "probability": 0.7584822773933411
+        },
+        {
+          "word": " hat",
+          "start": 123.36,
+          "end": 123.56,
+          "probability": 0.7603566646575928
+        },
+        {
+          "word": " der",
+          "start": 123.56,
+          "end": 123.84,
+          "probability": 0.9161961078643799
+        },
+        {
+          "word": " Kedadren",
+          "start": 123.84,
+          "end": 124.3,
+          "probability": 0.18175978679209948
+        },
+        {
+          "word": " 43L",
+          "start": 124.3,
+          "end": 124.92,
+          "probability": 0.6205019056797028
+        },
+        {
+          "word": " verstanden.",
+          "start": 124.92,
+          "end": 125.38,
+          "probability": 0.9948690533638
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "seek": 17268,
+      "start": 175.78,
+      "end": 177.36,
+      "text": " Peter, 21.03.",
+      "tokens": [
+        50364,
+        6508,
+        11,
+        5080,
+        13,
+        11592,
+        13,
+        50414
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": [
+        {
+          "word": " Peter,",
+          "start": 175.78,
+          "end": 176.28,
+          "probability": 0.3776610791683197
+        },
+        {
+          "word": " 21",
+          "start": 176.42,
+          "end": 176.64,
+          "probability": 0.10155832767486572
+        },
+        {
+          "word": ".03.",
+          "start": 176.64,
+          "end": 177.36,
+          "probability": 0.2051127403974533
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "seek": 17268,
+      "start": 177.6,
+      "end": 177.8,
+      "text": " Peter, 41.03.",
+      "tokens": [
+        50414,
+        6508,
+        11,
+        18173,
+        13,
+        11592,
+        13,
+        50464
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": [
+        {
+          "word": " Peter,",
+          "start": 177.6,
+          "end": 177.8,
+          "probability": 0.010815782472491264
+        },
+        {
+          "word": " 41",
+          "start": 177.8,
+          "end": 177.8,
+          "probability": 0.22564515471458435
+        },
+        {
+          "word": ".03.",
+          "start": 177.8,
+          "end": 177.8,
+          "probability": 0.8859671354293823
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "seek": 17268,
+      "start": 177.8,
+      "end": 178.4,
+      "text": " Peter, 41.",
+      "tokens": [
+        50464,
+        6508,
+        11,
+        18173,
+        13,
+        50514
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": [
+        {
+          "word": " Peter,",
+          "start": 177.8,
+          "end": 177.8,
+          "probability": 0.8396279811859131
+        },
+        {
+          "word": " 41.",
+          "start": 177.8,
+          "end": 178.4,
+          "probability": 0.5604684352874756
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "seek": 17268,
+      "start": 178.66,
+      "end": 179.12,
+      "text": " Peter, 41.",
+      "tokens": [
+        50514,
+        6508,
+        11,
+        18173,
+        13,
+        50564
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": [
+        {
+          "word": " Peter,",
+          "start": 178.66,
+          "end": 179.12,
+          "probability": 4.299308329791529e-06
+        },
+        {
+          "word": " 41.",
+          "start": 179.12,
+          "end": 179.12,
+          "probability": 0.9009192585945129
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "seek": 17268,
+      "start": 179.12,
+      "end": 179.14,
+      "text": " Peter, 41.",
+      "tokens": [
+        50564,
+        6508,
+        11,
+        18173,
+        13,
+        50614
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": [
+        {
+          "word": " Peter,",
+          "start": 179.12,
+          "end": 179.14,
+          "probability": 7.694173837080598e-05
+        },
+        {
+          "word": " 41.",
+          "start": 179.14,
+          "end": 179.14,
+          "probability": 0.9200149774551392
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 20,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 21,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 22,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 23,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 24,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 25,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 26,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 27,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 28,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 29,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 30,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 31,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 32,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 33,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 34,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 35,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 36,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 37,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 38,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 39,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 40,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 41,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    },
+    {
+      "id": 42,
+      "seek": 17268,
+      "start": 179.14,
+      "end": 179.14,
+      "text": "",
+      "tokens": [],
+      "temperature": 0.2,
+      "avg_logprob": -0.12853322558932834,
+      "compression_ratio": 10.451612903225806,
+      "no_speech_prob": 0.40103721618652344,
+      "words": []
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250912_200528"
+}

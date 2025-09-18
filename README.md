@@ -14,10 +14,12 @@ For SE Mamba (the code is inside the backend folder), a Linux-based system is re
 WSL, conda, Pytorch, Torchaudio, and Cuda are required. 
 
 
-First it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use conda to install pytorch, torchaudio versions 2.2.2 as said in the requirements.txt inside the backend folder, torchvision, as well as cuda-toolkit (or pytorch-cuda, or both) version 12.1.
+First it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use conda to install pytorch, torchaudio versions 2.2.2 as said in the requirements.txt inside the project root folder, torchvision, as well as cuda-toolkit (or pytorch-cuda, or both) version 12.1.
 
 
-Then install all the packages in requirements.txt (again, the one inside the backend folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26. 
+Then install all the packages in requirements.txt (again, the one inside the project root folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26.
+
+We are also using the package webrtcvad to determine whether the audio contains speech. To install this, run the command pip `install -c conda-forge webrtcvad`
 
 
 Then we need to build the mamba_ssm by running (inside the backend folder): 
@@ -42,27 +44,26 @@ conda list --explicit > env-backup.txt
 
 # Whisper
 We install whisper using the command: pip install openai-whisper (still inside the same conda environment). 
-Then we import whisper inside mamba (interface.py) and after mamba is done cleaning up the background noise but before it is saved we call whisper to transcribe it and save the transcription as a json file. 
+Then we import whisper inside mamba (interface.py).  After each check and subsequent filter combo is deemed appropriate, Whisper is used to transcribe. The transcription from whisper is used by several functions to calculate a score by using both average log probability and a multilingual sentence transformer model that validates how 'correct' it is and essentially how much sense it makes context wise. This score is then used to compare this script with the next one to determine which is best. In the end, only the best one is written/saved.
+
+Whisper is also fine tuned with parameters and a prompt in german (the prompt might still need work).
+Extra functions are also implemented to ensure the repetition of words or sentences whisper does sometimes doesnt happen again.
+
+
+We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper. 
 
 
 # Filters
-We changed how the interface.py processes audio by making it cut the audio into 3 second chunks, thus improving the speed. We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: pip install deepfilternet. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested. The pipeline so far looks like this: 
+We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: pip install deepfilternet. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
 
 
-SEMamba -> Bandpass filter -> deepfilternet3 -> Whisper
-
-
-After testing chunking the audio file, the resulting transcription was of bad quality, so we decided to go back to how originally mamba processed files with a few changes. One change is to use .half() when loading mamba in order to save memory, as the model is large, it saves memory by using half-precision floats. 
-We also changed mamba's model parameter hop_size (they are samples between successive frames) from 100 to 200. 
-
+We  changed mamba's model parameter hop_size (they are samples between successive frames) from 100 to 200. 
 
 With these changes we managed to make the entire pipeline run in under approximately 30 seconds for a 1 minute audio input, which is a great improvement from the initial 3 minutes that this took.
 
 
 So far we have changed the way files are processed so that only the last added input audio (into the input_audio folder) is processed instead of all of them.
 
-
-We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper. 
 
 
 
@@ -83,9 +84,20 @@ Keep in mind that pretrained.sh needs to be encoded in CRLF. Look at the bottom 
 
 # Checks for filters 
 
-We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. To fix this issue, we implemented several checks/functions that calculate the noise and quality of the input audio, if it reaches a certain level and is deemed as clean, we skip one, two or all the filters and go directly to whisper. Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
+We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. 
+To fix this issue, we implemented several functions that calculate the noise and quality of the input audio, if it reaches certain levels, then only certain filters are applied.  Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
 
-# database
+
+The functions we used are: 
+
+
+1. Signal to Noise Ratio (SNR) to measure how strong the desired signal (speech) is compared to background noise, higher SNR means clearer speech; 
+2. Voice Activity Detector (VAD) to separate speech and non-speech segments and calculate SNR using only the speech frames as signal and the non-speech frames as noise;
+3. Spectral Flatness to measure how noise-like or tone-like a signal is;
+4. Background RMS (root mean square) which measures the average energy (loudness) of the background (non-speech) portions of audio to detect if the background is quiet or noisy.
+
+
+# DATABASE
 
 We use posgresql 17.6 for our database system, which means you have to [install](https://www.postgresql.org/download/) it.
 Additionally, the python library psycopg has to be installed:
@@ -188,3 +200,16 @@ The text "No data received yet." is displyed by default and the text "No transcr
 # History
 
 To show a history of transcriptions, a table with unique IDs, a timestamp, and a status (successful - not empty transcription, fail - empty transcription) is displayed.
+
+
+## Citation
+
+Citing Mamba:
+```
+@article{mamba,
+  title={Mamba: Linear-Time Sequence Modeling with Selective State Spaces},
+  author={Gu, Albert and Dao, Tri},
+  journal={arXiv preprint arXiv:2312.00752},
+  year={2023}
+}
+```

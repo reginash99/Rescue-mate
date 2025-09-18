@@ -8,6 +8,7 @@
                         <th>ID</th>
                         <th>Time</th>
                         <th>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -21,9 +22,21 @@
                                 <i :class="item.status  ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                             </div>
                         </td>
+                       <td>
+                        <button @click="openModal(item)">View</button>
+                       </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <!-- Modal -->
+        <div v-if="showModal" class="modal-overlay">
+            <div class="modal-content">
+            <button class="modal-close" @click="closeModal">×</button>
+                <div v-if="selectedItem">
+                    <p><strong>Transcription:</strong> {{ selectedItem.text }}</p>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -51,12 +64,17 @@ function formatTimestamp(ts) {
   const hour = ts.slice(9, 11);
   const minute = ts.slice(11, 13);
   const second = ts.slice(13, 15);
-  return `${day}.${month}.${year}  ${hour}:${minute}:${second}`;
+  return `${day}/${month}/${year}  ${hour}:${minute}:${second}`;
 }
 
 </script>
 
 <style scoped>
+
+h1 {
+    text-align: center;
+}
+
 .main-table {
     display: flex;
     padding: 10px;
@@ -65,6 +83,7 @@ function formatTimestamp(ts) {
     box-sizing: border-box;
     min-height: 0;
     width: 100%;
+    position: relative;
 }
 
 .table_component {
@@ -82,7 +101,6 @@ function formatTimestamp(ts) {
 .table_component table {
     width: 100%;
     border-collapse: collapse;
-    border-spacing: 0;
 }
 
 .table_component caption {
@@ -94,31 +112,50 @@ function formatTimestamp(ts) {
     position: sticky;
     top: 0;
     z-index: 2;
-    border: 1px none #dededf;
-    background-color: #000000;
-    color: #ffffff;
+    background-color: var(--ternary-background);
     padding: 5px;
+    color: var(--color-text-2);
 }
 
 .table_component td {
-    border: 1px none #dededf;
     padding: 5px;
+    font-size: large;
 }
 
 .table_component tr:nth-child(even) td {
-    background-color: #f3f2f2;
-    color: #000000;
+    background-color: var(--secondary-background);
 }
 
 .table_component tr:nth-child(odd) td {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(grid-item-backgound-color);
 }
 
 @media (max-width: 900px) {
-  .table_component th {
-    position: relative;
-  }
+    .table_component th {
+        position: relative;
+    }
+}
+
+.table_component tr td:first-child {
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+    padding-left: 13px !important;
+}
+
+.table_component tr td:last-child {
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+.table_component th:first-child {
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
+  padding-left: 13px !important;
+}
+
+.table_component th:last-child {
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
 }
 
 .sent {
@@ -143,5 +180,47 @@ function formatTimestamp(ts) {
     color: #670000;
     padding: 1px 5px;
     border-radius: 6px;
+}
+
+/* Modal View */
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(190, 188, 188, 0.288);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal-content {
+    overflow-y: auto;
+    overflow-x: auto;
+    background: var(--color-background);
+    border-radius: 12px;
+    padding: 32px 24px 24px 24px;
+    width: 70%;
+    min-width: 250px;
+    max-width: 500px;
+    height: 70%;
+    max-height: 400px;
+    min-height: 250px;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    position: relative;
+    font-size: larger;
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
 }
 </style>

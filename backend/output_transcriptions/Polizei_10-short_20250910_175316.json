@@ -1,0 +1,352 @@
+{
+  "text": "Dort hat sich das Ausstuktschiff Victoria losgehitten und treibt jetzt mit Maschinschaden vor dem Hafen. Sonderrechte zugeladen. Das hat der 1123 mit die 1152 und 1153 ebenfalls nicht geblieben. Untertitel im Auftrag des ZDF, 2017",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 3000,
+      "start": 30.0,
+      "end": 37.42,
+      "text": " Dort hat sich das Ausstuktschiff Victoria losgehitten und treibt jetzt mit Maschinschaden vor dem Hafen.",
+      "tokens": [
+        50364,
+        32308,
+        2385,
+        3041,
+        1482,
+        9039,
+        372,
+        2034,
+        1373,
+        339,
+        3661,
+        16656,
+        1750,
+        27057,
+        2987,
+        674,
+        2192,
+        13651,
+        4354,
+        2194,
+        5224,
+        339,
+        1292,
+        339,
+        14771,
+        4245,
+        1371,
+        47933,
+        268,
+        13,
+        50739
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.6280574798583984,
+      "compression_ratio": 1.2763157894736843,
+      "no_speech_prob": 0.24361605942249298,
+      "words": [
+        {
+          "word": " Dort",
+          "start": 30.0,
+          "end": 30.6,
+          "probability": 0.5101303458213806
+        },
+        {
+          "word": " hat",
+          "start": 30.6,
+          "end": 30.74,
+          "probability": 0.8363329172134399
+        },
+        {
+          "word": " sich",
+          "start": 30.74,
+          "end": 30.9,
+          "probability": 0.8085569143295288
+        },
+        {
+          "word": " das",
+          "start": 30.9,
+          "end": 31.02,
+          "probability": 0.9243592023849487
+        },
+        {
+          "word": " Ausstuktschiff",
+          "start": 31.02,
+          "end": 31.9,
+          "probability": 0.47669214693208534
+        },
+        {
+          "word": " Victoria",
+          "start": 31.9,
+          "end": 32.48,
+          "probability": 0.4942340552806854
+        },
+        {
+          "word": " losgehitten",
+          "start": 32.48,
+          "end": 33.84,
+          "probability": 0.7769163548946381
+        },
+        {
+          "word": " und",
+          "start": 33.84,
+          "end": 34.3,
+          "probability": 0.7810716032981873
+        },
+        {
+          "word": " treibt",
+          "start": 34.3,
+          "end": 34.6,
+          "probability": 0.6792312264442444
+        },
+        {
+          "word": " jetzt",
+          "start": 34.6,
+          "end": 34.82,
+          "probability": 0.824924111366272
+        },
+        {
+          "word": " mit",
+          "start": 34.82,
+          "end": 35.02,
+          "probability": 0.9325438737869263
+        },
+        {
+          "word": " Maschinschaden",
+          "start": 35.02,
+          "end": 36.0,
+          "probability": 0.7595824778079987
+        },
+        {
+          "word": " vor",
+          "start": 36.0,
+          "end": 36.28,
+          "probability": 0.9942294359207153
+        },
+        {
+          "word": " dem",
+          "start": 36.28,
+          "end": 36.44,
+          "probability": 0.9965376853942871
+        },
+        {
+          "word": " Hafen.",
+          "start": 36.44,
+          "end": 37.42,
+          "probability": 0.9881065487861633
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "seek": 3000,
+      "start": 37.44,
+      "end": 38.78,
+      "text": " Sonderrechte zugeladen.",
+      "tokens": [
+        50739,
+        318,
+        8548,
+        265,
+        10553,
+        33507,
+        338,
+        14771,
+        13,
+        50839
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.6280574798583984,
+      "compression_ratio": 1.2763157894736843,
+      "no_speech_prob": 0.24361605942249298,
+      "words": [
+        {
+          "word": " Sonderrechte",
+          "start": 37.44,
+          "end": 38.34,
+          "probability": 0.26488905027508736
+        },
+        {
+          "word": " zugeladen.",
+          "start": 38.34,
+          "end": 38.78,
+          "probability": 0.609624594449997
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "seek": 3000,
+      "start": 42.16,
+      "end": 53.08,
+      "text": " Das hat der 1123 mit die 1152 und 1153 ebenfalls nicht geblieben.",
+      "tokens": [
+        50989,
+        2846,
+        2385,
+        1163,
+        2975,
+        9356,
+        2194,
+        978,
+        2975,
+        17602,
+        674,
+        2975,
+        19584,
+        48977,
+        1979,
+        1519,
+        5199,
+        38243,
+        13,
+        51539
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.6280574798583984,
+      "compression_ratio": 1.2763157894736843,
+      "no_speech_prob": 0.24361605942249298,
+      "words": [
+        {
+          "word": " Das",
+          "start": 42.16,
+          "end": 43.26,
+          "probability": 0.313707560300827
+        },
+        {
+          "word": " hat",
+          "start": 43.26,
+          "end": 43.48,
+          "probability": 0.5751157999038696
+        },
+        {
+          "word": " der",
+          "start": 43.48,
+          "end": 43.68,
+          "probability": 0.34395861625671387
+        },
+        {
+          "word": " 1123",
+          "start": 43.68,
+          "end": 44.9,
+          "probability": 0.5770436227321625
+        },
+        {
+          "word": " mit",
+          "start": 44.9,
+          "end": 45.62,
+          "probability": 0.7835202813148499
+        },
+        {
+          "word": " die",
+          "start": 45.62,
+          "end": 48.94,
+          "probability": 0.33783620595932007
+        },
+        {
+          "word": " 1152",
+          "start": 48.94,
+          "end": 50.5,
+          "probability": 0.871750682592392
+        },
+        {
+          "word": " und",
+          "start": 50.5,
+          "end": 51.02,
+          "probability": 0.8937889337539673
+        },
+        {
+          "word": " 1153",
+          "start": 51.02,
+          "end": 51.72,
+          "probability": 0.9515462219715118
+        },
+        {
+          "word": " ebenfalls",
+          "start": 51.72,
+          "end": 52.36,
+          "probability": 0.8075237274169922
+        },
+        {
+          "word": " nicht",
+          "start": 52.36,
+          "end": 52.72,
+          "probability": 0.5082637667655945
+        },
+        {
+          "word": " geblieben.",
+          "start": 52.72,
+          "end": 53.08,
+          "probability": 0.35878318299849826
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "seek": 6000,
+      "start": 60.0,
+      "end": 61.04,
+      "text": " Untertitel im Auftrag des ZDF, 2017",
+      "tokens": [
+        50364,
+        12065,
+        27689,
+        338,
+        566,
+        39119,
+        3731,
+        730,
+        1176,
+        35,
+        37,
+        11,
+        6591,
+        50464
+      ],
+      "temperature": 0.2,
+      "avg_logprob": -0.5283672014872233,
+      "compression_ratio": 0.813953488372093,
+      "no_speech_prob": 0.8330862522125244,
+      "words": [
+        {
+          "word": " Untertitel",
+          "start": 60.0,
+          "end": 61.04,
+          "probability": 0.6722942193349203
+        },
+        {
+          "word": " im",
+          "start": 61.04,
+          "end": 61.04,
+          "probability": 0.6722129583358765
+        },
+        {
+          "word": " Auftrag",
+          "start": 61.04,
+          "end": 61.04,
+          "probability": 0.9843771159648895
+        },
+        {
+          "word": " des",
+          "start": 61.04,
+          "end": 61.04,
+          "probability": 0.9785459637641907
+        },
+        {
+          "word": " ZDF,",
+          "start": 61.04,
+          "end": 61.04,
+          "probability": 0.9518108169237772
+        },
+        {
+          "word": " 2017",
+          "start": 61.04,
+          "end": 61.04,
+          "probability": 0.22536443173885345
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250910_175316"
+}
