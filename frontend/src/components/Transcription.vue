@@ -20,7 +20,7 @@
           </p>
         </div>
       </div>
-    </div>
+    
     <button class="btn floating-btn" @click="panelOpen = !panelOpen">
       <i>AI</i>
     </button>
