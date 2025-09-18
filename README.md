@@ -29,8 +29,11 @@ As stated in the requirements.txt file inside the project root folder (as well a
 Then, install all the packages listed in requirements.txt (located inside the project root folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26.
 Use the commands: 
 
+
 `conda install openai-whisper fastapi uvicorn -c conda-forge -c pytorch -c nvidia`
+
 `conda install python-multipart packaging librosa pysoundfile pyyaml tensorboard pesq einops -c conda-forge -c pytorch -c nvidia`
+
 
 Sometimes when installing them in a single command it may cause issues. If this happens, try to install them separately, for example: conda install python-multipart -c conda-forge -c pytorch -c nvidia, conda install packaging -c conda-forge -c pytorch -c nvidia etc.
 
