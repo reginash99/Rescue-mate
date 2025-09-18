@@ -30,7 +30,9 @@ Then, install all the packages listed in requirements.txt (located inside the pr
 Use the commands: 
 
 
-`conda install openai-whisper fastapi uvicorn -c conda-forge -c pytorch -c nvidia`
+`pip install openai-whisper`
+
+`conda install fastapi uvicorn -c conda-forge -c pytorch -c nvidia`
 
 `conda install python-multipart packaging librosa pysoundfile pyyaml tensorboard pesq einops -c conda-forge -c pytorch -c nvidia`
 
