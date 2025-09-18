@@ -54,7 +54,7 @@ We tried faster-whisper as well, but the resulting transcription was not that mu
 
 
 # Filters
-We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: pip install deepfilternet. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
+We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: 'pip install deepfilternet'. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
 
 
 We  changed mamba's model parameter hop_size (they are samples between successive frames) from 100 to 200. 
