@@ -64,8 +64,7 @@ conda list --explicit > env-backup.txt
 
 
 # Whisper
-We install whisper using the command: pip install openai-whisper (still inside the same conda environment). 
-Then we import whisper inside mamba (interface.py).  After each check and subsequent filter combo is deemed appropriate, Whisper is used to transcribe. The transcription from whisper is used by several functions to calculate a score by using both average log probability and a multilingual sentence transformer model that validates how 'correct' it is and essentially how much sense it makes context wise. This score is then used to compare this script with the next one to determine which is best. In the end, only the best one is written/saved.
+After each check and subsequent filter combo is deemed appropriate, Whisper is used to transcribe. The transcription from whisper is used by several functions to calculate a score by using both average log probability and a multilingual sentence transformer model that validates how 'correct' it is and essentially how much sense it makes context wise. This score is then used to compare this script with the next one to determine which is best. In the end, only the best one is written/saved.
 
 Whisper is also fine tuned with parameters and a prompt in german (the prompt might still need work).
 Extra functions are also implemented to ensure the repetition of words or sentences whisper does sometimes doesnt happen again.
