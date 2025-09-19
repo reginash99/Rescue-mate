@@ -23,6 +23,8 @@ First it is recommended to install miniconda on Ubuntu. Then create a conda virt
 
 `conda install cuda-toolkit=12.1 -c conda-forge -c pytorch -c nvidia`
 
+`conda install sentence-transformers`
+
 As stated in the requirements.txt file inside the project root folder (as well as cuda-toolkit (or pytorch-cuda, or both), version 12.1)
 
 
