@@ -70,7 +70,6 @@ html, body {
   width: calc(100vw - 20px);
   box-sizing: border-box;
   padding: 10;
-  overflow: auto;
 }
 
 .grid-item {

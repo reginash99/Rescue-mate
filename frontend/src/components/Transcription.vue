@@ -1,6 +1,11 @@
 <template>
   <div class="transcription-main" :class="{ 'is-busy': status }">
     <h1>Transcription</h1>
+    <button class="btn-info" @click="openModal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-lg" viewBox="0 0 16 16">
+        <path d="m9.708 6.075-3.024.379-.108.502.595.108c.387.093.464.232.38.619l-.975 4.577c-.255 1.183.14 1.74 1.067 1.74.72 0 1.554-.332 1.933-.789l.116-.549c-.263.232-.65.325-.905.325-.363 0-.494-.255-.402-.704zm.091-2.755a1.32 1.32 0 1 1-2.64 0 1.32 1.32 0 0 1 2.64 0"/>
+        </svg>
+    </button>
     <div class="transcription">
       <div :class="['transcription-text', { shrunk: panelOpen }]">
         <div v-if="data">
@@ -8,9 +13,7 @@
           <p v-else>No transcription available.</p>
         </div>
         <div v-else>
-          <p>Transcription will appear here... Lorem ipsum dolor, sit amet consectetur adipisicing elit. Adipisci minus quas voluptatum. Quo at aliquam itaque recusandae mollitia, amet atque eum consectetur consequatur nulla quisquam blanditiis perspiciatis totam in? Voluptates. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum eligendi expedita deleniti blanditiis voluptate id quisquam facere corrupti, molestias quaerat? Rerum, veniam. Laborum consectetur dignissimos debitis, odit nulla quos deleniti!
-
-          </p>
+          <p>Press the record button to transcribe your audio</p>
         </div>
         <div v-if="status" class="overlay">
           <div class="spinner"></div>
@@ -18,24 +21,46 @@
         </div>
       </div>
       <div class="side-panel" v-if="panelOpen">
+        <div v-if="data && data['text'] && data['text'].trim() !== ''"">
           <p>Updated transcription...</p>
+        </div>
+        <div v-else>
+          <p>No updates available</p>
+        </div>
       </div>
     </div>
     <button class="btn floating-btn" @click="panelOpen = !panelOpen">
-      <i>AI</i>
+      <img src="./media/notification.png"></img>
+      <span>!</span>
     </button>
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal-content">
+        <button class="modal-close" @click="closeModal">×</button>
+        <h4>Information</h4>
+        <p>The transiption displayed initialy is raw. After further processing, the transciption will be updated if its quality is better than the raw transcription. In case of an update, the bell button in the bottom right corner of the transcription will have a red alert bubble and can be clicked on to display this. </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 
-defineProps({
+const props = defineProps({
   data: Object,
   status: { type: Boolean, default: false },
 })
 
 const panelOpen = ref(false)
+const showModal = ref(false)
+
+function openModal() {
+  showModal.value = true
+}
+
+function closeModal() {
+  showModal.value = false
+}
 </script>
 
 <style scoped>
@@ -90,15 +115,15 @@ const panelOpen = ref(false)
 /* Floating Button */
 .floating-btn {
   position: absolute;
-  bottom: 24px;
-  right: 24px;
+  bottom: 25px;
+  right: 30px;
   width: auto;
-  height: auto;
-  border-radius: 18px;
-  background-color: rgb(0, 192, 6);
+  height: 50px;
+  border-radius: 50%;
+  background-color: #AAD2DE;
   color: white;
   border: none;
-  box-shadow: 0 4px 16px rgb(0, 0, 0);
+  box-shadow: 0 4px 16px var(--shadow-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,11 +131,31 @@ const panelOpen = ref(false)
   cursor: pointer;
   z-index: 10;
   transition: background 0.2s, box-shadow 0.2s;
+  text-decoration: none;
 }
 
 .floating-btn:hover {
   background-color: rgb(255, 255, 255);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  box-shadow: 0 8px 32px var(--shadow-color);
+}
+
+.floating-btn span {
+  position: absolute;
+  top: -3px;
+  right: 0px;
+  background: #eb0010;
+  font-size: 14px;
+  font-weight: bold;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.floating-btn img {
+  width: 27px;
+  height: 27px;
 }
 
 /* Processing Buffer */
@@ -166,6 +211,69 @@ const panelOpen = ref(false)
   overflow-y: auto;
   padding: 15px;
   flex: 1;
+}
+
+/* Info button */
+.btn-info {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--secondary-background);
+  color: var(--color-text);
+  border: none;
+  box-shadow: 0 4px 16px var(--shadow-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+/* Modal View */
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(190, 188, 188, 0.288);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal-content {
+    overflow-y: auto;
+    overflow-x: auto;
+    background: var(--color-background);
+    border-radius: 12px;
+    padding: 28px 24px 24px 24px;
+    width: auto;
+    min-width: 250px;
+    max-width: 500px;
+    height: auto;
+    max-height: 400px;
+    min-height: 250px;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    position: relative;
+    font-size: larger;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
 }
 
 </style>
