@@ -1,0 +1,3109 @@
+{
+  "text": "Nichts von der T-246 kommen. Er wird 53 und älbe 53 hört. Für Sie geht es einmal zum Hafenburg-Karten. Dort hat sich das Ausstuhlschiff Victoria losgehitten und treibt jetzt mit Maschinen-Schaden vor dem Hafen. Sommlerrecht ist so gelassen. Ja, ja. Da sagt er. Elbe 23, mit. Die Elbe 25, und Elbe 35, ebenfalls nicht. Michael von Elbe, 21. Michael. Schauen wir einmal eine Meldung, dass Schiff Victoria, Zeit vor dem Hafen, kann von uns nicht gesichert werden. Sie bräuchten einen Schlepperort. Die Elbe 23 von Michel, der Schlepper Dahlmann ist auf dem Weg zum Das hat die Able 23 verstanden. Die Elbe 52 von Elbe 23, Elbe 52, Elbe 23, Sie einmal überprüfen, ob auf dem Ausflugschiff dass Victoria noch gestern an Bord bin. Und jetzt hat Elbe 52 verstanden. Elbe Klein ist an Elbe 52. Elbe 23 hört. Allerdings schifft Victoria keine Gäste vorhanden, nämlich zwei Besatzpunkte wieder. Beide Personen unverletzt. Und Elbe 23 verstanden? Ja, ja, ja Hier nicht nur von Elbe 23, die hier hört, und Elbe 23, wie Schlepper Darmann, hat die Vektoria jetzt link seid und wird das Schiff in den Hafen und Karten zurückbringen und der Pest-Dateien. Betreien vor, wie das hat mich überstanden. Cronel, Betreien 20.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 3.339999999999999,
+      "end": 5.7,
+      "text": " Nichts von der T-246 kommen.",
+      "tokens": [
+        50364,
+        22629,
+        82,
+        2957,
+        1163,
+        314,
+        12,
+        7911,
+        21,
+        11729,
+        13,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6477641296386719,
+      "compression_ratio": 1.425,
+      "no_speech_prob": 0.21812127530574799,
+      "words": [
+        {
+          "word": " Nichts",
+          "start": 3.339999999999999,
+          "end": 4.0,
+          "probability": 0.12053485680371523
+        },
+        {
+          "word": " von",
+          "start": 4.0,
+          "end": 4.24,
+          "probability": 0.40013387799263
+        },
+        {
+          "word": " der",
+          "start": 4.24,
+          "end": 4.38,
+          "probability": 0.9411662220954895
+        },
+        {
+          "word": " T",
+          "start": 4.38,
+          "end": 4.52,
+          "probability": 0.6185100674629211
+        },
+        {
+          "word": "-246",
+          "start": 4.52,
+          "end": 5.34,
+          "probability": 0.16868106524149576
+        },
+        {
+          "word": " kommen.",
+          "start": 5.34,
+          "end": 5.7,
+          "probability": 0.5936681032180786
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 17.54,
+      "end": 19.76,
+      "text": " Nichts von der T-246 kommen.",
+      "tokens": [
+        51214,
+        22629,
+        82,
+        2957,
+        1163,
+        314,
+        12,
+        7911,
+        21,
+        11729,
+        13,
+        51364
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6477641296386719,
+      "compression_ratio": 1.425,
+      "no_speech_prob": 0.21812127530574799,
+      "words": [
+        {
+          "word": " Nichts",
+          "start": 17.54,
+          "end": 18.2,
+          "probability": 0.9415704607963562
+        },
+        {
+          "word": " von",
+          "start": 18.2,
+          "end": 18.42,
+          "probability": 0.995978593826294
+        },
+        {
+          "word": " der",
+          "start": 18.42,
+          "end": 18.54,
+          "probability": 0.9965586066246033
+        },
+        {
+          "word": " T",
+          "start": 18.54,
+          "end": 18.74,
+          "probability": 0.9932675361633301
+        },
+        {
+          "word": "-246",
+          "start": 18.74,
+          "end": 19.46,
+          "probability": 0.9733200470606486
+        },
+        {
+          "word": " kommen.",
+          "start": 19.46,
+          "end": 19.76,
+          "probability": 0.9855366349220276
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "seek": 9000,
+      "start": 91.98,
+      "end": 95.46,
+      "text": " Er wird 53 und älbe 53 hört.",
+      "tokens": [
+        50364,
+        3300,
+        4578,
+        21860,
+        674,
+        3078,
+        75,
+        650,
+        21860,
+        42243,
+        13,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6167600992563609,
+      "compression_ratio": 1.2369942196531791,
+      "no_speech_prob": 0.7590023875236511,
+      "words": [
+        {
+          "word": " Er",
+          "start": 91.98,
+          "end": 92.72,
+          "probability": 0.0696292445063591
+        },
+        {
+          "word": " wird",
+          "start": 92.72,
+          "end": 92.86,
+          "probability": 0.17897172272205353
+        },
+        {
+          "word": " 53",
+          "start": 92.86,
+          "end": 93.5,
+          "probability": 0.4653720259666443
+        },
+        {
+          "word": " und",
+          "start": 93.5,
+          "end": 93.86,
+          "probability": 0.7855560779571533
+        },
+        {
+          "word": " älbe",
+          "start": 93.86,
+          "end": 94.2,
+          "probability": 0.6130815918246905
+        },
+        {
+          "word": " 53",
+          "start": 94.2,
+          "end": 95.0,
+          "probability": 0.9656805396080017
+        },
+        {
+          "word": " hört.",
+          "start": 95.0,
+          "end": 95.46,
+          "probability": 0.26841801404953003
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "seek": 9000,
+      "start": 99.18,
+      "end": 102.32,
+      "text": " Für Sie geht es einmal zum Hafenburg-Karten.",
+      "tokens": [
+        50814,
+        14990,
+        3559,
+        7095,
+        785,
+        11078,
+        5919,
+        47933,
+        268,
+        8342,
+        12,
+        42,
+        11719,
+        13,
+        51014
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6167600992563609,
+      "compression_ratio": 1.2369942196531791,
+      "no_speech_prob": 0.7590023875236511,
+      "words": [
+        {
+          "word": " Für",
+          "start": 99.18,
+          "end": 99.92,
+          "probability": 0.042718224227428436
+        },
+        {
+          "word": " Sie",
+          "start": 99.92,
+          "end": 100.16,
+          "probability": 0.3527480959892273
+        },
+        {
+          "word": " geht",
+          "start": 100.16,
+          "end": 100.36,
+          "probability": 0.4890545606613159
+        },
+        {
+          "word": " es",
+          "start": 100.36,
+          "end": 100.56,
+          "probability": 0.8934597969055176
+        },
+        {
+          "word": " einmal",
+          "start": 100.56,
+          "end": 100.82,
+          "probability": 0.7339444160461426
+        },
+        {
+          "word": " zum",
+          "start": 100.82,
+          "end": 101.22,
+          "probability": 0.8688579201698303
+        },
+        {
+          "word": " Hafenburg",
+          "start": 101.22,
+          "end": 101.94,
+          "probability": 0.5344339733322462
+        },
+        {
+          "word": "-Karten.",
+          "start": 101.94,
+          "end": 102.32,
+          "probability": 0.7969281474749247
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "seek": 9000,
+      "start": 103.08,
+      "end": 106.44,
+      "text": " Dort hat sich das Ausstuhlschiff Victoria losgehitten",
+      "tokens": [
+        51014,
+        32308,
+        2385,
+        3041,
+        1482,
+        9039,
+        372,
+        3232,
+        75,
+        6145,
+        3661,
+        16656,
+        1750,
+        27057,
+        2987,
+        51214
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6167600992563609,
+      "compression_ratio": 1.2369942196531791,
+      "no_speech_prob": 0.7590023875236511,
+      "words": [
+        {
+          "word": " Dort",
+          "start": 103.08,
+          "end": 103.2,
+          "probability": 0.9701675176620483
+        },
+        {
+          "word": " hat",
+          "start": 103.2,
+          "end": 103.32,
+          "probability": 0.9570067524909973
+        },
+        {
+          "word": " sich",
+          "start": 103.32,
+          "end": 103.46,
+          "probability": 0.6276087760925293
+        },
+        {
+          "word": " das",
+          "start": 103.46,
+          "end": 103.6,
+          "probability": 0.9698655009269714
+        },
+        {
+          "word": " Ausstuhlschiff",
+          "start": 103.6,
+          "end": 104.46,
+          "probability": 0.5662571129699548
+        },
+        {
+          "word": " Victoria",
+          "start": 104.46,
+          "end": 105.1,
+          "probability": 0.45693737268447876
+        },
+        {
+          "word": " losgehitten",
+          "start": 105.1,
+          "end": 106.44,
+          "probability": 0.7947232524553934
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "seek": 9000,
+      "start": 106.44,
+      "end": 110.08,
+      "text": " und treibt jetzt mit Maschinen-Schaden vor dem Hafen.",
+      "tokens": [
+        51214,
+        674,
+        2192,
+        13651,
+        4354,
+        2194,
+        5224,
+        339,
+        5636,
+        12,
+        31560,
+        14771,
+        4245,
+        1371,
+        47933,
+        268,
+        13,
+        51364
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6167600992563609,
+      "compression_ratio": 1.2369942196531791,
+      "no_speech_prob": 0.7590023875236511,
+      "words": [
+        {
+          "word": " und",
+          "start": 106.44,
+          "end": 106.88,
+          "probability": 0.7674275040626526
+        },
+        {
+          "word": " treibt",
+          "start": 106.88,
+          "end": 107.18,
+          "probability": 0.6274596452713013
+        },
+        {
+          "word": " jetzt",
+          "start": 107.18,
+          "end": 107.36,
+          "probability": 0.8130661249160767
+        },
+        {
+          "word": " mit",
+          "start": 107.36,
+          "end": 107.58,
+          "probability": 0.8519777655601501
+        },
+        {
+          "word": " Maschinen",
+          "start": 107.58,
+          "end": 108.02,
+          "probability": 0.6957070827484131
+        },
+        {
+          "word": "-Schaden",
+          "start": 108.02,
+          "end": 108.58,
+          "probability": 0.846014678478241
+        },
+        {
+          "word": " vor",
+          "start": 108.58,
+          "end": 108.86,
+          "probability": 0.9937103986740112
+        },
+        {
+          "word": " dem",
+          "start": 108.86,
+          "end": 109.02,
+          "probability": 0.9972391128540039
+        },
+        {
+          "word": " Hafen.",
+          "start": 109.02,
+          "end": 110.08,
+          "probability": 0.9938040375709534
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "seek": 9000,
+      "start": 110.16,
+      "end": 111.36,
+      "text": " Sommlerrecht ist so gelassen.",
+      "tokens": [
+        51364,
+        318,
+        1204,
+        1918,
+        31495,
+        1418,
+        370,
+        4087,
+        8356,
+        13,
+        51464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6167600992563609,
+      "compression_ratio": 1.2369942196531791,
+      "no_speech_prob": 0.7590023875236511,
+      "words": [
+        {
+          "word": " Sommlerrecht",
+          "start": 110.16,
+          "end": 110.9,
+          "probability": 0.30984447337687016
+        },
+        {
+          "word": " ist",
+          "start": 110.9,
+          "end": 111.0,
+          "probability": 0.7858241200447083
+        },
+        {
+          "word": " so",
+          "start": 111.0,
+          "end": 111.12,
+          "probability": 0.8976926803588867
+        },
+        {
+          "word": " gelassen.",
+          "start": 111.12,
+          "end": 111.36,
+          "probability": 0.692840501666069
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "seek": 11136,
+      "start": 111.36,
+      "end": 111.56,
+      "text": " Ja, ja.",
+      "tokens": [
+        50364,
+        3530,
+        11,
+        2784,
+        13,
+        50414
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.697283564387141,
+      "compression_ratio": 1.0533333333333332,
+      "no_speech_prob": 0.5914956331253052,
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 111.36,
+          "end": 111.56,
+          "probability": 0.05202103033661842
+        },
+        {
+          "word": " ja.",
+          "start": 111.56,
+          "end": 111.56,
+          "probability": 0.009199605323374271
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "seek": 11136,
+      "start": 115.04,
+      "end": 116.28,
+      "text": " Da sagt er.",
+      "tokens": [
+        50564,
+        3933,
+        15764,
+        1189,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.697283564387141,
+      "compression_ratio": 1.0533333333333332,
+      "no_speech_prob": 0.5914956331253052,
+      "words": [
+        {
+          "word": " Da",
+          "start": 115.04,
+          "end": 115.82,
+          "probability": 0.21783608198165894
+        },
+        {
+          "word": " sagt",
+          "start": 115.82,
+          "end": 116.06,
+          "probability": 0.5322485566139221
+        },
+        {
+          "word": " er.",
+          "start": 116.06,
+          "end": 116.28,
+          "probability": 0.8092756867408752
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "seek": 11136,
+      "start": 116.8,
+      "end": 118.36,
+      "text": " Elbe 23, mit ...",
+      "tokens": [
+        50614,
+        2699,
+        650,
+        6673,
+        11,
+        2194,
+        1097,
+        50714
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.697283564387141,
+      "compression_ratio": 1.0533333333333332,
+      "no_speech_prob": 0.5914956331253052,
+      "words": [
+        {
+          "word": " Elbe",
+          "start": 116.8,
+          "end": 116.9,
+          "probability": 0.4961467310786247
+        },
+        {
+          "word": " 23,",
+          "start": 116.9,
+          "end": 117.54,
+          "probability": 0.7937256693840027
+        },
+        {
+          "word": " mit",
+          "start": 117.98,
+          "end": 118.22,
+          "probability": 0.7310642600059509
+        },
+        {
+          "word": " ...",
+          "start": 118.22,
+          "end": 118.61,
+          "probability": 0.23202860355377197
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "seek": 11136,
+      "start": 121.4,
+      "end": 125.26,
+      "text": " Die Elbe 25, und Elbe 35, ebenfalls nicht.",
+      "tokens": [
+        50864,
+        3229,
+        2699,
+        650,
+        3552,
+        11,
+        674,
+        2699,
+        650,
+        6976,
+        11,
+        48977,
+        1979,
+        13,
+        51064
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.697283564387141,
+      "compression_ratio": 1.0533333333333332,
+      "no_speech_prob": 0.5914956331253052,
+      "words": [
+        {
+          "word": " Die",
+          "start": 121.4,
+          "end": 122.18,
+          "probability": 0.3458753824234009
+        },
+        {
+          "word": " Elbe",
+          "start": 122.18,
+          "end": 122.56,
+          "probability": 0.8956247270107269
+        },
+        {
+          "word": " 25,",
+          "start": 122.56,
+          "end": 123.08,
+          "probability": 0.6553766131401062
+        },
+        {
+          "word": " und",
+          "start": 123.36,
+          "end": 123.62,
+          "probability": 0.8770365118980408
+        },
+        {
+          "word": " Elbe",
+          "start": 123.62,
+          "end": 123.88,
+          "probability": 0.9458703100681305
+        },
+        {
+          "word": " 35,",
+          "start": 123.88,
+          "end": 124.28,
+          "probability": 0.3170982003211975
+        },
+        {
+          "word": " ebenfalls",
+          "start": 124.5,
+          "end": 124.92,
+          "probability": 0.5920072197914124
+        },
+        {
+          "word": " nicht.",
+          "start": 124.92,
+          "end": 125.26,
+          "probability": 0.7891978621482849
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "seek": 15526,
+      "start": 161.1,
+      "end": 162.56,
+      "text": " Michael von Elbe, 21.",
+      "tokens": [
+        50364,
+        5116,
+        2957,
+        2699,
+        650,
+        11,
+        5080,
+        13,
+        50414
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.612051103935867,
+      "compression_ratio": 1.2553191489361701,
+      "no_speech_prob": 0.6886271834373474,
+      "words": [
+        {
+          "word": " Michael",
+          "start": 161.1,
+          "end": 161.66,
+          "probability": 0.18683388829231262
+        },
+        {
+          "word": " von",
+          "start": 161.66,
+          "end": 161.94,
+          "probability": 0.07735438644886017
+        },
+        {
+          "word": " Elbe,",
+          "start": 161.94,
+          "end": 162.2,
+          "probability": 0.6677301228046417
+        },
+        {
+          "word": " 21.",
+          "start": 162.22,
+          "end": 162.56,
+          "probability": 0.270764023065567
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "seek": 15526,
+      "start": 165.74,
+      "end": 166.3,
+      "text": " Michael.",
+      "tokens": [
+        50414,
+        5116,
+        13,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.612051103935867,
+      "compression_ratio": 1.2553191489361701,
+      "no_speech_prob": 0.6886271834373474,
+      "words": [
+        {
+          "word": " Michael.",
+          "start": 165.74,
+          "end": 166.3,
+          "probability": 0.8525741100311279
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "seek": 15526,
+      "start": 169.78,
+      "end": 175.06,
+      "text": " Schauen wir einmal eine Meldung, dass Schiff Victoria, Zeit vor dem Hafen, kann von uns",
+      "tokens": [
+        50464,
+        2065,
+        11715,
+        1987,
+        11078,
+        3018,
+        376,
+        5957,
+        1063,
+        11,
+        2658,
+        2065,
+        3661,
+        16656,
+        11,
+        9394,
+        4245,
+        1371,
+        47933,
+        268,
+        11,
+        4028,
+        2957,
+        2693,
+        51364
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.612051103935867,
+      "compression_ratio": 1.2553191489361701,
+      "no_speech_prob": 0.6886271834373474,
+      "words": [
+        {
+          "word": " Schauen",
+          "start": 169.78,
+          "end": 170.34,
+          "probability": 0.5049999356269836
+        },
+        {
+          "word": " wir",
+          "start": 170.34,
+          "end": 170.48,
+          "probability": 0.9338032007217407
+        },
+        {
+          "word": " einmal",
+          "start": 170.48,
+          "end": 170.74,
+          "probability": 0.8523774743080139
+        },
+        {
+          "word": " eine",
+          "start": 170.74,
+          "end": 170.96,
+          "probability": 0.9479820728302002
+        },
+        {
+          "word": " Meldung,",
+          "start": 170.96,
+          "end": 171.36,
+          "probability": 0.9945171674092611
+        },
+        {
+          "word": " dass",
+          "start": 171.7,
+          "end": 171.86,
+          "probability": 0.746608316898346
+        },
+        {
+          "word": " Schiff",
+          "start": 171.86,
+          "end": 172.4,
+          "probability": 0.6298316717147827
+        },
+        {
+          "word": " Victoria,",
+          "start": 172.4,
+          "end": 172.98,
+          "probability": 0.48457109928131104
+        },
+        {
+          "word": " Zeit",
+          "start": 173.26,
+          "end": 173.42,
+          "probability": 0.09486802667379379
+        },
+        {
+          "word": " vor",
+          "start": 173.42,
+          "end": 173.64,
+          "probability": 0.9752106666564941
+        },
+        {
+          "word": " dem",
+          "start": 173.64,
+          "end": 173.76,
+          "probability": 0.9731936454772949
+        },
+        {
+          "word": " Hafen,",
+          "start": 173.76,
+          "end": 174.2,
+          "probability": 0.9372994303703308
+        },
+        {
+          "word": " kann",
+          "start": 174.52,
+          "end": 174.74,
+          "probability": 0.8740431070327759
+        },
+        {
+          "word": " von",
+          "start": 174.74,
+          "end": 174.92,
+          "probability": 0.9785795211791992
+        },
+        {
+          "word": " uns",
+          "start": 174.92,
+          "end": 175.06,
+          "probability": 0.997886598110199
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "seek": 15526,
+      "start": 175.06,
+      "end": 176.1,
+      "text": " nicht gesichert werden.",
+      "tokens": [
+        51364,
+        1979,
+        5019,
+        480,
+        911,
+        4604,
+        13,
+        51414
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.612051103935867,
+      "compression_ratio": 1.2553191489361701,
+      "no_speech_prob": 0.6886271834373474,
+      "words": [
+        {
+          "word": " nicht",
+          "start": 175.06,
+          "end": 175.34,
+          "probability": 0.9953102469444275
+        },
+        {
+          "word": " gesichert",
+          "start": 175.34,
+          "end": 175.86,
+          "probability": 0.9433005849520365
+        },
+        {
+          "word": " werden.",
+          "start": 175.86,
+          "end": 176.1,
+          "probability": 0.9951220154762268
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "seek": 15526,
+      "start": 176.3,
+      "end": 177.56,
+      "text": " Sie bräuchten einen Schlepperort.",
+      "tokens": [
+        51414,
+        3559,
+        738,
+        737,
+        625,
+        1147,
+        4891,
+        2065,
+        306,
+        3717,
+        477,
+        13,
+        51464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.612051103935867,
+      "compression_ratio": 1.2553191489361701,
+      "no_speech_prob": 0.6886271834373474,
+      "words": [
+        {
+          "word": " Sie",
+          "start": 176.3,
+          "end": 176.38,
+          "probability": 0.5787707567214966
+        },
+        {
+          "word": " bräuchten",
+          "start": 176.38,
+          "end": 176.74,
+          "probability": 0.7709886021912098
+        },
+        {
+          "word": " einen",
+          "start": 176.74,
+          "end": 176.9,
+          "probability": 0.9818665385246277
+        },
+        {
+          "word": " Schlepperort.",
+          "start": 176.9,
+          "end": 177.56,
+          "probability": 0.6184144876897335
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "seek": 17756,
+      "start": 192.92000000000002,
+      "end": 207.54,
+      "text": " Die Elbe 23 von Michel, der Schlepper Dahlmann ist auf dem Weg zum",
+      "tokens": [
+        50364,
+        3229,
+        2699,
+        650,
+        6673,
+        2957,
+        23709,
+        11,
+        1163,
+        2065,
+        306,
+        3717,
+        413,
+        10722,
+        14912,
+        1418,
+        2501,
+        1371,
+        18919,
+        5919,
+        51860
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5835810951564623,
+      "compression_ratio": 0.9295774647887324,
+      "no_speech_prob": 0.6939714550971985,
+      "words": [
+        {
+          "word": " Die",
+          "start": 192.92000000000002,
+          "end": 193.78,
+          "probability": 0.0801774337887764
+        },
+        {
+          "word": " Elbe",
+          "start": 193.78,
+          "end": 194.64,
+          "probability": 0.6154332906007767
+        },
+        {
+          "word": " 23",
+          "start": 194.64,
+          "end": 195.24,
+          "probability": 0.9224321246147156
+        },
+        {
+          "word": " von",
+          "start": 195.24,
+          "end": 196.22,
+          "probability": 0.5250308513641357
+        },
+        {
+          "word": " Michel,",
+          "start": 196.22,
+          "end": 196.48,
+          "probability": 0.246595099568367
+        },
+        {
+          "word": " der",
+          "start": 196.9,
+          "end": 205.48,
+          "probability": 0.3593606948852539
+        },
+        {
+          "word": " Schlepper",
+          "start": 205.48,
+          "end": 205.92,
+          "probability": 0.9215823809305826
+        },
+        {
+          "word": " Dahlmann",
+          "start": 205.92,
+          "end": 206.46,
+          "probability": 0.7754905621210734
+        },
+        {
+          "word": " ist",
+          "start": 206.46,
+          "end": 206.76,
+          "probability": 0.5700241327285767
+        },
+        {
+          "word": " auf",
+          "start": 206.76,
+          "end": 206.9,
+          "probability": 0.6805098652839661
+        },
+        {
+          "word": " dem",
+          "start": 206.9,
+          "end": 207.02,
+          "probability": 0.8277084827423096
+        },
+        {
+          "word": " Weg",
+          "start": 207.02,
+          "end": 207.24,
+          "probability": 0.9933837056159973
+        },
+        {
+          "word": " zum",
+          "start": 207.24,
+          "end": 207.54,
+          "probability": 0.9448117017745972
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "seek": 20754,
+      "start": 210.73999999999998,
+      "end": 213.14,
+      "text": " Das hat die Able 23 verstanden.",
+      "tokens": [
+        50364,
+        2846,
+        2385,
+        978,
+        316,
+        638,
+        6673,
+        1306,
+        33946,
+        13,
+        50714
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.9821305274963379,
+      "compression_ratio": 0.7948717948717948,
+      "no_speech_prob": 0.6278127431869507,
+      "words": [
+        {
+          "word": " Das",
+          "start": 210.73999999999998,
+          "end": 211.54,
+          "probability": 0.09001005440950394
+        },
+        {
+          "word": " hat",
+          "start": 211.54,
+          "end": 211.76,
+          "probability": 0.17800186574459076
+        },
+        {
+          "word": " die",
+          "start": 211.76,
+          "end": 211.9,
+          "probability": 0.7430817484855652
+        },
+        {
+          "word": " Able",
+          "start": 211.9,
+          "end": 212.1,
+          "probability": 0.35883937776088715
+        },
+        {
+          "word": " 23",
+          "start": 212.1,
+          "end": 212.5,
+          "probability": 0.5685698390007019
+        },
+        {
+          "word": " verstanden.",
+          "start": 212.5,
+          "end": 213.14,
+          "probability": 0.9629606306552887
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "seek": 23754,
+      "start": 248.84,
+      "end": 261.04,
+      "text": " Die Elbe 52 von Elbe 23, Elbe 52, Elbe 23,",
+      "tokens": [
+        50364,
+        3229,
+        2699,
+        650,
+        18079,
+        2957,
+        2699,
+        650,
+        6673,
+        11,
+        2699,
+        650,
+        18079,
+        11,
+        2699,
+        650,
+        6673,
+        11,
+        51552
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6783179205817145,
+      "compression_ratio": 1.1358024691358024,
+      "no_speech_prob": 0.5529112219810486,
+      "words": [
+        {
+          "word": " Die",
+          "start": 248.84,
+          "end": 249.84,
+          "probability": 0.43905243277549744
+        },
+        {
+          "word": " Elbe",
+          "start": 249.84,
+          "end": 250.1,
+          "probability": 0.5688667744398117
+        },
+        {
+          "word": " 52",
+          "start": 250.1,
+          "end": 250.68,
+          "probability": 0.8406581282615662
+        },
+        {
+          "word": " von",
+          "start": 250.68,
+          "end": 251.14,
+          "probability": 0.8764756321907043
+        },
+        {
+          "word": " Elbe",
+          "start": 251.14,
+          "end": 251.58,
+          "probability": 0.8384685218334198
+        },
+        {
+          "word": " 23,",
+          "start": 251.58,
+          "end": 252.24,
+          "probability": 0.9891121983528137
+        },
+        {
+          "word": " Elbe",
+          "start": 253.56,
+          "end": 256.1,
+          "probability": 0.9109104871749878
+        },
+        {
+          "word": " 52,",
+          "start": 256.1,
+          "end": 256.62,
+          "probability": 0.8986871242523193
+        },
+        {
+          "word": " Elbe",
+          "start": 257.14,
+          "end": 257.3,
+          "probability": 0.5340286381542683
+        },
+        {
+          "word": " 23,",
+          "start": 257.3,
+          "end": 261.04,
+          "probability": 0.9739121198654175
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "seek": 23754,
+      "start": 261.44,
+      "end": 264.76,
+      "text": " Sie einmal überprüfen, ob auf dem Ausflugschiff",
+      "tokens": [
+        51552,
+        3559,
+        11078,
+        4502,
+        48715,
+        6570,
+        11,
+        1111,
+        2501,
+        1371,
+        9039,
+        3423,
+        697,
+        6145,
+        3661,
+        51728
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6783179205817145,
+      "compression_ratio": 1.1358024691358024,
+      "no_speech_prob": 0.5529112219810486,
+      "words": [
+        {
+          "word": " Sie",
+          "start": 261.44,
+          "end": 261.52,
+          "probability": 0.26259300112724304
+        },
+        {
+          "word": " einmal",
+          "start": 261.52,
+          "end": 262.0,
+          "probability": 0.7325294613838196
+        },
+        {
+          "word": " überprüfen,",
+          "start": 262.0,
+          "end": 262.92,
+          "probability": 0.9683524171511332
+        },
+        {
+          "word": " ob",
+          "start": 263.28,
+          "end": 263.28,
+          "probability": 0.9924956560134888
+        },
+        {
+          "word": " auf",
+          "start": 263.28,
+          "end": 263.6,
+          "probability": 0.4690014123916626
+        },
+        {
+          "word": " dem",
+          "start": 263.6,
+          "end": 263.84,
+          "probability": 0.9585694670677185
+        },
+        {
+          "word": " Ausflugschiff",
+          "start": 263.84,
+          "end": 264.76,
+          "probability": 0.7098482370376586
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "seek": 26476,
+      "start": 264.76,
+      "end": 266.62,
+      "text": " dass Victoria noch gestern an Bord bin.",
+      "tokens": [
+        50364,
+        2658,
+        16656,
+        3514,
+        7219,
+        1248,
+        364,
+        363,
+        765,
+        5171,
+        13,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6541772569928851,
+      "compression_ratio": 1.098901098901099,
+      "no_speech_prob": 0.5082671046257019,
+      "words": [
+        {
+          "word": " dass",
+          "start": 264.76,
+          "end": 264.86,
+          "probability": 0.06535391509532928
+        },
+        {
+          "word": " Victoria",
+          "start": 264.86,
+          "end": 265.28,
+          "probability": 0.07830878347158432
+        },
+        {
+          "word": " noch",
+          "start": 265.28,
+          "end": 265.64,
+          "probability": 0.9779068231582642
+        },
+        {
+          "word": " gestern",
+          "start": 265.64,
+          "end": 266.06,
+          "probability": 0.9852039515972137
+        },
+        {
+          "word": " an",
+          "start": 266.06,
+          "end": 266.2,
+          "probability": 0.3054160177707672
+        },
+        {
+          "word": " Bord",
+          "start": 266.2,
+          "end": 266.32,
+          "probability": 0.9525115191936493
+        },
+        {
+          "word": " bin.",
+          "start": 266.32,
+          "end": 266.62,
+          "probability": 0.26308533549308777
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "seek": 26476,
+      "start": 268.48,
+      "end": 270.94,
+      "text": " Und jetzt hat Elbe 52 verstanden.",
+      "tokens": [
+        50564,
+        2719,
+        4354,
+        2385,
+        2699,
+        650,
+        18079,
+        1306,
+        33946,
+        13,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6541772569928851,
+      "compression_ratio": 1.098901098901099,
+      "no_speech_prob": 0.5082671046257019,
+      "words": [
+        {
+          "word": " Und",
+          "start": 268.48,
+          "end": 269.26,
+          "probability": 0.1510688215494156
+        },
+        {
+          "word": " jetzt",
+          "start": 269.26,
+          "end": 269.38,
+          "probability": 0.8698093891143799
+        },
+        {
+          "word": " hat",
+          "start": 269.38,
+          "end": 269.56,
+          "probability": 0.8986647725105286
+        },
+        {
+          "word": " Elbe",
+          "start": 269.56,
+          "end": 269.86,
+          "probability": 0.568199634552002
+        },
+        {
+          "word": " 52",
+          "start": 269.86,
+          "end": 270.34,
+          "probability": 0.9092429280281067
+        },
+        {
+          "word": " verstanden.",
+          "start": 270.34,
+          "end": 270.94,
+          "probability": 0.9170997440814972
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "seek": 26476,
+      "start": 291.56,
+      "end": 293.96,
+      "text": " Elbe Klein ist an Elbe 52.",
+      "tokens": [
+        51714,
+        2699,
+        650,
+        33327,
+        1418,
+        364,
+        2699,
+        650,
+        18079,
+        13,
+        51814
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6541772569928851,
+      "compression_ratio": 1.098901098901099,
+      "no_speech_prob": 0.5082671046257019,
+      "words": [
+        {
+          "word": " Elbe",
+          "start": 291.56,
+          "end": 292.34,
+          "probability": 0.9000318646430969
+        },
+        {
+          "word": " Klein",
+          "start": 292.34,
+          "end": 292.6,
+          "probability": 0.0321265272796154
+        },
+        {
+          "word": " ist",
+          "start": 292.6,
+          "end": 293.08,
+          "probability": 0.7565564513206482
+        },
+        {
+          "word": " an",
+          "start": 293.08,
+          "end": 293.22,
+          "probability": 0.8035336136817932
+        },
+        {
+          "word": " Elbe",
+          "start": 293.22,
+          "end": 293.4,
+          "probability": 0.9882464110851288
+        },
+        {
+          "word": " 52.",
+          "start": 293.4,
+          "end": 293.96,
+          "probability": 0.9943066239356995
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "seek": 29476,
+      "start": 296.7,
+      "end": 298.66,
+      "text": " Elbe 23 hört.",
+      "tokens": [
+        50364,
+        2699,
+        650,
+        6673,
+        42243,
+        13,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.4666134096541495,
+      "compression_ratio": 1.1176470588235294,
+      "no_speech_prob": 0.5314788818359375,
+      "words": [
+        {
+          "word": " Elbe",
+          "start": 296.7,
+          "end": 297.7,
+          "probability": 0.5577250868082047
+        },
+        {
+          "word": " 23",
+          "start": 297.7,
+          "end": 298.2,
+          "probability": 0.9554837942123413
+        },
+        {
+          "word": " hört.",
+          "start": 298.2,
+          "end": 298.66,
+          "probability": 0.7639693021774292
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "seek": 29476,
+      "start": 301.96,
+      "end": 304.76,
+      "text": " Allerdings schifft Victoria keine Gäste vorhanden,",
+      "tokens": [
+        50564,
+        1057,
+        28519,
+        956,
+        3661,
+        83,
+        16656,
+        9252,
+        460,
+        737,
+        2941,
+        4245,
+        5543,
+        268,
+        11,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.4666134096541495,
+      "compression_ratio": 1.1176470588235294,
+      "no_speech_prob": 0.5314788818359375,
+      "words": [
+        {
+          "word": " Allerdings",
+          "start": 301.96,
+          "end": 302.7,
+          "probability": 0.41349127516150475
+        },
+        {
+          "word": " schifft",
+          "start": 302.7,
+          "end": 303.24,
+          "probability": 0.6163945645093918
+        },
+        {
+          "word": " Victoria",
+          "start": 303.24,
+          "end": 303.62,
+          "probability": 0.1991729736328125
+        },
+        {
+          "word": " keine",
+          "start": 303.62,
+          "end": 303.92,
+          "probability": 0.6332533955574036
+        },
+        {
+          "word": " Gäste",
+          "start": 303.92,
+          "end": 304.26,
+          "probability": 0.9511921008427938
+        },
+        {
+          "word": " vorhanden,",
+          "start": 304.26,
+          "end": 304.76,
+          "probability": 0.9474742809931437
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "seek": 29476,
+      "start": 304.78,
+      "end": 306.58,
+      "text": " nämlich zwei Besatzpunkte wieder.",
+      "tokens": [
+        50864,
+        21219,
+        12002,
+        8190,
+        10300,
+        27133,
+        975,
+        6216,
+        13,
+        50964
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.4666134096541495,
+      "compression_ratio": 1.1176470588235294,
+      "no_speech_prob": 0.5314788818359375,
+      "words": [
+        {
+          "word": " nämlich",
+          "start": 304.78,
+          "end": 304.96,
+          "probability": 0.1724088191986084
+        },
+        {
+          "word": " zwei",
+          "start": 304.96,
+          "end": 305.44,
+          "probability": 0.9500800371170044
+        },
+        {
+          "word": " Besatzpunkte",
+          "start": 305.44,
+          "end": 306.24,
+          "probability": 0.8023995757102966
+        },
+        {
+          "word": " wieder.",
+          "start": 306.24,
+          "end": 306.58,
+          "probability": 0.25756579637527466
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "seek": 29476,
+      "start": 307.38,
+      "end": 308.62,
+      "text": " Beide Personen unverletzt.",
+      "tokens": [
+        50964,
+        879,
+        482,
+        40942,
+        517,
+        331,
+        2631,
+        2682,
+        13,
+        51064
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.4666134096541495,
+      "compression_ratio": 1.1176470588235294,
+      "no_speech_prob": 0.5314788818359375,
+      "words": [
+        {
+          "word": " Beide",
+          "start": 307.38,
+          "end": 307.56,
+          "probability": 0.9813622534275055
+        },
+        {
+          "word": " Personen",
+          "start": 307.56,
+          "end": 307.88,
+          "probability": 0.7484914660453796
+        },
+        {
+          "word": " unverletzt.",
+          "start": 307.88,
+          "end": 308.62,
+          "probability": 0.9209792166948318
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "seek": 29476,
+      "start": 311.26,
+      "end": 313.24,
+      "text": " Und Elbe 23 verstanden?",
+      "tokens": [
+        51064,
+        2719,
+        2699,
+        650,
+        6673,
+        1306,
+        33946,
+        30,
+        51314
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.4666134096541495,
+      "compression_ratio": 1.1176470588235294,
+      "no_speech_prob": 0.5314788818359375,
+      "words": [
+        {
+          "word": " Und",
+          "start": 311.26,
+          "end": 312.08,
+          "probability": 0.7962233424186707
+        },
+        {
+          "word": " Elbe",
+          "start": 312.08,
+          "end": 312.26,
+          "probability": 0.9816095530986786
+        },
+        {
+          "word": " 23",
+          "start": 312.26,
+          "end": 312.72,
+          "probability": 0.9981303811073303
+        },
+        {
+          "word": " verstanden?",
+          "start": 312.72,
+          "end": 313.24,
+          "probability": 0.976559579372406
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "seek": 35476,
+      "start": 363.86000000000007,
+      "end": 383.9,
+      "text": " Ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja, ja",
+      "tokens": [
+        50364,
+        3530,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784,
+        11,
+        2784
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.09779531690809462,
+      "compression_ratio": 26.235294117647058,
+      "no_speech_prob": 0.8663037419319153,
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 363.86000000000007,
+          "end": 364.70000000000005,
+          "probability": 0.1109686866402626
+        },
+        {
+          "word": " ja,",
+          "start": 364.70000000000005,
+          "end": 365.54,
+          "probability": 0.16155517101287842
+        },
+        {
+          "word": " ja,",
+          "start": 365.54,
+          "end": 367.66,
+          "probability": 0.516498327255249
+        },
+        {
+          "word": " ja,",
+          "start": 367.66,
+          "end": 374.5,
+          "probability": 0.6633853912353516
+        },
+        {
+          "word": " ja,",
+          "start": 375.68,
+          "end": 376.64,
+          "probability": 0.7753422260284424
+        },
+        {
+          "word": " ja,",
+          "start": 377.8,
+          "end": 378.12,
+          "probability": 0.873755693435669
+        },
+        {
+          "word": " ja,",
+          "start": 378.28,
+          "end": 378.82,
+          "probability": 0.9322686195373535
+        },
+        {
+          "word": " ja,",
+          "start": 378.9,
+          "end": 379.42,
+          "probability": 0.9636042714118958
+        },
+        {
+          "word": " ja,",
+          "start": 379.42,
+          "end": 379.58,
+          "probability": 0.9785627722740173
+        },
+        {
+          "word": " ja,",
+          "start": 379.74,
+          "end": 379.74,
+          "probability": 0.9867245554924011
+        },
+        {
+          "word": " ja,",
+          "start": 379.74,
+          "end": 379.74,
+          "probability": 0.9904574155807495
+        },
+        {
+          "word": " ja,",
+          "start": 379.78,
+          "end": 379.78,
+          "probability": 0.9924968481063843
+        },
+        {
+          "word": " ja,",
+          "start": 379.78,
+          "end": 379.78,
+          "probability": 0.994087815284729
+        },
+        {
+          "word": " ja,",
+          "start": 379.78,
+          "end": 379.78,
+          "probability": 0.9948057532310486
+        },
+        {
+          "word": " ja,",
+          "start": 379.78,
+          "end": 379.78,
+          "probability": 0.9950962662696838
+        },
+        {
+          "word": " ja,",
+          "start": 379.78,
+          "end": 379.78,
+          "probability": 0.9952276945114136
+        },
+        {
+          "word": " ja,",
+          "start": 379.78,
+          "end": 379.78,
+          "probability": 0.995633065700531
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9958438277244568
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9958594441413879
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9958264231681824
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9957734942436218
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9959774613380432
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.995804488658905
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9957147240638733
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9954268932342529
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9951654672622681
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9953462481498718
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9952741861343384
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9953058362007141
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9952613711357117
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.995116114616394
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9950060248374939
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9950302839279175
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9947393536567688
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9944955706596375
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9944425225257874
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9949070811271667
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9944772124290466
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9945662021636963
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9947716593742371
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.54,
+          "probability": 0.9943185448646545
+        },
+        {
+          "word": " ja,",
+          "start": 380.54,
+          "end": 380.74,
+          "probability": 0.9944549202919006
+        },
+        {
+          "word": " ja,",
+          "start": 380.94,
+          "end": 380.94,
+          "probability": 0.9946908354759216
+        },
+        {
+          "word": " ja,",
+          "start": 380.94,
+          "end": 380.94,
+          "probability": 0.9947638511657715
+        },
+        {
+          "word": " ja,",
+          "start": 380.94,
+          "end": 380.94,
+          "probability": 0.9949129819869995
+        },
+        {
+          "word": " ja,",
+          "start": 380.94,
+          "end": 380.94,
+          "probability": 0.9949996471405029
+        },
+        {
+          "word": " ja,",
+          "start": 380.94,
+          "end": 380.94,
+          "probability": 0.9947549104690552
+        },
+        {
+          "word": " ja,",
+          "start": 380.94,
+          "end": 380.94,
+          "probability": 0.9951077699661255
+        },
+        {
+          "word": " ja,",
+          "start": 380.94,
+          "end": 380.94,
+          "probability": 0.9952390193939209
+        },
+        {
+          "word": " ja,",
+          "start": 380.94,
+          "end": 380.94,
+          "probability": 0.9953006505966187
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9954736828804016
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9957225322723389
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9958802461624146
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9960105419158936
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9961032867431641
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.996297299861908
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9961298704147339
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9962975382804871
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9962896108627319
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9963648915290833
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9962463974952698
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9962129592895508
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9962968230247498
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9964583516120911
+        },
+        {
+          "word": " ja,",
+          "start": 381.26,
+          "end": 381.26,
+          "probability": 0.9964221715927124
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9965524673461914
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9964082837104797
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.996593177318573
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.996802568435669
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9968189001083374
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9970585107803345
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9971490502357483
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9972921013832092
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9971605539321899
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9972242116928101
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9973822236061096
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9974242448806763
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9973614811897278
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.997491717338562
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9977321624755859
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9977261424064636
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9978185892105103
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.9978173971176147
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.997957706451416
+        },
+        {
+          "word": " ja,",
+          "start": 381.34,
+          "end": 381.34,
+          "probability": 0.997998058795929
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.997978150844574
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9980772733688354
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9981557726860046
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9981271624565125
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9981319308280945
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.998141884803772
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9981729984283447
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9981899857521057
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9982045888900757
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9982153177261353
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9982402324676514
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9982668161392212
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.998306393623352
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9982839226722717
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9983041286468506
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9983275532722473
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9983755350112915
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9983412027359009
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9983408451080322
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9983556866645813
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.998369038105011
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9983204007148743
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.998296320438385
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9982825517654419
+        },
+        {
+          "word": " ja,",
+          "start": 381.44,
+          "end": 381.44,
+          "probability": 0.9983280301094055
+        },
+        {
+          "word": " ja,",
+          "start": 383.78,
+          "end": 383.78,
+          "probability": 0.998347282409668
+        },
+        {
+          "word": " ja",
+          "start": 383.9,
+          "end": 383.9,
+          "probability": 0.9981812238693237
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "seek": 38390,
+      "start": 395.26,
+      "end": 404.88,
+      "text": " Hier nicht nur von Elbe 23, die hier hört, und Elbe 23, wie Schlepper Darmann, hat die",
+      "tokens": [
+        50364,
+        10886,
+        1979,
+        4343,
+        2957,
+        2699,
+        650,
+        6673,
+        11,
+        978,
+        3296,
+        42243,
+        11,
+        674,
+        2699,
+        650,
+        6673,
+        11,
+        3355,
+        2065,
+        306,
+        3717,
+        413,
+        4452,
+        969,
+        11,
+        2385,
+        978,
+        51416
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6424075232611762,
+      "compression_ratio": 1.25,
+      "no_speech_prob": 0.5993831157684326,
+      "words": [
+        {
+          "word": " Hier",
+          "start": 395.26,
+          "end": 395.86,
+          "probability": 0.038470808416604996
+        },
+        {
+          "word": " nicht",
+          "start": 395.86,
+          "end": 395.86,
+          "probability": 0.16646885871887207
+        },
+        {
+          "word": " nur",
+          "start": 395.86,
+          "end": 395.96,
+          "probability": 0.5039379596710205
+        },
+        {
+          "word": " von",
+          "start": 395.96,
+          "end": 396.1,
+          "probability": 0.9295768141746521
+        },
+        {
+          "word": " Elbe",
+          "start": 396.1,
+          "end": 396.26,
+          "probability": 0.5031439960002899
+        },
+        {
+          "word": " 23,",
+          "start": 396.26,
+          "end": 396.66,
+          "probability": 0.31847015023231506
+        },
+        {
+          "word": " die",
+          "start": 399.2,
+          "end": 399.5,
+          "probability": 0.4494338929653168
+        },
+        {
+          "word": " hier",
+          "start": 399.5,
+          "end": 399.68,
+          "probability": 0.47828876972198486
+        },
+        {
+          "word": " hört,",
+          "start": 399.68,
+          "end": 400.04,
+          "probability": 0.7072439193725586
+        },
+        {
+          "word": " und",
+          "start": 402.16,
+          "end": 402.68,
+          "probability": 0.7074050307273865
+        },
+        {
+          "word": " Elbe",
+          "start": 402.68,
+          "end": 403.0,
+          "probability": 0.9619161784648895
+        },
+        {
+          "word": " 23,",
+          "start": 403.0,
+          "end": 403.46,
+          "probability": 0.6898865699768066
+        },
+        {
+          "word": " wie",
+          "start": 403.6,
+          "end": 403.72,
+          "probability": 0.7925060391426086
+        },
+        {
+          "word": " Schlepper",
+          "start": 403.72,
+          "end": 404.06,
+          "probability": 0.7176268100738525
+        },
+        {
+          "word": " Darmann,",
+          "start": 404.06,
+          "end": 404.48,
+          "probability": 0.4914422358075778
+        },
+        {
+          "word": " hat",
+          "start": 404.56,
+          "end": 404.7,
+          "probability": 0.9325873255729675
+        },
+        {
+          "word": " die",
+          "start": 404.7,
+          "end": 404.88,
+          "probability": 0.8969283699989319
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "seek": 38390,
+      "start": 404.88,
+      "end": 410.78,
+      "text": " Vektoria jetzt link seid und wird das Schiff in den Hafen und Karten zurückbringen und",
+      "tokens": [
+        51416,
+        691,
+        8192,
+        8172,
+        4354,
+        2113,
+        38041,
+        674,
+        4578,
+        1482,
+        2065,
+        3661,
+        294,
+        1441,
+        47933,
+        268,
+        674,
+        591,
+        11719,
+        15089,
+        39455,
+        674,
+        51710
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6424075232611762,
+      "compression_ratio": 1.25,
+      "no_speech_prob": 0.5993831157684326,
+      "words": [
+        {
+          "word": " Vektoria",
+          "start": 404.88,
+          "end": 405.34,
+          "probability": 0.6096471746762594
+        },
+        {
+          "word": " jetzt",
+          "start": 405.34,
+          "end": 405.7,
+          "probability": 0.9740280508995056
+        },
+        {
+          "word": " link",
+          "start": 405.7,
+          "end": 405.9,
+          "probability": 0.3497524559497833
+        },
+        {
+          "word": " seid",
+          "start": 405.9,
+          "end": 406.16,
+          "probability": 0.2106786072254181
+        },
+        {
+          "word": " und",
+          "start": 406.16,
+          "end": 407.0,
+          "probability": 0.8757409453392029
+        },
+        {
+          "word": " wird",
+          "start": 407.0,
+          "end": 407.3,
+          "probability": 0.7841888070106506
+        },
+        {
+          "word": " das",
+          "start": 407.3,
+          "end": 408.32,
+          "probability": 0.8613466024398804
+        },
+        {
+          "word": " Schiff",
+          "start": 408.32,
+          "end": 408.6,
+          "probability": 0.9649852514266968
+        },
+        {
+          "word": " in",
+          "start": 408.6,
+          "end": 408.78,
+          "probability": 0.9676117897033691
+        },
+        {
+          "word": " den",
+          "start": 408.78,
+          "end": 408.88,
+          "probability": 0.9601550698280334
+        },
+        {
+          "word": " Hafen",
+          "start": 408.88,
+          "end": 409.18,
+          "probability": 0.7192107290029526
+        },
+        {
+          "word": " und",
+          "start": 409.18,
+          "end": 409.28,
+          "probability": 0.9365152716636658
+        },
+        {
+          "word": " Karten",
+          "start": 409.28,
+          "end": 409.64,
+          "probability": 0.982036828994751
+        },
+        {
+          "word": " zurückbringen",
+          "start": 409.64,
+          "end": 410.54,
+          "probability": 0.8719768822193146
+        },
+        {
+          "word": " und",
+          "start": 410.54,
+          "end": 410.78,
+          "probability": 0.5767924189567566
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "seek": 41078,
+      "start": 410.78,
+      "end": 412.12,
+      "text": " der Pest-Dateien.",
+      "tokens": [
+        50364,
+        1163,
+        430,
+        377,
+        12,
+        35,
+        473,
+        1053,
+        13,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.9387522803412544,
+      "compression_ratio": 1.0506329113924051,
+      "no_speech_prob": 0.49587175250053406,
+      "words": [
+        {
+          "word": " der",
+          "start": 410.78,
+          "end": 410.9,
+          "probability": 0.09058800339698792
+        },
+        {
+          "word": " Pest",
+          "start": 410.9,
+          "end": 411.2,
+          "probability": 0.4786660149693489
+        },
+        {
+          "word": "-Dateien.",
+          "start": 411.2,
+          "end": 412.12,
+          "probability": 0.48210713267326355
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "seek": 41078,
+      "start": 414.52000000000004,
+      "end": 416.28,
+      "text": " Betreien vor, wie das hat mich überstanden.",
+      "tokens": [
+        50564,
+        6279,
+        265,
+        1053,
+        4245,
+        11,
+        3355,
+        1482,
+        2385,
+        6031,
+        4502,
+        33946,
+        13,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.9387522803412544,
+      "compression_ratio": 1.0506329113924051,
+      "no_speech_prob": 0.49587175250053406,
+      "words": [
+        {
+          "word": " Betreien",
+          "start": 414.52000000000004,
+          "end": 415.16,
+          "probability": 0.4129112958908081
+        },
+        {
+          "word": " vor,",
+          "start": 415.16,
+          "end": 415.34,
+          "probability": 0.4403671622276306
+        },
+        {
+          "word": " wie",
+          "start": 415.4,
+          "end": 415.48,
+          "probability": 0.907056987285614
+        },
+        {
+          "word": " das",
+          "start": 415.48,
+          "end": 415.56,
+          "probability": 0.326938271522522
+        },
+        {
+          "word": " hat",
+          "start": 415.56,
+          "end": 415.72,
+          "probability": 0.5403366684913635
+        },
+        {
+          "word": " mich",
+          "start": 415.72,
+          "end": 415.82,
+          "probability": 0.7150322794914246
+        },
+        {
+          "word": " überstanden.",
+          "start": 415.82,
+          "end": 416.28,
+          "probability": 0.8114246428012848
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "seek": 41078,
+      "start": 419.14,
+      "end": 420.58,
+      "text": " Cronel, Betreien 20.",
+      "tokens": [
+        50764,
+        383,
+        2044,
+        338,
+        11,
+        6279,
+        265,
+        1053,
+        945,
+        13,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.9387522803412544,
+      "compression_ratio": 1.0506329113924051,
+      "no_speech_prob": 0.49587175250053406,
+      "words": [
+        {
+          "word": " Cronel,",
+          "start": 419.14,
+          "end": 419.78,
+          "probability": 0.4524134810393055
+        },
+        {
+          "word": " Betreien",
+          "start": 419.86,
+          "end": 420.2,
+          "probability": 0.6930898129940033
+        },
+        {
+          "word": " 20.",
+          "start": 420.2,
+          "end": 420.58,
+          "probability": 0.2215893566608429
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250913_140821"
+}

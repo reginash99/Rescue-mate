@@ -1,0 +1,503 @@
+{
+  "text": "Die Elbe-Zweisschenstil und die Elbe-Gleisschenstil auf dem 1er zum Schatten. Der Elbe-Gleisschenstil verschraubt. Die Elbe-Gleisschenstil verschraubt. Die von der Elbphilharmonie erlaubt den Meldung, die Victoria im Hardmore-Karten wiederverkommelt. Wenn du nicht verletzt, gehe Betriebsstimme aufgetreten. Das hat mir überstanden. Einmal Ende.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 4.0,
+      "text": " Die Elbe-Zweisschenstil und die Elbe-Gleisschenstil auf dem 1er zum Schatten.",
+      "tokens": [
+        50364,
+        3229,
+        2699,
+        650,
+        12,
+        57,
+        826,
+        891,
+        2470,
+        372,
+        388,
+        674,
+        978,
+        2699,
+        650,
+        12,
+        38,
+        306,
+        891,
+        2470,
+        372,
+        388,
+        2501,
+        1371,
+        502,
+        260,
+        5919,
+        2065,
+        32733,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5656534830729166,
+      "compression_ratio": 1.6777777777777778,
+      "no_speech_prob": 0.06697077304124832,
+      "words": [
+        {
+          "word": " Die",
+          "start": 0.0,
+          "end": 1.32,
+          "probability": 0.33591142296791077
+        },
+        {
+          "word": " Elbe",
+          "start": 1.32,
+          "end": 1.52,
+          "probability": 0.622480496764183
+        },
+        {
+          "word": "-Zweisschenstil",
+          "start": 1.52,
+          "end": 2.24,
+          "probability": 0.3657779502017157
+        },
+        {
+          "word": " und",
+          "start": 2.24,
+          "end": 2.38,
+          "probability": 0.26933544874191284
+        },
+        {
+          "word": " die",
+          "start": 2.38,
+          "end": 2.46,
+          "probability": 0.3671361804008484
+        },
+        {
+          "word": " Elbe",
+          "start": 2.46,
+          "end": 2.54,
+          "probability": 0.9818440079689026
+        },
+        {
+          "word": "-Gleisschenstil",
+          "start": 2.54,
+          "end": 3.08,
+          "probability": 0.6929932406970433
+        },
+        {
+          "word": " auf",
+          "start": 3.08,
+          "end": 3.3,
+          "probability": 0.7907226085662842
+        },
+        {
+          "word": " dem",
+          "start": 3.3,
+          "end": 3.44,
+          "probability": 0.8286683559417725
+        },
+        {
+          "word": " 1er",
+          "start": 3.44,
+          "end": 3.7,
+          "probability": 0.25540341809391975
+        },
+        {
+          "word": " zum",
+          "start": 3.7,
+          "end": 3.78,
+          "probability": 0.37650391459465027
+        },
+        {
+          "word": " Schatten.",
+          "start": 3.78,
+          "end": 4.0,
+          "probability": 0.7219672203063965
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 6.72,
+      "end": 8.52,
+      "text": " Der Elbe-Gleisschenstil verschraubt.",
+      "tokens": [
+        50714,
+        5618,
+        2699,
+        650,
+        12,
+        38,
+        306,
+        891,
+        2470,
+        372,
+        388,
+        20563,
+        424,
+        836,
+        83,
+        13,
+        50814
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5656534830729166,
+      "compression_ratio": 1.6777777777777778,
+      "no_speech_prob": 0.06697077304124832,
+      "words": [
+        {
+          "word": " Der",
+          "start": 6.72,
+          "end": 7.52,
+          "probability": 0.0731363371014595
+        },
+        {
+          "word": " Elbe",
+          "start": 7.52,
+          "end": 7.64,
+          "probability": 0.8303444981575012
+        },
+        {
+          "word": "-Gleisschenstil",
+          "start": 7.64,
+          "end": 8.12,
+          "probability": 0.8770553980554853
+        },
+        {
+          "word": " verschraubt.",
+          "start": 8.12,
+          "end": 8.52,
+          "probability": 0.5026491191238165
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "seek": 0,
+      "start": 10.16,
+      "end": 12.24,
+      "text": " Die Elbe-Gleisschenstil verschraubt.",
+      "tokens": [
+        50864,
+        3229,
+        2699,
+        650,
+        12,
+        38,
+        306,
+        891,
+        2470,
+        372,
+        388,
+        20563,
+        424,
+        836,
+        83,
+        13,
+        51014
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5656534830729166,
+      "compression_ratio": 1.6777777777777778,
+      "no_speech_prob": 0.06697077304124832,
+      "words": [
+        {
+          "word": " Die",
+          "start": 10.16,
+          "end": 10.96,
+          "probability": 0.09364892542362213
+        },
+        {
+          "word": " Elbe",
+          "start": 10.96,
+          "end": 11.14,
+          "probability": 0.9962055087089539
+        },
+        {
+          "word": "-Gleisschenstil",
+          "start": 11.14,
+          "end": 11.68,
+          "probability": 0.992311988558088
+        },
+        {
+          "word": " verschraubt.",
+          "start": 11.68,
+          "end": 12.24,
+          "probability": 0.8271667063236237
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "seek": 3000,
+      "start": 42.14,
+      "end": 55.74,
+      "text": " Die von der Elbphilharmonie erlaubt den Meldung, die Victoria im Hardmore-Karten wiederverkommelt.",
+      "tokens": [
+        50364,
+        3229,
+        2957,
+        1163,
+        2699,
+        65,
+        950,
+        388,
+        5854,
+        3317,
+        414,
+        1189,
+        20798,
+        83,
+        1441,
+        376,
+        5957,
+        1063,
+        11,
+        978,
+        16656,
+        566,
+        11817,
+        3138,
+        12,
+        42,
+        11719,
+        6216,
+        331,
+        74,
+        1204,
+        2018,
+        13,
+        51664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.9084900750054253,
+      "compression_ratio": 1.0769230769230769,
+      "no_speech_prob": 0.605970025062561,
+      "words": [
+        {
+          "word": " Die",
+          "start": 42.14,
+          "end": 42.9,
+          "probability": 0.016658050939440727
+        },
+        {
+          "word": " von",
+          "start": 42.9,
+          "end": 43.08,
+          "probability": 0.04235461726784706
+        },
+        {
+          "word": " der",
+          "start": 43.08,
+          "end": 43.18,
+          "probability": 0.5878192782402039
+        },
+        {
+          "word": " Elbphilharmonie",
+          "start": 43.18,
+          "end": 44.74,
+          "probability": 0.6227454543113708
+        },
+        {
+          "word": " erlaubt",
+          "start": 44.74,
+          "end": 52.38,
+          "probability": 0.26686157658696175
+        },
+        {
+          "word": " den",
+          "start": 52.38,
+          "end": 52.58,
+          "probability": 0.0586661733686924
+        },
+        {
+          "word": " Meldung,",
+          "start": 52.58,
+          "end": 52.92,
+          "probability": 0.8448209365208944
+        },
+        {
+          "word": " die",
+          "start": 53.04,
+          "end": 53.14,
+          "probability": 0.41794413328170776
+        },
+        {
+          "word": " Victoria",
+          "start": 53.14,
+          "end": 53.52,
+          "probability": 0.7630749344825745
+        },
+        {
+          "word": " im",
+          "start": 53.52,
+          "end": 53.98,
+          "probability": 0.9129003286361694
+        },
+        {
+          "word": " Hardmore",
+          "start": 53.98,
+          "end": 54.38,
+          "probability": 0.2299271710216999
+        },
+        {
+          "word": "-Karten",
+          "start": 54.38,
+          "end": 54.72,
+          "probability": 0.8183826804161072
+        },
+        {
+          "word": " wiederverkommelt.",
+          "start": 54.72,
+          "end": 55.74,
+          "probability": 0.4195289246737957
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "seek": 5574,
+      "start": 55.74,
+      "end": 59.52,
+      "text": " Wenn du nicht verletzt, gehe Betriebsstimme aufgetreten.",
+      "tokens": [
+        50364,
+        7899,
+        1581,
+        1979,
+        1306,
+        2631,
+        2682,
+        11,
+        34252,
+        6279,
+        5469,
+        929,
+        372,
+        20380,
+        2501,
+        847,
+        35383,
+        13,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6939991116523743,
+      "compression_ratio": 1.043956043956044,
+      "no_speech_prob": 0.24943408370018005,
+      "words": [
+        {
+          "word": " Wenn",
+          "start": 55.74,
+          "end": 56.82,
+          "probability": 0.12320390343666077
+        },
+        {
+          "word": " du",
+          "start": 56.82,
+          "end": 56.92,
+          "probability": 0.35204800963401794
+        },
+        {
+          "word": " nicht",
+          "start": 56.92,
+          "end": 57.22,
+          "probability": 0.74614417552948
+        },
+        {
+          "word": " verletzt,",
+          "start": 57.22,
+          "end": 57.78,
+          "probability": 0.8395201563835144
+        },
+        {
+          "word": " gehe",
+          "start": 58.02,
+          "end": 58.1,
+          "probability": 0.13659119606018066
+        },
+        {
+          "word": " Betriebsstimme",
+          "start": 58.1,
+          "end": 58.86,
+          "probability": 0.5961312770843505
+        },
+        {
+          "word": " aufgetreten.",
+          "start": 58.86,
+          "end": 59.52,
+          "probability": 0.8528802593549093
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "seek": 5574,
+      "start": 62.5,
+      "end": 65.0,
+      "text": " Das hat mir überstanden. Einmal Ende.",
+      "tokens": [
+        50714,
+        2846,
+        2385,
+        3149,
+        4502,
+        33946,
+        13,
+        6391,
+        5579,
+        15152,
+        13,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6939991116523743,
+      "compression_ratio": 1.043956043956044,
+      "no_speech_prob": 0.24943408370018005,
+      "words": [
+        {
+          "word": " Das",
+          "start": 62.5,
+          "end": 63.38,
+          "probability": 0.5216865539550781
+        },
+        {
+          "word": " hat",
+          "start": 63.38,
+          "end": 63.52,
+          "probability": 0.866780698299408
+        },
+        {
+          "word": " mir",
+          "start": 63.52,
+          "end": 63.64,
+          "probability": 0.7536011338233948
+        },
+        {
+          "word": " überstanden.",
+          "start": 63.64,
+          "end": 64.08,
+          "probability": 0.8976888656616211
+        },
+        {
+          "word": " Einmal",
+          "start": 64.54,
+          "end": 64.74,
+          "probability": 0.2484527751803398
+        },
+        {
+          "word": " Ende.",
+          "start": 64.74,
+          "end": 65.0,
+          "probability": 0.3013356924057007
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250913_143654"
+}
