@@ -56,11 +56,6 @@
 
       <div :style="{ width: '100%', height: '100%', display:'flex', alignItems:'center', justifyContent:'center' }">
 
-        <!-- <video id="recordingVideo"
-          src="./media/record_video_cropped.mp4" autoplay
-          loop muted :style="{maxWidth: '100%', height:'100%', objectFit:'fill'}">
-        </video> -->
-
         <div class="audio_spectrum">
           <div
             v-for="n in 35"
@@ -83,6 +78,10 @@
 </template>
 
 <style>
+
+.btn.btn-danger {
+  box-shadow: 0 4px 16px var(--shadow-color);
+}
 
 :root {
   --m: 17.5;

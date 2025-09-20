@@ -107,6 +107,7 @@ html, body {
   .grid-item {
     max-width: 100%;
     min-width: 100%;
+    height: calc(100vh / 2 - 10px);
     border-radius: 0;
     resize: none;
   }
