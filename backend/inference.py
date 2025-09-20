@@ -177,13 +177,17 @@ def inference(args, device):
 
 
         # ===== Stage 1: RAW/Clean (always baseline) =====
+        #FIRST RAW TRANSCRIPT IS GENERATED HERE and saved at best_result - NO FILTERS APPLIED
         best_result = whisper_decode(whisper_model, best_audio)
         print(f"Stage RAW text: {best_result.get('text','').strip()}")
+        #Here is where this transcription will be saved to the backend as the raw trancript, if it was succesfully sent, then flag is set to True
         
         quality, snr_db, flatness,hf_ratio = classify_audio_quality(best_audio, sr=sr)
 
         if quality == "clean":
             print("Audio classified as clean -> skipping filtering.")
+            #I havent added it here, but im thinking of adding one of the checks i have written to see if the transcript has repetetive words/sentences, and if it does to clean it up then resend it to the frontend again. But right now, if we are here then the audio is clean and we just keep the raw trancript as the final one
+
 
         # ===== Stage 2: Band-pass (conditional) =====
         elif quality == "moderate":
@@ -192,6 +196,8 @@ def inference(args, device):
             bp_result = whisper_decode(whisper_model, bp_audio)
             best_result = compare_and_update(best_result, bp_result, "band-pass")
             best_audio = bp_audio
+            #If we are here then we have applied bandpass filter only, then compared the old best_result transcript with the new best_result transcript and keep only the one who is the best. This i need to fix, because what happens right now is that whichever transcript is the best, overrides the previous one. I will write the code that saves this transcript as well later today.
+            # Here will be the code that saves the intermediate transcript to backend as well, if it was succesfully sent, then flag is set to True
         
          # ===== Stage 3: Band-pass + Pre-emphasis (conditional) =====
         elif quality == "muffled":
@@ -201,6 +207,7 @@ def inference(args, device):
             pe_result = whisper_decode(whisper_model, pe_audio)
             best_result = compare_and_update(best_result, pe_result, "band-pass+PE")
             best_audio = pe_audio
+            #If we are here, then we have applied bandpass + pre-emphasis, and we (will) have another intermediate trancript that needs to be send to the backend as well, if it was succesfully sent, then flag is set to True
 
         # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
         elif quality == "noisy":  #run SEMamba only when noisy enough
@@ -249,6 +256,7 @@ def inference(args, device):
                 print("Post-Mamba audio still muffled -> applying pre-emphasis.")
                 mamba_audio = pre_emphasis(mamba_audio)
                 stage_name += "+PE"
+                # here we have applied mamba+bandpass+pre emphasis, and we (will) have another intermediate transcript to send to backend as well, if it was succesfully sent, then flag is set to True. Right now we dont have a transcript generated here, but we will have it after i write the code
 
             if args.post_processing_PCS:
                 mamba_audio = cal_pcs(mamba_audio)
@@ -256,6 +264,7 @@ def inference(args, device):
             mamba_result = whisper_decode(whisper_model, mamba_audio)
             best_result = compare_and_update(best_result, mamba_result, stage_name)
             best_audio = mamba_audio
+            #here we will have another intermediate transcript. I have to reorganize this part of the code a bit so that its before the pre emphasis and pcs, so that i can save the transcript before those two filters are applied as well. If it was succesfully sent, then flag is set to True
 
             # ===== Stage 5: DeepFilterNet (conditional) =====
             snr_post = estimate_snr_vad(best_audio, sr=16000)
@@ -275,6 +284,8 @@ def inference(args, device):
                 dfn_result = whisper_decode(whisper_model, dfn_audio)
                 best_result = compare_and_update(best_result, dfn_result, "DeepFilterNet")
                 best_audio = dfn_audio
+
+                #here we will have the final intermediate transcript, that will be sent to the backend as well, if it was succesfully sent, then flag is set to True
                 os.remove(dfn_path)
 
         # Save final
@@ -286,6 +297,8 @@ def inference(args, device):
         os.makedirs(os.path.dirname(out_json), exist_ok=True)
         with open(out_json, 'w', encoding='utf-8') as f:
             json.dump(best_result, f, ensure_ascii=False, indent=2)
+
+        #Here we will send the final transript to the backend, if it was succesfully sent, then flag is set to True
 
         print(f"\nFINAL TEXT   : {best_result.get('text','').strip()}")
         print(f"SAVED WAV    : {final_wav_out}")
