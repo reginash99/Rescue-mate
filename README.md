@@ -8,18 +8,41 @@ Naming Convention:
 
 ## BACKEND
 # SE Mamba
-For SE Mamba (the code is inside the backend folder), a Linux-based system is required, but since we are operating on Windows, we will use WSL on windows and install Ubuntu using it (there are tutorials on how to make this work but it is fairly simple and involves only terminal commands). By doing this, we will be able to use the Ubuntu terminal on our respective windows devices.
+For SE Mamba (the code is inside the backend folder), a Linux-based system is required, but since we are operating on Windows, we will use WSL on windows and install Ubuntu 22.04 using it (there are tutorials on how to make this work but it is fairly simple and involves only terminal commands). By doing this, we will be able to use the Ubuntu terminal on our respective windows devices.
 
 
 WSL, conda, Pytorch, Torchaudio, and Cuda are required. 
 
 
-First it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use conda to install pytorch, torchaudio versions 2.2.2 as said in the requirements.txt inside the project root folder, torchvision, as well as cuda-toolkit (or pytorch-cuda, or both) version 12.1.
+First it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use these commands one by one:  
 
 
-Then install all the packages in requirements.txt (again, the one inside the project root folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26.
+`conda install pytorch=2.2.2 -c conda-forge -c pytorch -c nvidia`
 
-We are also using the package webrtcvad to determine whether the audio contains speech. To install this, run the command pip `install -c conda-forge webrtcvad`
+`conda install torchaudio=2.2.2 torchvision -c conda-forge -c pytorch -c nvidia`
+
+`conda install cuda-toolkit=12.1 -c conda-forge -c pytorch -c nvidia`
+
+`conda install sentence-transformers`
+
+As stated in the requirements.txt file inside the project root folder (as well as cuda-toolkit (or pytorch-cuda, or both), version 12.1)
+
+
+Then, install all the packages listed in requirements.txt (located inside the project root folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26.
+Use the commands: 
+
+
+`pip install openai-whisper`
+
+`conda install fastapi uvicorn -c conda-forge -c pytorch -c nvidia`
+
+`conda install python-multipart packaging librosa pysoundfile pyyaml tensorboard pesq einops -c conda-forge -c pytorch -c nvidia`
+
+
+Sometimes when installing them in a single command it may cause issues. If this happens, try to install them separately, for example: conda install python-multipart -c conda-forge -c pytorch -c nvidia, conda install packaging -c conda-forge -c pytorch -c nvidia etc.
+
+
+We are also using the package webrtcvad to determine whether the audio contains speech. To install this, run the command: `conda install -c conda-forge webrtcvad`
 
 
 Then we need to build the mamba_ssm by running (inside the backend folder): 
@@ -30,12 +53,16 @@ Then we need to build the mamba_ssm by running (inside the backend folder):
 
 If you run into trouble with nvcc run these in the terminal: 
 
-sudo rm /usr/local/cuda/bin/nvcc
+`sudo rm /usr/local/cuda/bin/nvcc`
 
-export CUDA_HOME=$CONDA_PREFIX
-export PATH="$CUDA_HOME/bin:$PATH"
-export CPLUS_INCLUDE_PATH="$CUDA_HOME/include"
-export C_INCLUDE_PATH="$CUDA_HOME/include"
+
+`export CUDA_HOME=$CONDA_PREFIX`
+
+`export PATH="$CUDA_HOME/bin:$PATH"`
+
+`export CPLUS_INCLUDE_PATH="$CUDA_HOME/include"`
+
+`export C_INCLUDE_PATH="$CUDA_HOME/include"`
 
 
 To backup your current environment run: 
@@ -43,18 +70,17 @@ conda list --explicit > env-backup.txt
 
 
 # Whisper
-We install whisper using the command: pip install openai-whisper (still inside the same conda environment). 
-Then we import whisper inside mamba (interface.py).  After each check and subsequent filter combo is deemed appropriate, Whisper is used to transcribe. The transcription from whisper is used by several functions to calculate a score by using both average log probability and a multilingual sentence transformer model that validates how 'correct' it is and essentially how much sense it makes context wise. This score is then used to compare this script with the next one to determine which is best. In the end, only the best one is written/saved.
+After each check and subsequent filter combo is deemed appropriate, Whisper is used to transcribe. The transcription from whisper is used by several functions to calculate a score by using both average log probability and a multilingual sentence transformer model that validates how 'correct' it is and essentially how much sense it makes context wise. This score is then used to compare this script with the next one to determine which is best. In the end, only the best one is written/saved.
 
 Whisper is also fine tuned with parameters and a prompt in german (the prompt might still need work).
 Extra functions are also implemented to ensure the repetition of words or sentences whisper does sometimes doesnt happen again.
 
 
-We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper. 
+We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper so we decided not to use it. 
 
 
 # Filters
-We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: pip install deepfilternet. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
+We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: `pip install deepfilternet`. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
 
 
 We  changed mamba's model parameter hop_size (they are samples between successive frames) from 100 to 200. 

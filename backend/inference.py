@@ -25,7 +25,7 @@ device = None
 # ------------------------------
 
 DOMAIN_PROMPT = (
-    "Alle hörbaren Wörter (einschließlich Orts- und Straßennamen) exakt wiedergeben. Keine zusätzlichen Wörter erfinden oder ergänzen. Zahlen als Ziffern darstellen. Unverständliche Stellen mit '...' markieren. Kurze Sätze, einfache Grammatik."
+    "Der Input sind Funksprüche von Rettungseinsätzen in Hamburg. Alle hörbaren Wörter (einschließlich Orts- und Straßennamen) exakt wiedergeben. Keine zusätzlichen Wörter erfinden oder ergänzen. Zahlen als Ziffern darstellen. Unverständliche Stellen mit '...' markieren. Kurze Sätze, einfache Grammatik."
 )
 
 def whisper_decode(model, audio_array, language=None):
@@ -42,12 +42,88 @@ def whisper_decode(model, audio_array, language=None):
         language=language,
         condition_on_previous_text=False,   
         initial_prompt=DOMAIN_PROMPT,       # Injects domain lexicon
-        beam_size=8,                        
+        beam_size=5,                        
         best_of=3,
-        temperature=(0.2, 0.4),             
+        patience=1.2,
+        temperature=(0.0, 0.2),             
         no_speech_threshold=0.1,
+        compression_ratio_threshold=2.4,
         word_timestamps=True
     )
+
+
+# Chunked SEMamba denoising to keep peak GPU memory low while remaining fast.
+def semamba_denoise_chunks(audio_np, sr, model, device, n_fft, hop_size, win_size, compress_factor,
+                           chunk_size_sec=8.0, overlap_sec=2.0):
+    
+    model.eval()
+    chunk_size = int(chunk_size_sec * sr)
+    overlap = int(overlap_sec * sr)
+    if chunk_size <= 0:
+        raise ValueError("chunk_size_sec too small")
+    step = chunk_size - overlap
+
+    total_len = len(audio_np)
+    # pad to fit last chunk
+    n_steps = max(1, (total_len - overlap + step - 1) // step)
+    padded_len = step * n_steps + overlap
+    pad_amount = max(0, padded_len - total_len)
+    audio = np.concatenate([audio_np, np.zeros(pad_amount, dtype=audio_np.dtype)])
+
+    out = np.zeros_like(audio)
+    win = np.hanning(chunk_size).astype(np.float32)
+    norm = np.zeros_like(audio)
+
+    for i in range(0, padded_len - overlap, step):
+        chunk = audio[i:i+chunk_size]
+        if len(chunk) < chunk_size:
+            chunk = np.pad(chunk, (0, chunk_size - len(chunk)))
+
+        # Prepare tensor on device
+        noisy_wav = torch.from_numpy(chunk.astype(np.float32)).to(device)
+        # normalize per-chunk (keeps numerical stability)
+        norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
+        noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
+
+        with torch.no_grad():
+            noisy_amp, noisy_pha, _ = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor)
+            noisy_amp = noisy_amp.to(device).half()
+            noisy_pha = noisy_pha.to(device).half()
+
+            amp_g, pha_g, _ = model(noisy_amp, noisy_pha)
+
+            # Try fast GPU ISTFT after freeing inputs
+            try:
+                del noisy_amp, noisy_pha
+                torch.cuda.empty_cache()
+                mamba_t = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor)
+                mamba_chunk = mamba_t.squeeze().cpu().detach().numpy()
+            
+            except RuntimeError as e:
+                # Fallback to CPU ISTFT if OOM
+                print(f"GPU ISTFT failed with {e}; falling back to CPU ISTFT for this chunk")
+                mamba_t = mag_phase_istft(amp_g.float().cpu(), pha_g.float().cpu(), n_fft, hop_size, win_size, compress_factor)
+                mamba_chunk = mamba_t.squeeze().detach().numpy()
+
+            # cleanup
+            try:
+                del amp_g, pha_g
+            except Exception:
+                pass
+            torch.cuda.empty_cache()
+
+        # undo per-chunk normalization
+        mamba_chunk = (mamba_chunk / norm_factor.cpu().item())
+
+        # apply window and overlap-add
+        out[i:i+chunk_size] += mamba_chunk * win
+        norm[i:i+chunk_size] += win
+
+    norm[norm == 0] = 1.0
+    out = out[:total_len] / norm[:total_len]
+    out = out / (np.max(np.abs(out)) + 1e-9)
+    
+    return out
 
 
 # ------------------------------
@@ -59,8 +135,8 @@ def inference(args, device):
     n_fft, hop_size, win_size = cfg['stft_cfg']['n_fft'], cfg['stft_cfg']['hop_size'], cfg['stft_cfg']['win_size']
     compress_factor = cfg['model_cfg']['compress_factor']
     
-    #model = SEMamba(cfg).to(device).half()
-    model = SEMamba(cfg).to(device)
+    model = SEMamba(cfg).to(device).half()
+    #model = SEMamba(cfg).to(device)
 
     state_dict = torch.load(args.checkpoint_file, map_location=device)
     model.load_state_dict(state_dict['generator'])
@@ -119,7 +195,7 @@ def inference(args, device):
         
          # ===== Stage 3: Band-pass + Pre-emphasis (conditional) =====
         elif quality == "muffled":
-            print("Audio is muffled , applying bandpass and pre-emphasis.")
+            print("Audio is muffled, applying bandpass and pre-emphasis.")
             bp_audio = bandpass_filter(best_audio)
             pe_audio = pre_emphasis(bp_audio)
             pe_result = whisper_decode(whisper_model, pe_audio)
@@ -128,26 +204,38 @@ def inference(args, device):
 
         # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
         elif quality == "noisy":  #run SEMamba only when noisy enough
-            print("Audio is noisy/muffled, applying SEmamba and bandpass.")
-            noisy_wav = torch.FloatTensor(best_audio).to(device)
-            norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
-            
-            noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
-            noisy_amp, noisy_pha, _ = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor)
-            
-            noisy_amp = noisy_amp.to(device)
-            noisy_pha = noisy_pha.to(device)
+            print("Audio is noisy, applying SEmamba and bandpass.")
+        
+        # If clip is long (> 4 minutes) use chunked processing to avoid OOM
+            clip_seconds = len(best_audio) / float(sr)
+            if clip_seconds > 4 * 60:
+                print(f"Long clip ({clip_seconds/60:.2f} min) detected: using chunked SEMamba denoise.")
+                mamba_audio = semamba_denoise_chunks(best_audio, sr, model, device, n_fft, hop_size, win_size, compress_factor=0.8, chunk_size_sec=8.0, overlap_sec=2.0)
+          
+            else:
+                noisy_wav = torch.FloatTensor(best_audio).to(device)
+                norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
+                
+                noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
+                noisy_amp, noisy_pha, _ = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor=0.8)
+                
+                noisy_amp = noisy_amp.to(device).half()
+                noisy_pha = noisy_pha.to(device).half()
 
-            amp_g, pha_g, _ = model(noisy_amp, noisy_pha)
-            mamba_audio = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor)
-            #mamba_audio = (mamba_audio / norm_factor).squeeze().cpu().detach().numpy()
-            
-            mamba_audio = mamba_audio.squeeze().cpu().detach().numpy()
+                amp_g, pha_g, _ = model(noisy_amp, noisy_pha)
+                mamba_audio = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor=0.8)
+                #mamba_audio = (mamba_audio / norm_factor).squeeze().cpu().detach().numpy()
 
-            torch.cuda.empty_cache()
+                mamba_audio = (mamba_audio / norm_factor.cpu().item())
+                mamba_audio = mamba_audio.squeeze().cpu().detach().numpy()
 
+                mamba_audio = mamba_audio / (np.max(np.abs(mamba_audio)) + 1e-9)
+
+                del amp_g, pha_g, noisy_amp, noisy_pha
+                torch.cuda.empty_cache()
+                
             # --- Always bandpass after SEMamba ---
-            mamba_audio = bandpass_filter(mamba_audio, 200, 5000)
+            mamba_audio = bandpass_filter(mamba_audio, 80, 7000)
 
             # --- Conditional pre-emphasis ---
             fft = np.abs(np.fft.rfft(mamba_audio))**2
@@ -157,7 +245,7 @@ def inference(args, device):
             hf_ratio = hf_energy / (lf_energy + 1e-9)
 
             stage_name = "SEMamba+BP"
-            if hf_ratio < 0.05:
+            if hf_ratio < 0.02:
                 print("Post-Mamba audio still muffled -> applying pre-emphasis.")
                 mamba_audio = pre_emphasis(mamba_audio)
                 stage_name += "+PE"

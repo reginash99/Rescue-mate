@@ -1,5 +1,6 @@
 import numpy as np
 from collections import Counter
+import re
 from sentence_transformers import SentenceTransformer, util
 
 semantic_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
@@ -17,8 +18,6 @@ def repetition_score(text: str, max_ngram=4) -> float:
         return 0.0
 
     score = 0.0
-
-    #Consecutive repetition
     count = 1
     for i in range(1, len(words)):
         if words[i] == words[i-1]:
@@ -28,24 +27,38 @@ def repetition_score(text: str, max_ngram=4) -> float:
         else:
             count = 1
 
-    #n-gram repetition
     for n in range(2, max_ngram+1):
         ngrams = [" ".join(words[i:i+n]) for i in range(len(words)-n+1)]
         counts = Counter(ngrams)
         for ng, c in counts.items():
             if c > 2:
-                score += (c-2) * n  #longer n-grams penalized harder
-
+                score += (c-2) * n
+   
     return score
+
+
+def word_diversity(text):
+    words = text.strip().split()
+    if not words: return 0
+    return len(set(words)) / len(words)
+
+
+def alpha_ratio(text):
+    letters = len(re.findall(r"[a-zA-ZäöüßÄÖÜ]", text))
+    return letters / max(1, len(text))
+
+
+def looks_like_nonsense(text, repeat_thr=8):
+    words = text.split()
+    counts = Counter(words)
+    return any(c > repeat_thr for c in counts.values())
+
 
 
 #Remove excessive repetition at both word and phrase level.
 #max_repeat: how many times a phrase can appear before being trimmed
 #min_phrase_len: minimum length (words) for phrase-level deduplication
-
 def cleanup_repetition(text, max_repeat=1, min_phrase_len=4):
-    
-    # First pass: consecutive word-level cleanup (like before)
     words = text.split()
     cleaned_words = []
     count = 1
@@ -59,7 +72,6 @@ def cleanup_repetition(text, max_repeat=1, min_phrase_len=4):
         cleaned_words.append(w)
     text = " ".join(cleaned_words)
 
-    # Second pass: phrase-level cleanup
     sentences = [s.strip() for s in text.split(".") if s.strip()]
     seen = {}
     final_sentences = []
@@ -68,10 +80,15 @@ def cleanup_repetition(text, max_repeat=1, min_phrase_len=4):
         if word_count >= min_phrase_len:
             seen[s] = seen.get(s, 0) + 1
             if seen[s] > max_repeat:
-                continue  # skip repeated sentence
+                continue
         final_sentences.append(s)
+    
     return ". ".join(final_sentences) + "."
 
+
+# ------------------------------
+# Transcript scoring
+# ------------------------------
 
 # Scoring function to compare transcripts after every filter and pick the best one
 def score_transcript(result, baseline_len=None):
@@ -80,32 +97,40 @@ def score_transcript(result, baseline_len=None):
     compression_ratio = result.get("compression_ratio", 1.0)
     text = result.get("text", "").strip()
 
-    # Clean up repetition before scoring
     text = cleanup_repetition(text)
 
-    # Base score
     score = avg_logprob - 0.3 * compression_ratio
 
-    # Too short penalty
     if baseline_len and len(text.split()) < 0.5 * baseline_len:
         score -= 1.0
 
-    # Strong repetition penalty
     rep_penalty = repetition_score(text)
-    score -= rep_penalty * 4.0   #make this much stronger
-
-    # Hard reject if extremely repetitive
+    score -= rep_penalty * 4.0
     if rep_penalty > 8:
         score -= 20.0
 
-    # Compression-ratio hard rejection
+    div = word_diversity(text)
+    if div < 0.2:
+        score -= 15.0  # reject low-diversity junk
+
+    ar = alpha_ratio(text)
+    if ar < 0.5:
+        score -= 20.0  # reject mostly non-letters
+
+    if looks_like_nonsense(text):
+        score -= 50.0  # outright reject nonsense
+
     if compression_ratio < 0.25:
         score -= 5.0
 
-    return score, text  # return cleaned text too
+    return score, text
 
 
-def compare_and_update(old_result, new_result, stage_name, semantic_weight=0.5):
+# ------------------------------
+# Transcript comparison
+# ------------------------------
+
+def compare_and_update(old_result, new_result, stage_name, semantic_weight=2.0):
     if old_result is None:
         return new_result
 
@@ -115,18 +140,24 @@ def compare_and_update(old_result, new_result, stage_name, semantic_weight=0.5):
     old_score, old_clean = score_transcript(old_result, baseline_len)
     new_score, new_clean = score_transcript(new_result, baseline_len)
 
-    # semantic similarity boost only if repetition is low
+    if looks_like_nonsense(new_clean):
+            print(f"[COMPARE] {stage_name}: new transcript looks like nonsense, rejecting.\n")
+            old_result["text"] = old_clean
+            return old_result
+
     sim = semantic_similarity(new_clean, old_clean)
+
+    # Only boost if new text is not repetitive
     if repetition_score(new_clean) < 3:
         combined_new = new_score + semantic_weight * sim
     else:
-        combined_new = new_score  # don’t boost repetitive junk
+        combined_new = new_score
 
     combined_old = old_score + semantic_weight * 1.0
 
     print(f"[COMPARE] {stage_name}: old={combined_old:.3f}, new={combined_new:.3f}, sim={sim:.2f}")
-    print(f"[OLD TEXT] {old_clean}")
-    print(f"[NEW TEXT] {new_clean}")
+    print(f"[OLD TEXT] {old_clean[:200]}...")
+    print(f"[NEW TEXT] {new_clean[:200]}...")
 
     if combined_new > combined_old:
         print("→ New transcript is better, replacing old one.\n")

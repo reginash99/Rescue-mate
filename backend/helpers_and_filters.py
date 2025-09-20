@@ -15,7 +15,7 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 #A bandpass filter to improve speech intelligibility (esp. for radio-style speech):
-def bandpass_filter(audio, lowcut=200.0, highcut=5000.0, fs=16000, order=6):
+def bandpass_filter(audio, lowcut=80.0, highcut=7000.0, fs=16000, order=6):
     nyq = 0.5 * fs
     low = lowcut / nyq
     high = highcut / nyq
