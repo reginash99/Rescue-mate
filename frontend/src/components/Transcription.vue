@@ -42,7 +42,7 @@
       <div class="modal-content">
         <button class="modal-close" @click="closeModal">×</button>
         <h4>Information</h4>
-        <p>The transiption displayed initialy is raw. After further processing, the transciption will be updated if its quality is better than the raw transcription. In case of an update, the bell button in the bottom right corner of the transcription will have a red alert bubble and can be clicked on to display this. </p>
+          <p>The transcription displayed initially is raw. After further processing, the transcription will be updated if its quality is better than the raw transcription. If an update is available, the bell button in the bottom right corner of the transcription will show a red alert bubble and can be clicked to display the updated transcription.</p>
       </div>
     </div>
   </div>
