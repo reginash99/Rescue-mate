@@ -1,3 +1,4 @@
+#!/bin/sh
 FILENAME="$1"
 
 python inference.py \

@@ -100,29 +100,54 @@ The functions we used are:
 # DATABASE
 
 We use posgresql 17.6 for our database system, which means you have to [install](https://www.postgresql.org/download/) it.
+
+Start postgresql in wsl:
+``` 
+sudo service postgresql start
+```
+
+connect to psql:
+```
+sudo -u postgres psql
+```
+
+Set a password for the user postgres within psql
+```
+ ALTER USER postgres WITH PASSWORD 'PASSWORD_PLACEHOLDER';
+```
+Got to the following path within your wsl:
+```
+sudo nano /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
+```
+And change the following to enable the connection via password authentification:
+from  <br>
+local   all    postgres   peer <br>
+to <br>
+local   all    postgres   md5
+
+Afterwards, restart posgresql:
+```
+sudo service postgresql restart
+```
+
 Additionally, the python library psycopg has to be installed:
-In the following installation instruction examples, the database is called rescue_mate and it is listening on port 5433 but the values can be adjusted.
+In the following installation instruction examples, the database is called rescue_mate and it is listening on port 5432 but the values can be adjusted.
 
 ```
-npm install psycopg
+npm install psycopg2
 ```
 the database can be installed within a terminal 
 
 ```
-createdb -p 5433 rescue_mate
+createdb -U postgres -p 5432 rescue_mate
 ```
 
 there is one table called transcription which can be installed within a terminal
 (the schema lies in migration folder of the project, the respective command has to be executed in the backend folder, otherwise adjust the path to the sql file):
 
-(Linux/MacOS)
-```
-psql -p 5433 -d rescue_mate -f migrations/schema.sql
-```
-(Windows)
 
 ```
-psql -U postgres -p 5433 -d rescue_mate -f migrations/schema.sql
+psql -U postgres -p 5432 -d rescue_mate -f migrations/schema.sql 
 ```
 
 for the connection to the database, an .env file in the backend folder is required with the following structure:

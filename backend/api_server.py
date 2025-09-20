@@ -27,7 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-'''def convert_webm_to_wav(webm_path, wav_path):
+def convert_webm_to_wav(webm_path, wav_path):
     subprocess.run([
         "ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path
     ], check=True)
@@ -35,7 +35,7 @@ app.add_middleware(
 @app.post("/transcribe-audio/")
 async def upload_audio(file: UploadFile = File(...)):
      # Generate a unique filename
-    #timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     unique_id = uuid.uuid4().hex[:8]
     base, ext = os.path.splitext(file.filename)
     unique_filename = f"{base}_{unique_id}{ext}"
@@ -66,7 +66,7 @@ async def upload_audio(file: UploadFile = File(...)):
         transcription_data_json = json.loads(transcription_data)
 
     #flag_status =  '1' if transcription_data_json['status'] !== '' else '0'
-    flag_status = False # placeholder until status is added to json structure    
+    flag_status = True # placeholder until status is added to json structure    
     # Insert record into the database
     insert_record(transcription_data_json['timestamp'], transcription_data_json['text'], flag_status)
     #insert_record(datetime.datetime.now(), transcription_data_json['text'])
@@ -75,7 +75,7 @@ async def upload_audio(file: UploadFile = File(...)):
     # delete all records older that 24 hours
     delete_records()
 
-    return JSONResponse(content={"transcription": transcription_data_json})'''
+    return JSONResponse(content={"transcription": transcription_data_json})
 
 @app.get("/get-history/")
 async def get_history(): 
@@ -84,7 +84,7 @@ async def get_history():
     return JSONResponse(content={"history": records})
 
 # temporary endpoint to simulate transcription insertion -- mocking the current transcription process
-@app.post("/transcribe-audio/")
+#@app.post("/transcribe-audio/")
 async def placeholder_recording():
     '''transcription_files = glob.glob(r".\Polizei_10_20250913_140821.json")
     latest_transcription = max(transcription_files, key=os.path.getmtime)
@@ -105,7 +105,7 @@ async def placeholder_recording():
     print(transcription_data_json)'''
     create_new_record()
     latest_id = get_latest_id()
-    insert_intermediate_record("testing",1,latest_id)
+    insert_intermediate_record("Hallo Alex",0,latest_id)
     set_success_status(latest_id,True)
     json_data = select_record(latest_id)
     print(json_data)

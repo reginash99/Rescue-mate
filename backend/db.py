@@ -4,13 +4,23 @@ import os
 
 dotenv.load_dotenv()
 
+
+DB_NAME=os.getenv("DB_NAME")
+DB_USER=os.getenv("DB_USER") 
+DB_PASSWORD=os.getenv("DB_PASSWORD")
+DB_HOST=os.getenv("DB_HOST")
+DB_PORT=os.getenv("DB_PORT")
+
+print("DB_NAME:", DB_NAME, "USER:", DB_USER, "HOST:", DB_HOST, "PORT:", DB_PORT)
+print("DB_NAME:", os.getenv("DB_NAME"), "USER:", os.getenv("DB_USER"), "HOST:", os.getenv("DB_HOST"), "PORT:",os.getenv("DB_PORT") )
+
 def insert_record(timestamp, transcription,status):
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("USER"),
-        password=os.getenv("PASSWORD"),
-        host=os.getenv("HOST"),
-        port=os.getenv("PORT")
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT
     ) as conn:
 
         with conn.cursor() as cur:
@@ -31,10 +41,10 @@ def insert_record(timestamp, transcription,status):
 def delete_records():
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
-        user=os.getenv("USER"),
-        password=os.getenv("PASSWORD"),
-        host=os.getenv("HOST"),
-        port=os.getenv("PORT")
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     ) as conn:
         
         with conn.cursor() as cur:
@@ -54,10 +64,10 @@ def delete_records():
 def select_records():
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
-        user=os.getenv("USER"),
-        password=os.getenv("PASSWORD"),
-        host=os.getenv("HOST"),
-        port=os.getenv("PORT")
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     ) as conn:
 
         with conn.cursor() as cur:
@@ -86,10 +96,10 @@ def select_records():
 def select_record(id):
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
-        user=os.getenv("USER"),
-        password=os.getenv("PASSWORD"),
-        host=os.getenv("HOST"),
-        port=os.getenv("PORT")
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     ) as conn:
 
         with conn.cursor() as cur:
@@ -120,10 +130,10 @@ def select_record(id):
 def get_id(timestamp, transcription,status):
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
-        user=os.getenv("USER"),
-        password=os.getenv("PASSWORD"),
-        host=os.getenv("HOST"),
-        port=os.getenv("PORT")
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     ) as conn:
 
         with conn.cursor() as cur:
@@ -144,10 +154,10 @@ def get_id(timestamp, transcription,status):
 def get_latest_id():
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
-        user=os.getenv("USER"),
-        password=os.getenv("PASSWORD"),
-        host=os.getenv("HOST"),
-        port=os.getenv("PORT")
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     ) as conn:
 
         with conn.cursor() as cur:
@@ -168,10 +178,10 @@ def get_latest_id():
 def insert_intermediate_record(transcription, column_index,id):
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
-        user=os.getenv("USER"),
-        password=os.getenv("PASSWORD"),
-        host=os.getenv("HOST"),
-        port=os.getenv("PORT")
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     ) as conn:
          with conn.cursor() as cur:
             table_name = 'transcription'
@@ -197,10 +207,10 @@ def insert_intermediate_record(transcription, column_index,id):
 def create_new_record():
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
-        user=os.getenv("USER"),
-        password=os.getenv("PASSWORD"),
-        host=os.getenv("HOST"),
-        port=os.getenv("PORT")
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     ) as conn:
          with conn.cursor() as cur:
             table_name = 'transcription'
@@ -214,10 +224,10 @@ def set_success_status(id,status):
     print("status ", status)
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
-        user=os.getenv("USER"),
-        password=os.getenv("PASSWORD"),
-        host=os.getenv("HOST"),
-        port=os.getenv("PORT")
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     ) as conn:
          with conn.cursor() as cur:
             table_name = 'transcription'
