@@ -34,8 +34,7 @@ def estimate_snr(audio, frame_length=2048, hop_length=512):
 #using a VAD (voice activity detector) to separate speech and noise (for best results, but more complex)
 #reject very quiet frames (likely noise)
 #reject hiss-only frames (low spectral centroid)
-def estimate_snr_vad(audio, sr=16000, frame_ms=30, vad_level=2, min_speech_db=-45, min_centroid_hz=150):
-    
+def estimate_snr_vad(audio, sr=16000, frame_ms=30, vad_level=2, min_speech_db=-45, min_centroid_hz=150, return_speech=False):
     audio_pcm = (audio * 32767).astype(np.int16)
     vad = webrtcvad.Vad(vad_level)  # 0-3, 3 = most aggressive
 
@@ -66,40 +65,40 @@ def estimate_snr_vad(audio, sr=16000, frame_ms=30, vad_level=2, min_speech_db=-4
             noise_frames.append(frame)
 
     if not noise_frames or not speech_frames:
-        # fallback to energy-based if VAD fails
-        return estimate_snr(audio)
+        snr_db = estimate_snr(audio)
+        return (snr_db, np.array([], dtype=np.float32)) if return_speech else snr_db
 
     noise = np.concatenate(noise_frames)
     speech = np.concatenate(speech_frames)
     noise_power = np.mean(noise.astype(np.float32)**2)
     speech_power = np.mean(speech.astype(np.float32)**2)
-    if noise_power == 0:
-        return float('inf')
-    snr_db = 10 * np.log10(speech_power / noise_power)
+    snr_db = 10 * np.log10(speech_power / (noise_power + 1e-9))
+
+    if return_speech:
+        speech_float = speech.astype(np.float32) / 32767.0
+        return snr_db, speech_float
     return snr_db
 
 
 #Decide if audio is clean, moderate, noisy, or muffled using SNR + spectral cues.
-def classify_audio_quality(audio, sr=16000, snr_clean_thr=28, snr_light_thr=15, flatness_thr=0.01, hf_ratio_thr=0.012):
+def classify_audio_quality(audio, sr=16000, snr_clean_thr=28, snr_light_thr=18, flatness_thr=0.01, hf_ratio_thr=0.012):
     if np.max(np.abs(audio)) < 1e-4:
         return "silent", 0, 0, 0
 
-    snr_db = estimate_snr_vad(audio, sr=sr)
-
+    snr_db, speech_sig = estimate_snr_vad(audio, sr=sr, return_speech=True)
+    
     if np.isnan(snr_db) or np.isinf(snr_db) or snr_db < -5:
         snr_db = estimate_snr(audio, sr=sr)
+        speech_sig = audio  #fallback
 
+    if speech_sig.size == 0:
+        speech_sig = audio
 
-    if len(audio) > sr * 30:  # >30 seconds
-        audio_eval = audio[len(audio)//2 - sr*15 : len(audio)//2 + sr*15]
-    else:
-        audio_eval = audio
-
-    S = np.abs(librosa.stft(audio_eval))
+    S = np.abs(librosa.stft(speech_sig))
     flatness = librosa.feature.spectral_flatness(S=S).mean()
 
-    fft = np.abs(np.fft.rfft(audio_eval))**2
-    freqs = np.fft.rfftfreq(len(audio_eval), 1/sr)
+    fft = np.abs(np.fft.rfft(speech_sig))**2
+    freqs = np.fft.rfftfreq(len(speech_sig), 1/sr)
     hf_energy = fft[(freqs > 2000) & (freqs < 6000)].sum()
     lf_energy = fft[freqs <= 2000].sum()
     hf_ratio = hf_energy / (lf_energy + 1e-9)
@@ -112,7 +111,6 @@ def classify_audio_quality(audio, sr=16000, snr_clean_thr=28, snr_light_thr=15, 
 
     if rms_db > -28 and snr_db < 28:
         return "noisy", snr_db, flatness, hf_ratio
-
     if snr_db < snr_light_thr:
         return "noisy", snr_db, flatness, hf_ratio
     elif hf_ratio < hf_ratio_thr or flatness < flatness_thr:
