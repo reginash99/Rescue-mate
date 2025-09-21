@@ -29,14 +29,9 @@ As stated in the requirements.txt file inside the project root folder (as well a
 
 
 Then, install all the packages listed in requirements.txt (located inside the project root folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26.
-Use the commands: 
+Use the command: 
 
-
-`pip install openai-whisper`
-
-`conda install fastapi uvicorn -c conda-forge -c pytorch -c nvidia`
-
-`conda install python-multipart packaging librosa pysoundfile pyyaml tensorboard pesq einops -c conda-forge -c pytorch -c nvidia`
+`conda install packaging librosa pysoundfile pyyaml tensorboard pesq einops -c conda-forge -c pytorch -c nvidia`
 
 
 Sometimes when installing them in a single command it may cause issues. If this happens, try to install them separately, for example: conda install python-multipart -c conda-forge -c pytorch -c nvidia, conda install packaging -c conda-forge -c pytorch -c nvidia etc.
@@ -70,6 +65,7 @@ conda list --explicit > env-backup.txt
 
 
 # Whisper
+Install using the command: `pip install openai-whisper`.
 After each check and subsequent filter combo is deemed appropriate, Whisper is used to transcribe. The transcription from whisper is used by several functions to calculate a score by using both average log probability and a multilingual sentence transformer model that validates how 'correct' it is and essentially how much sense it makes context wise. This score is then used to compare this script with the next one to determine which is best. In the end, only the best one is written/saved.
 
 Whisper is also fine tuned with parameters and a prompt in german (the prompt might still need work).
@@ -97,9 +93,9 @@ So far we have changed the way files are processed so that only the last added i
 In order for the api to work, you need to run these commands (all of these inside your conda environment): 
 
 
-conda install fastapi
-conda install uvicorn
-conda install python-multipart
+`conda install fastapi -c conda-forge -c pytorch -c nvidia`
+`conda install uvicorn -c conda-forge -c pytorch -c nvidia`
+`conda install python-multipart c conda-forge -c pytorch -c nvidia`
 
 
 This is how to start the backend server (run it on wsl ubuntu, inside the backend folder): uvicorn api_server:app --reload. 
