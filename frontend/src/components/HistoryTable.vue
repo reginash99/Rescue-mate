@@ -55,7 +55,7 @@
             <div class="modal-content">
             <button class="modal-close" @click="closeModal">×</button>
                 <div v-if="selectedItem">
-                    <p><strong>Transcription:</strong> {{ selectedItem.text }}</p>
+                    <p><strong>Transcription:</strong> {{ selectedItem.transcription }}</p>
                 </div>
             </div>
         </div>

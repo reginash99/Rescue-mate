@@ -5,22 +5,13 @@ import os
 dotenv.load_dotenv()
 
 
-DB_NAME=os.getenv("DB_NAME")
-DB_USER=os.getenv("DB_USER") 
-DB_PASSWORD=os.getenv("DB_PASSWORD")
-DB_HOST=os.getenv("DB_HOST")
-DB_PORT=os.getenv("DB_PORT")
-
-print("DB_NAME:", DB_NAME, "USER:", DB_USER, "HOST:", DB_HOST, "PORT:", DB_PORT)
-print("DB_NAME:", os.getenv("DB_NAME"), "USER:", os.getenv("DB_USER"), "HOST:", os.getenv("DB_HOST"), "PORT:",os.getenv("DB_PORT") )
-
 def insert_record(timestamp, transcription,status):
     with psycopg.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     ) as conn:
 
         with conn.cursor() as cur:
@@ -200,6 +191,8 @@ def insert_intermediate_record(transcription, column_index,id):
                     cur.execute("update transcription set mamba_bp_preemp_transcr = %s                  where id = %s", (transcription,id,))
                 case 5:
                     cur.execute("update transcription set mamba_bp_preemp_deepfilternet_transcrp = %s   where id = %s", (transcription,id,))
+                case 6:
+                    cur.execute("update transcription set bp_transcr = %s                               where id = %s", (transcription,id,))
                 case _:
                     print("No valid column index provided.")
                     return
@@ -234,6 +227,57 @@ def set_success_status(id,status):
             cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
 
             cur.execute("update transcription set successful_transcription = %s where id = %s", (status,id,))
+
+def add_audio_path(id, path, path_flag):
+     with psycopg.connect(
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
+    ) as conn:
+         with conn.cursor() as cur:
+            match path_flag:
+                case 0:
+                    cur.execute("update transcription set input_audio_path = %s where id = %s", (path,id,))
+                case 1:
+                    cur.execute("update transcription set output_audio_path = %s where id = %s", (path,id,))
+
+def select_intermediate_result(id, column_index):
+    with psycopg.connect(
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
+    ) as conn:
+
+        with conn.cursor() as cur:
+            table_name = 'transcription'
+            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
+            
+     
+            if cur.fetchone()[0]:
+                print("table exists")
+                match column_index:
+                    case 0:
+                        cur.execute("select final_transcription,successful_transcription from transcription where id = %s;", (id,))
+                    case 1:
+                        cur.execute("select raw_transcr,successful_transcription from transcription where id = %s;", (id,))
+                    case 2:
+                        cur.execute("select bp_preemp_transcr,successful_transcription from transcription where id = %s;", (id,))
+                    case 3:
+                        cur.execute("select mamba_bp_transcr,successful_transcription from transcription where id = %s;", (id,))
+                    case 4:
+                        cur.execute("select mamba_bp_preemp_transcr,successful_transcription from transcription where id = %s;", (id,))
+                    case 5:
+                        cur.execute("select mamba_bp_preemp_deepfilternet_transcrp,successful_transcription from transcription  where id = %s", (id,))
+                    case 6:
+                        cur.execute("select bp_transcr from transcription,successful_transcription                             where id = %s", (id,))
+                    case _:
+                        print("No valid column index provided.")
+                        return
+            return cur.fetchall()[0]
 #insert_record('2025-09-07 00:12:00', 'This is a test transcription.',False) # just a test that the inserting function works
 #delete_records()
 

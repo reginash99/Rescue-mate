@@ -15,6 +15,12 @@ from collections import Counter
 from snr_helpers import estimate_snr_vad, classify_audio_quality
 from helpers_and_filters import bandpass_filter, pre_emphasis, run_deepfilternet, str2bool, semamba_denoise_chunks, save_intermediate_transcript
 from transcription_comparison import cleanup_repetition, compare_and_update
+from db import insert_intermediate_record,set_success_status,add_audio_path
+import dotenv
+
+# Load environment variables for database connection
+dotenv.load_dotenv()
+
 
 h = None
 device = None 
@@ -55,6 +61,11 @@ def whisper_decode(model, audio_array, language=None):
 # ------------------------------
 
 def inference(args, device):
+
+    
+    # current id for database access
+    current_id = int(args.current_id)
+
     cfg = load_config(args.config)
     n_fft, hop_size, win_size = cfg['stft_cfg']['n_fft'], cfg['stft_cfg']['hop_size'], cfg['stft_cfg']['win_size']
     compress_factor = cfg['model_cfg']['compress_factor']
@@ -105,8 +116,14 @@ def inference(args, device):
         best_result["text"] = cleanup_repetition(best_result["text"])
         save_intermediate_transcript(base, stage, best_result)
         print(f"Stage RAW text: {best_result.get('text','').strip()}")
+
         #right now, here is where this transcription is saved at the 'output_transcriptions' folder in the backend as the raw trancript 
         # here is where the request to save it into the database will go and if it was succesfully sent, then flag is set to True
+
+        # Here is where we insert the raw transcript into the database
+        insert_intermediate_record(best_result["text"].strip(), 1,current_id)
+        if(best_result["text"]):
+            set_success_status(current_id, True)  
         
         quality, snr_db, flatness,hf_ratio = classify_audio_quality(best_audio, sr=sr)
 
@@ -130,6 +147,10 @@ def inference(args, device):
             best_audio = bp_audio
             #If we are here then we have applied bandpass filter only, then compared the old best_result transcript with the new bp_result transcript. The intermediate transcript is saved at the "output_transcriptions" folder in the backend as well
 
+            insert_intermediate_record(best_result["text"].strip(), 6,current_id)
+            if(best_result["text"]):
+                set_success_status(current_id, True)
+           
             # Here will be the code that saves the intermediate transcript to the database, if it was succesfully sent, then flag is set to True
         
          # ===== Stage 3: Band-pass + Pre-emphasis (conditional) =====
@@ -143,6 +164,10 @@ def inference(args, device):
             best_result = compare_and_update(best_result, pe_result, stage)
             best_audio = pe_audio
             #If we are here, then we have applied bandpass + pre-emphasis, and we (will) have another intermediate trancript that needs to be send to the backend as well, if it was succesfully sent, then flag is set to True
+
+            insert_intermediate_record(best_result["text"].strip(), 2,current_id)
+            if(best_result["text"]):
+                set_success_status(current_id, True)  
 
         # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
         elif quality == "noisy":  #run SEMamba only when noisy enough
@@ -196,6 +221,9 @@ def inference(args, device):
             best_result = compare_and_update(best_result, mamba_result, stage)
             best_audio = mamba_audio
             # here we have applied mamba+bandpass, and we have another intermediate transcript saved and have to send to the database as well, if it was succesfully sent, then flag is set to True
+            insert_intermediate_record(best_result["text"].strip(), 3,current_id)
+            if(best_result["text"]):
+                set_success_status(current_id, True)  
 
             if hf_ratio < 0.02:
                 print("Post-Mamba audio still muffled -> applying pre-emphasis.")
@@ -206,6 +234,10 @@ def inference(args, device):
                 best_result = compare_and_update(best_result, pe_result, stage)
                 best_audio = mamba_audio
                 # here we have applied mamba+bandpass+pre emphasis, and we have another intermediate transcript saved and have to send to the database as well, if it was succesfully sent, then flag is set to True.
+
+                insert_intermediate_record(best_result["text"].strip(), 4,current_id)
+                if(best_result["text"]):
+                    set_success_status(current_id, True)  
 
             # ===== Stage 5: DeepFilterNet (conditional) =====
             snr_post = estimate_snr_vad(best_audio, sr=16000)
@@ -229,6 +261,10 @@ def inference(args, device):
                 best_audio = dfn_audio
 
                 #here we have the final intermediate transcript, that will be sent to the database as well, if it was succesfully sent, then flag is set to True
+                insert_intermediate_record(best_result["text"].strip(), 5,current_id)
+                if(best_result["text"]):
+                    set_success_status(current_id, True)  
+                
                 os.remove(dfn_path)
 
         # Save final
@@ -238,7 +274,13 @@ def inference(args, device):
         best_result["text"] = cleanup_repetition(best_result["text"])
         save_intermediate_transcript(base, "final", best_result)
 
+        add_audio_path(current_id, final_wav_out,1) # 1 for output audio path
+
         #Here we need to send the final transript to the backend, if it was succesfully sent, then flag is set to True
+        # Here is where we insert the final transcript into the database
+        insert_intermediate_record(best_result["text"].strip(), 0,current_id)
+        if(best_result["text"]):
+            set_success_status(current_id, True) 
 
         print(f"\nFINAL TEXT   : {best_result.get('text','').strip()}")
         print(f"SAVED WAV    : {final_wav_out}")
@@ -254,6 +296,7 @@ def main():
     parser.add_argument('--checkpoint_file', required=True)
     parser.add_argument('--post_processing_PCS', type=str2bool, default=False)
     parser.add_argument('--file', type=str, default=None, help='Specific file to process')
+    parser.add_argument('--current_id', type=int, default=None, help='Current ID for database record')
     args = parser.parse_args()
 
     global device

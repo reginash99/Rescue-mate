@@ -6,7 +6,7 @@ import glob
 import datetime
 import uuid
 import json
-from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record,create_new_record, insert_intermediate_record,set_success_status
+from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record,create_new_record, add_audio_path
 import dotenv
 
 dotenv.load_dotenv()
@@ -54,12 +54,17 @@ async def upload_audio(file: UploadFile = File(...)):
 
     backend_dir = os.path.abspath(os.path.dirname(__file__))
 
+    # Initialize database with a new record to get an ID for intermediate updates
+    create_new_record()
+    current_id = str(get_latest_id())
+    add_audio_path(current_id, wav_location,0) # 0 for input audio path
+
     # Run the inference pipeline, passing the unique file as input
     # (You may need to modify pretrained.sh and inference.py to accept a specific file)
-    subprocess.run(["sh", "pretrained.sh", wav_filename], cwd=backend_dir, check=True)
+    subprocess.run(["sh", "pretrained.sh", wav_filename,current_id], cwd=backend_dir, check=True)
 
     # Find the latest JSON transcription
-    transcription_files = glob.glob("./output_transcriptions/*.json")
+    '''transcription_files = glob.glob("./output_transcriptions/*.json")
     latest_transcription = max(transcription_files, key=os.path.getmtime)
     with open(latest_transcription, "r", encoding="utf-8") as f:
         transcription_data = f.read()
@@ -70,12 +75,15 @@ async def upload_audio(file: UploadFile = File(...)):
     # Insert record into the database
     insert_record(transcription_data_json['timestamp'], transcription_data_json['text'], flag_status)
     #insert_record(datetime.datetime.now(), transcription_data_json['text'])
-    current_id = get_id(transcription_data_json['timestamp'], transcription_data_json['text'],flag_status)
+    current_id = get_id(transcription_data_json['timestamp'], transcription_data_json['text'],flag_status)'''
 
     # delete all records older that 24 hours
-    delete_records()
+    #delete_records()
+    
+    json_data = select_record(current_id)
+    print(json_data)
 
-    return JSONResponse(content={"transcription": transcription_data_json})
+    return JSONResponse(content={"transcription": json_data})
 
 @app.get("/get-history/")
 async def get_history(): 
@@ -103,10 +111,8 @@ async def placeholder_recording():
     transcription_data_json['status'] = flag_status
     transcription_data_json['id'] = current_id
     print(transcription_data_json)'''
-    create_new_record()
+    
     latest_id = get_latest_id()
-    insert_intermediate_record("Hallo Alex",0,latest_id)
-    set_success_status(latest_id,True)
     json_data = select_record(latest_id)
     print(json_data)
 

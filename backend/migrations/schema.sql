@@ -9,6 +9,9 @@ CREATE TABLE transcription (
     bp_preemp_transcr text,
     mamba_bp_transcr text,
     mamba_bp_preemp_transcr text,
-    mamba_bp_preemp_deepfilternet_transcrp text
+    mamba_bp_preemp_deepfilternet_transcr text,
+    bp_transcr text,
+    input_audio_path text,
+    output_audio_path text
 );
 
