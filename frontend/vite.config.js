@@ -7,17 +7,21 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
-  server: {
-    proxy: {
-      // FastAPI endpoints
-      '/geocode': {
-        target: 'http://127.0.0.1:8001',
-        changeOrigin: true,
-      },
-      '/transcribe-audio': {
-        target: 'http://127.0.0.1:8001',
-        changeOrigin: true,
-      },
+server: {
+  proxy: {
+    '^/transcribe-audio/?$': {
+      target: 'http://127.0.0.1:8000',   // or 8001 if that’s your backend
+      changeOrigin: true,
+    },
+    '^/geocode/?$': {
+      target: 'http://127.0.0.1:8000',
+      changeOrigin: true,
     },
   },
+},
+
+
+
 })
+
+

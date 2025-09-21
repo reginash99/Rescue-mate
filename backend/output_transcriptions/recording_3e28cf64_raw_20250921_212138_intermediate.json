@@ -1,0 +1,32 @@
+{
+  "text": "Mota.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.44,
+      "end": 2.84,
+      "text": " Mota.",
+      "tokens": [
+        50364,
+        376,
+        5377,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.9537370204925537,
+      "compression_ratio": 0.38461538461538464,
+      "no_speech_prob": 0.17323236167430878,
+      "words": [
+        {
+          "word": " Mota.",
+          "start": 1.44,
+          "end": 2.84,
+          "probability": 0.6592047065496445
+        }
+      ]
+    }
+  ],
+  "language": "pl"
+}

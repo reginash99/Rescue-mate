@@ -1,116 +1,112 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException  # + HTTPException
-from fastapi.responses import FileResponse, JSONResponse
-import os
-import subprocess
-import glob
-import datetime
-import uuid
-from pydantic import BaseModel
+# backend/api_server.py
+
+import os, re, glob, uuid, subprocess, traceback
 from typing import List, Set, Optional
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import httpx
-import re
 
-UPLOAD_DIR = "./input_audio/"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-
+# --- create app FIRST ---
 app = FastAPI()
 
-from fastapi.middleware.cors import CORSMiddleware
-
+# --- CORS (optional if you proxy through Vite) ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-def convert_webm_to_wav(webm_path, wav_path):
-    subprocess.run([
-        "ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path
-    ], check=True)
+# --- Paths & helpers ---
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_DIR = os.path.join(BASE_DIR, "input_audio")
+OUTPUT_DIR = os.path.join(BASE_DIR, "output_transcriptions")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+def run(cmd, cwd=None):
+    p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    if p.returncode != 0:
+        raise RuntimeError(
+            f"Command failed: {' '.join(cmd)}\nstdout:\n{p.stdout}\nstderr:\n{p.stderr}"
+        )
+    return p
+
+def convert_webm_to_wav(webm_path, wav_path):
+    run(["ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path])
+
+# --- Routes (after app exists) ---
+@app.post("/transcribe-audio")
 @app.post("/transcribe-audio/")
 async def upload_audio(file: UploadFile = File(...)):
-     # Generate a unique filename
-    #timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    unique_id = uuid.uuid4().hex[:8]
-    base, ext = os.path.splitext(file.filename)
-    unique_filename = f"{base}_{unique_id}{ext}"
-    file_location = os.path.join(UPLOAD_DIR, unique_filename)
+    try:
+        unique_id = uuid.uuid4().hex[:8]
+        base, ext = os.path.splitext(file.filename or "audio.webm")
+        ext = ext or ".webm"
+        webm_name = f"{base}_{unique_id}{ext}"
+        webm_path = os.path.join(UPLOAD_DIR, webm_name)
 
-    with open(file_location, "wb") as f:
-        f.write(await file.read())
+        with open(webm_path, "wb") as f:
+            f.write(await file.read())
 
-    # Convert to WAV if needed
-    base, _ = os.path.splitext(unique_filename)
-    wav_filename = f"{base}.wav"
-    wav_location = os.path.join(UPLOAD_DIR, wav_filename)
-    convert_webm_to_wav(file_location, wav_location)
+        wav_name = f"{base}_{unique_id}.wav"
+        wav_path = os.path.join(UPLOAD_DIR, wav_name)
+        convert_webm_to_wav(webm_path, wav_path)
+        os.remove(webm_path)
 
-    os.remove(file_location)
+        run(["sh", "pretrained.sh", wav_name], cwd=BASE_DIR)
 
-    backend_dir = os.path.abspath(os.path.dirname(__file__))
+        files = glob.glob(os.path.join(OUTPUT_DIR, "*.json"))
+        if not files:
+            raise RuntimeError(f"No transcription JSON produced in {OUTPUT_DIR}")
+        latest = max(files, key=os.path.getmtime)
+        with open(latest, "r", encoding="utf-8") as f:
+            transcription_data = f.read()
 
-    # Run the inference pipeline, passing the unique file as input
-    # (You may need to modify pretrained.sh and inference.py to accept a specific file)
-    subprocess.run(["sh", "pretrained.sh", wav_filename], cwd=backend_dir, check=True)
+        return JSONResponse(content={"transcription": transcription_data})
 
-    # Find the latest JSON transcription
-    transcription_files = glob.glob("./output_transcriptions/*.json")
-    latest_transcription = max(transcription_files, key=os.path.getmtime)
-    with open(latest_transcription, "r", encoding="utf-8") as f:
-        transcription_data = f.read()
+    except Exception as e:
+        print("UPLOAD ERROR:", e, "\n", traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
 
-    return JSONResponse(content={"transcription": transcription_data})
-
-
-
-# @app.get("/get-audio/{filename}")
-# async def get_audio(filename: str):
-#     file_path = os.path.join(UPLOAD_DIR, filename)
-#     if not os.path.exists(file_path):
-#         return {"error": "File not found"}
-#     return FileResponse(file_path)
-
-# ---------- Hamburg geocoding helpers ----------
-
+# ---------- Geocoding ----------
 HAMBURG_VIEWBOX = dict(left=8.4, top=53.95, right=10.5, bottom=53.3)
-
-# Basic German street/POI extraction. Improve later if needed.
 poi_list = [
-    'Elbphilharmonie','Miniatur Wunderland','HafenCity','Landungsbrücken',
-    'Schanzenviertel','St. Pauli','Reeperbahn','Planten un Blomen','Altona',
-    'Hauptbahnhof','Dammtor','Jungfernstieg','Binnenalster','Außenalster',
-    'Rathausmarkt','Speicherstadt','Fischmarkt','Eppendorf','Winterhude'
+    "Elbphilharmonie","Miniatur Wunderland","HafenCity","Landungsbrücken",
+    "Schanzenviertel","St. Pauli","Reeperbahn","Planten un Blomen","Altona",
+    "Hauptbahnhof","Dammtor","Jungfernstieg","Binnenalster","Außenalster",
+    "Rathausmarkt","Speicherstadt","Fischmarkt","Eppendorf","Winterhude",
 ]
-
 street_regex = re.compile(
-    r'\b([A-ZÄÖÜ][a-zäöüß]+(?:[ -][A-ZÄÖÜ][a-zäöüß]+)*\s(?:Straße|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer))\s*(\d+[a-zA-Z]?)?\b'
+    r"\b([A-ZÄÖÜ][a-zäöüß]+(?:[ -][A-ZÄÖÜ][a-zäöüß]+)*\s(?:Straße|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer))\s*(\d+[a-zA-Z]?)?\b"
 )
-plz_regex = re.compile(r'\b(20\d{3}|21\d{3}|22\d{3})\s*Hamburg\b', re.I)
+suffixless_number_regex = re.compile(
+    r"\b([A-ZÄÖÜ][\wÄÖÜäöüß]+(?:[ -][A-ZÄÖÜ][\wÄÖÜäöüß]+){0,3})\s+(\d+[a-zA-Z]?)\b"
+)
+plz_regex = re.compile(r"\b(20\d{3}|21\d{3}|22\d{3})\s*Hamburg\b", re.I)
 
 def extract_candidates(text: str) -> List[str]:
     if not text:
         return []
     cands: Set[str] = set()
 
-    if re.search(r'\bHamburg\b', text, re.I):
-        cands.add('Hamburg')
-
+    if re.search(r"\bHamburg\b", text, re.I):
+        cands.add("Hamburg")
     for m in street_regex.finditer(text):
-        street = ' '.join(filter(None, [m.group(1), m.group(2)]))
+        street = " ".join(filter(None, [m.group(1), m.group(2)]))
         cands.add(street)
-
+    for m in suffixless_number_regex.finditer(text):
+        name = m.group(1)
+        cands.add(f"{name} {m.group(2)}")
     for poi in poi_list:
-        if re.search(rf'\b{re.escape(poi)}\b', text, re.I):
+        if re.search(rf"\b{re.escape(poi)}\b", text, re.I):
             cands.add(poi)
-
     m = plz_regex.search(text)
     if m:
         cands.add(m.group(0))
-
     return list(cands)
 
 async def geocode_one(query: str) -> Optional[dict]:
@@ -143,7 +139,7 @@ class GeocodeIn(BaseModel):
     texts: Optional[List[str]] = None
 
 @app.post("/geocode")
-async def geocode(payload: GeocodeIn):
+async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
     texts = payload.texts if payload.texts else ([payload.text] if payload.text else [])
     if not texts:
         raise HTTPException(status_code=400, detail="Provide `text` or `texts`.")
@@ -153,14 +149,18 @@ async def geocode(payload: GeocodeIn):
         for c in extract_candidates(t or ""):
             candidates.add(c)
 
-    markers: List[dict] = []
+    markers, dbg = [], []
     for cand in candidates:
         try:
             hit = await geocode_one(cand)
+            dbg.append({"candidate": cand, "hit": bool(hit)})
             if hit:
                 markers.append(hit)
-        except Exception:
-            # swallow individual failures (you can log if you want)
-            pass
+        except Exception as e:
+            dbg.append({"candidate": cand, "error": str(e)})
 
-    return {"markers": markers, "meta": {"candidates": list(candidates), "count": len(markers)}}
+    resp = {"markers": markers, "meta": {"candidates": list(candidates), "count": len(markers)}}
+    if debug:
+        resp["debug"] = dbg
+    return resp
+

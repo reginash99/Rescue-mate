@@ -7,3 +7,5 @@ export async function geocodeTranscription(text) {
   if (!res.ok) throw new Error(`Geocode failed: ${res.status}`)
   return res.json()
 }
+
+

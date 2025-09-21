@@ -1,0 +1,36 @@
+{
+  "text": "Rettungseinsätzen.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 0.92,
+      "text": " Rettungseinsätzen.",
+      "tokens": [
+        50364,
+        497,
+        3093,
+        1063,
+        405,
+        1292,
+        45721,
+        13,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.9600391387939453,
+      "compression_ratio": 0.7037037037037037,
+      "no_speech_prob": 0.9105075597763062,
+      "words": [
+        {
+          "word": " Rettungseinsätzen.",
+          "start": 0.0,
+          "end": 0.92,
+          "probability": 0.0005981422772170694
+        }
+      ]
+    }
+  ],
+  "language": "en"
+}

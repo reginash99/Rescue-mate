@@ -1,0 +1,84 @@
+{
+  "text": "Ich bin in der Hebebrandstraß 2 in Hamburg.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.1199999999999994,
+      "end": 4.46,
+      "text": " Ich bin in der Hebebrandstraß 2 in Hamburg.",
+      "tokens": [
+        50364,
+        3141,
+        5171,
+        294,
+        1163,
+        634,
+        650,
+        30476,
+        19639,
+        2536,
+        568,
+        294,
+        34118,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.3409237265586853,
+      "compression_ratio": 0.9166666666666666,
+      "no_speech_prob": 0.010974370874464512,
+      "words": [
+        {
+          "word": " Ich",
+          "start": 1.1199999999999994,
+          "end": 1.84,
+          "probability": 0.8674662113189697
+        },
+        {
+          "word": " bin",
+          "start": 1.84,
+          "end": 2.02,
+          "probability": 0.9931573271751404
+        },
+        {
+          "word": " in",
+          "start": 2.02,
+          "end": 2.18,
+          "probability": 0.9725772142410278
+        },
+        {
+          "word": " der",
+          "start": 2.18,
+          "end": 2.32,
+          "probability": 0.957110583782196
+        },
+        {
+          "word": " Hebebrandstraß",
+          "start": 2.32,
+          "end": 3.36,
+          "probability": 0.6498232901096344
+        },
+        {
+          "word": " 2",
+          "start": 3.36,
+          "end": 3.78,
+          "probability": 0.8731099963188171
+        },
+        {
+          "word": " in",
+          "start": 3.78,
+          "end": 4.1,
+          "probability": 0.869259774684906
+        },
+        {
+          "word": " Hamburg.",
+          "start": 4.1,
+          "end": 4.46,
+          "probability": 0.9990050196647644
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}
