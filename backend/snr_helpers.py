@@ -4,16 +4,14 @@ import webrtcvad
 
 #signal-to-noise ratio estimation to determine if audio is clean enough
 def estimate_snr(audio, frame_length=2048, hop_length=512):
-    # Calculate short-term energy
     energies = np.array([
         np.sum(audio[i:i+frame_length]**2)
         for i in range(0, len(audio)-frame_length, hop_length)
     ])
     n = len(energies)
     if n < 10:
-        return 0  # Not enough data
+        return 0
 
-    # Use lowest 10% as noise, highest 10% as signal
     n10 = max(1, int(0.1 * n))
     sorted_indices = np.argsort(energies)
     noise_indices = sorted_indices[:n10]
@@ -36,8 +34,7 @@ def estimate_snr(audio, frame_length=2048, hop_length=512):
 #using a VAD (voice activity detector) to separate speech and noise (for best results, but more complex)
 #reject very quiet frames (likely noise)
 #reject hiss-only frames (low spectral centroid)
-def estimate_snr_vad(audio, sr=16000, frame_ms=30, vad_level=2,
-                     min_speech_db=-45, min_centroid_hz=150):
+def estimate_snr_vad(audio, sr=16000, frame_ms=30, vad_level=2, min_speech_db=-45, min_centroid_hz=150):
     
     audio_pcm = (audio * 32767).astype(np.int16)
     vad = webrtcvad.Vad(vad_level)  # 0-3, 3 = most aggressive
@@ -56,11 +53,9 @@ def estimate_snr_vad(audio, sr=16000, frame_ms=30, vad_level=2,
 
         is_speech = vad.is_speech(frame.tobytes(), sr)
 
-        # Convert back to float for extra checks
         frame_f = frame.astype(np.float32) / 32767.0
         rms_db = 20 * np.log10(np.sqrt(np.mean(frame_f**2)) + 1e-9)
 
-        # quick spectrum check
         S = np.abs(np.fft.rfft(frame_f * np.hanning(len(frame_f))))
         freqs = np.fft.rfftfreq(len(frame_f), 1/sr)
         centroid = np.sum(freqs * S) / (np.sum(S) + 1e-9)
@@ -85,7 +80,7 @@ def estimate_snr_vad(audio, sr=16000, frame_ms=30, vad_level=2,
 
 
 #Decide if audio is clean, moderate, noisy, or muffled using SNR + spectral cues.
-def classify_audio_quality(audio, sr=16000, snr_clean_thr=30, snr_light_thr=15, flatness_thr=0.07, hf_ratio_thr=0.012):
+def classify_audio_quality(audio, sr=16000, snr_clean_thr=28, snr_light_thr=15, flatness_thr=0.01, hf_ratio_thr=0.012):
     if np.max(np.abs(audio)) < 1e-4:
         return "silent", 0, 0, 0
 
@@ -115,7 +110,7 @@ def classify_audio_quality(audio, sr=16000, snr_clean_thr=30, snr_light_thr=15, 
     print(f"[AUDIO METRICS] SNR={snr_db:.2f} dB, flatness={flatness:.4f}, "
           f"HF ratio={hf_ratio:.4f}, RMS={rms_db:.1f} dBFS")
 
-    if rms_db > -30 and snr_db < 30:
+    if rms_db > -28 and snr_db < 28:
         return "noisy", snr_db, flatness, hf_ratio
 
     if snr_db < snr_light_thr:

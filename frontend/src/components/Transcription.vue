@@ -7,36 +7,42 @@
         </svg>
     </button>
     <div class="transcription">
-      <div v-if="data">
-        <!-- Displaying the transcription text if not empty -->
-        <p v-if="data['transcription'] && data['status']">{{ data["transcription"] }}</p>
-        <!-- Displaying the following string otherwise -->
-        <p v-else>No transcription available.</p>
-      </div>
-      <!-- Busy overlay -->
+      <div :class="['transcription-text', { shrunk: panelOpen }]">
+        <div v-if="data">
+          <p v-if="data['transcription'] && data['status']">{{ data["transcription"] }}</p>
+          <p v-else><i>No transcription available.</i></p>
+        </div>
+        <div v-else>
+          <p><i>Press the record button to transcribe your audio</i></p>
+        </div>
         <div v-if="status" class="overlay">
           <div class="spinner"></div>
           <div class="overlay-text">Processing…</div>
         </div>
       </div>
       <div class="side-panel" v-if="panelOpen">
-        <div v-if="data && data['text'] && data['text'].trim() !== ''"">
-          <p>Updated transcription...</p>
+        <div v-if="data">
+          <div v-if="data['text'] && data['text'].trim() !== ''">
+            <p><i>No updates available</i></p>
+          </div>
         </div>
         <div v-else>
-          <p>No updates available</p>
+          <p><i>No updates available</i></p>
         </div>
       </div>
-    
-    <button class="btn floating-btn" @click="panelOpen = !panelOpen">
-      <img src="./media/notification.png"></img>
-      <span>!</span>
-    </button>
+      <button class="btn floating-btn" @click="panelOpen = !panelOpen">
+        <img src="./media/notification.png"></img>
+        <span v-if="!panelOpen">!</span>
+      </button>
+    </div>
+    <!-- <div class="updates" v-if="panelOpen">
+      <p>Showing update for transcript...</p>
+    </div> -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-content">
         <button class="modal-close" @click="closeModal">×</button>
         <h4>Information</h4>
-        <p>The transiption displayed initialy is raw. After further processing, the transciption will be updated if its quality is better than the raw transcription. In case of an update, the bell button in the bottom right corner of the transcription will have a red alert bubble and can be clicked on to display this. </p>
+          <p>The transcription displayed initially is raw. After further processing, the transcription will be updated if its quality is better than the raw transcription. If an update is available, the bell button in the bottom right corner of the transcription will show a red alert bubble and can be clicked to display the updated transcription.</p>
       </div>
     </div>
   </div>
@@ -114,8 +120,8 @@ function closeModal() {
 /* Floating Button */
 .floating-btn {
   position: absolute;
-  bottom: 25px;
-  right: 30px;
+  bottom: 10px;
+  right: 10px;
   width: auto;
   height: 50px;
   border-radius: 50%;
@@ -127,7 +133,6 @@ function closeModal() {
   align-items: center;
   justify-content: center;
   font-size: 22px;
-  cursor: pointer;
   z-index: 10;
   transition: background 0.2s, box-shadow 0.2s;
   text-decoration: none;
@@ -155,6 +160,25 @@ function closeModal() {
 .floating-btn img {
   width: 27px;
   height: 27px;
+}
+
+/* Updates caption */
+.updates {
+  position: relative;
+  left: 20px;
+  margin-top: -5px;
+  margin-bottom: -12px;
+  opacity: 0;
+  animation: fadeInCaption 0.5s cubic-bezier(.77,0,.18,1) forwards;
+}
+
+@keyframes fadeInCaption {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Processing Buffer */
@@ -195,6 +219,7 @@ function closeModal() {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
 
 /* Side Panel */
 .side-panel {

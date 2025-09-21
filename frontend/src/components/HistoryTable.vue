@@ -8,10 +8,27 @@
                         <th>ID</th>
                         <th>Time</th>
                         <th>Status</th>
-                        <th></th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- <tr>
+                        <td>01</td>
+                        <td>10.12.32 34:12:20</td>
+                        <td>
+                            <div class="sent">
+                                Success
+                                <i class="fa fa-check-circle"></i>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn-view" @click="openModal(item)">
+                                <span class="eye-icon">
+                                    <i class="fa fa-eye"></i>View
+                                </span>
+                            </button>
+                       </td>
+                    </tr> -->
                     <tr v-for="(item, idx) in history" :key="idx">
                         <td>{{ item.id}}</td>
                         <td>{{ item.timestamp }}</td>
@@ -23,7 +40,11 @@
                             </div>
                         </td>
                        <td>
-                        <button @click="openModal(item)">View</button>
+                        <button class="btn-view" @click="openModal(item)">
+                            <span class="eye-icon">
+                                <i class="fa fa-eye"></i>View
+                            </span>
+                        </button>
                        </td>
                     </tr>
                 </tbody>
@@ -120,7 +141,7 @@ h1 {
 }
 
 .table_component td {
-    padding: 5px;
+    padding: 7px;
     font-size: large;
 }
 
@@ -160,6 +181,8 @@ h1 {
   border-bottom-right-radius: 18px;
 }
 
+/* Status */
+
 .sent {
     i{
         color: #34A853;
@@ -168,7 +191,7 @@ h1 {
     align-items: center;
     background-color: #D9FFC4;
     color: #1D6700;
-    padding: 1px 5px;
+    padding: 3px 5px;
     border-radius: 6px;
 }
 
@@ -180,8 +203,24 @@ h1 {
     align-items: center;
     background-color: #FFC4C4;
     color: #670000;
-    padding: 1px 5px;
+    padding: 3px 5px;
     border-radius: 6px;
+}
+
+/* View button */
+.btn-view {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    box-shadow: 0 4px 4px var(--shadow-color);
+    padding: 4px 12px;
+    border-radius: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.eye-icon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* Modal View */
@@ -204,13 +243,12 @@ h1 {
     overflow-x: auto;
     background: var(--color-background);
     border-radius: 12px;
-    padding: 32px 24px 24px 24px;
+    padding: 32px 24px 10px 24px;
     width: 70%;
     min-width: 250px;
     max-width: 500px;
-    height: 70%;
+    height: auto;
     max-height: 400px;
-    min-height: 250px;
     box-shadow: 0 8px 32px var(--shadow-color);
     position: relative;
     font-size: larger;
@@ -218,7 +256,7 @@ h1 {
 
 .modal-close {
     position: absolute;
-    top: 12px;
+    top: 0px;
     right: 16px;
     background: none;
     border: none;
