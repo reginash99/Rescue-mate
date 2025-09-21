@@ -5,11 +5,14 @@ from sentence_transformers import SentenceTransformer, util
 
 semantic_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
+# ------------------------------
+# Transcript cleanup
+# ------------------------------
+
 def semantic_similarity(text1, text2):
     emb1 = semantic_model.encode(text1, convert_to_tensor=True)
     emb2 = semantic_model.encode(text2, convert_to_tensor=True)
     return float(util.cos_sim(emb1, emb2))
-
 
 #Return a penalty if text is highly repetitive
 def repetition_score(text: str, max_ngram=4) -> float:
@@ -143,6 +146,7 @@ def compare_and_update(old_result, new_result, stage_name, semantic_weight=2.0):
     if looks_like_nonsense(new_clean):
             print(f"[COMPARE] {stage_name}: new transcript looks like nonsense, rejecting.\n")
             old_result["text"] = old_clean
+            old_result["text"]= cleanup_repetition(old_result["text"])
             return old_result
 
     sim = semantic_similarity(new_clean, old_clean)
@@ -162,8 +166,10 @@ def compare_and_update(old_result, new_result, stage_name, semantic_weight=2.0):
     if combined_new > combined_old:
         print("→ New transcript is better, replacing old one.\n")
         new_result["text"] = new_clean
+        new_result["text"]= cleanup_repetition(new_result["text"])
         return new_result
     else:
         print("→ Old transcript is better, keeping it.\n")
         old_result["text"] = old_clean
+        old_result["text"]= cleanup_repetition(old_result["text"])
         return old_result
