@@ -1,34 +1,50 @@
+
 <template>
   <div class="grid-container">
     <div class="grid-item record">
-        <Record @transcription="handleData" @waitingForRecording ="indicateRecordingStatus"/>
-      </div>
+      <Record @transcription="handleData" @waitingForRecording="indicateRecordingStatus" />
+    </div>
+
     <div class="grid-item transcript">
-      <Transcription :data="transcriptionData" :status="waitingForRecording"/>
+      <!-- Listen for markers-found from Transcription -->
+      <Transcription
+        :data="transcriptionData"
+        :status="waitingForRecording"
+        @markers-found="onMarkersFound"
+      />
     </div>
+
     <div class="grid-item history">
-      <HistoryTable :history="history"/>
+      <HistoryTable :history="history" />
     </div>
+
     <div class="grid-item map">
-      <Map/>
+      <!-- Pass markers down to Map -->
+      <Map :markers="markers" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
 import Transcription from "../src/components/Transcription.vue";
 import HistoryTable from "./components/HistoryTable.vue";
 import Map from "./components/Map.vue";
 import Record from "./components/Record.vue";
 
 const transcriptionData = ref(null);
-const history = ref([])
+const history = ref([]);
 const waitingForRecording = ref(false);
 
+// NEW: markers state
+const markers = ref([]);
+
+// NEW: handler receives markers from Transcription
+function onMarkersFound(m) {
+  markers.value = Array.isArray(m) ? m : [];
+}
+
 function indicateRecordingStatus(status) {
-  // This function can be used to indicate the recording status
-  // In this case, if the recording is processing or done processing
   waitingForRecording.value = !!status;
 }
 
@@ -37,17 +53,40 @@ function handleData(data) {
   // It sends the transcription to the Transcription component
   // and pushes it to the HistoryTable component as a new entry
   sendTranscription(data)
-  addHistoryEntry(data)
+  addHistoryEntry()
 }
 
 function sendTranscription(data) {
-  transcriptionData.value = data
+  transcriptionData.value = data;
 }
 
-function addHistoryEntry(data) {
-  history.value.push(data)
+async function addHistoryEntry() {
+  await get_records()
+}
+
+onMounted(async() =>
+{
+    await get_records()
+}
+)
+
+async function get_records() {
+    try {
+    const response = await fetch('http://localhost:8000/get-history')
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    const result = await response.json()
+   
+    history.value = result.history
+
+  } catch (error) {
+    console.error('Fetch error:', error)
+  }
 }
 </script>
+
+
 
 <style>
 

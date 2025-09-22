@@ -119,3 +119,6 @@ backend/.ogg
 backend/results_with_different_filters/
 backend/finetune_whisper_attempt/training_dataset/
 backend/finetune_whisper_attempt/my-whisper-small-finetuned/
+
+# Database specific
+backend/.env

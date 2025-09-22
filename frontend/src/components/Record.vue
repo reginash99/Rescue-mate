@@ -144,7 +144,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { defineEmits } from 'vue'
 
 const emit = defineEmits(['transcription', 'waitingForRecording'])
 const isRecording = ref(false)
@@ -221,10 +220,7 @@ async function sendAudioToBackend(file) {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch('http://localhost:8000/transcribe-audio/', {
-    method: 'POST',
-    body: formData
-  });
+  const response = await fetch('/transcribe-audio', { method:'POST', body: formData });
 
   if (!response.ok) {
     throw new Error('Failed to get transcription');
@@ -248,12 +244,14 @@ async function sentAudio() {
     const backend_response = await sendAudioToBackend(file);
 
     console.log("Transcription received: ", backend_response);
-    const parsed_transcription = JSON.parse(backend_response)
+    const parsed_transcription = backend_response//JSON.parse(backend_response)
 
-    // Putting transcription and timestamp into an object to emit
+    // Putting transcription, timestamp and status into an object to emit
     const transcription = {
-      text: parsed_transcription['text'],
-      timestamp: parsed_transcription['timestamp']
+      transcription: parsed_transcription['transcription'], //transciption instead of text - to be consistent with db
+      timestamp: parsed_transcription['timestamp'],
+      status: parsed_transcription['status'],
+      id: parsed_transcription['id']
     }
     emit('transcription', transcription)
     emit('waitingForRecording', false)

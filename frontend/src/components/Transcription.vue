@@ -9,7 +9,7 @@
     <div class="transcription">
       <div :class="['transcription-text', { shrunk: panelOpen }]">
         <div v-if="data">
-          <p v-if="data['text'] && data['text'].trim() !== ''">{{ data["text"] }}</p>
+          <p v-if="data['transcription'] && data['status']">{{ data["transcription"] }}</p>
           <p v-else><i>No transcription available.</i></p>
         </div>
         <div v-else>
@@ -49,24 +49,43 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { geocodeTranscription } from '@/composables/useGeocode.js'
 
 const props = defineProps({
   data: Object,
   status: { type: Boolean, default: false },
 })
+const emit = defineEmits(['markers-found'])
 
 const panelOpen = ref(false)
 const showModal = ref(false)
+const isGeocoding = ref(false)
+const markers = ref([])
 
-function openModal() {
-  showModal.value = true
-}
+watch(() => props.data?.transcription, async (newText) => {
+  markers.value = []
+  if (!newText || !newText.trim()) {
+    emit('markers-found', [])
+    return
+  }
+  try {
+    isGeocoding.value = true
+    const { markers: m } = await geocodeTranscription(newText)
+    markers.value = m || []
+    emit('markers-found', markers.value)
+  } catch (e) {
+    console.error(e)
+    emit('markers-found', [])
+  } finally {
+    isGeocoding.value = false
+  }
+})
 
-function closeModal() {
-  showModal.value = false
-}
+function openModal() { showModal.value = true }
+function closeModal() { showModal.value = false }
 </script>
+
 
 <style scoped>
 

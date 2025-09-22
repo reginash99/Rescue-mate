@@ -30,16 +30,13 @@
                        </td>
                     </tr> -->
                     <tr v-for="(item, idx) in history" :key="idx">
+                        <td>{{ item.id}}</td>
+                        <td>{{ item.timestamp }}</td>
                         <td>
-                            {{ idx + 1 }}
-                        </td>
-                        <td>
-                            {{ item.timestamp ? formatTimestamp(item.timestamp) : item.timestamp }}
-                        </td>
-                        <td>
-                            <div :class="item.text && item.text.trim() !== '' ? 'sent' : 'fail'">
-                                {{ item.text && item.text.trim() !== '' ? 'Success' : 'Failed' }}
-                                <i :class="item.text && item.text.trim() !== '' ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
+                            <!-- Success/sent if string is not empty, fail if string is empty -->
+                            <div :class="item.status ? 'sent' : 'fail'">
+                                {{ item.status ? 'Success' : 'Failed' }}
+                                <i :class="item.status  ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                             </div>
                         </td>
                        <td>
@@ -58,7 +55,7 @@
             <div class="modal-content">
             <button class="modal-close" @click="closeModal">×</button>
                 <div v-if="selectedItem">
-                    <p><strong>Transcription:</strong> {{ selectedItem.text }}</p>
+                    <p><strong>Transcription:</strong> {{ selectedItem.transcription }}</p>
                 </div>
             </div>
         </div>
@@ -66,7 +63,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted,ref } from 'vue';
+
 
 defineProps({
   history: {
@@ -75,19 +73,9 @@ defineProps({
   }
 })
 
-const showModal = ref(false)
-const selectedItem = ref(null)
 
-function openModal(item) {
-  selectedItem.value = item
-  showModal.value = true
-}
 
-function closeModal() {
-  showModal.value = false
-  selectedItem.value = null
-}
-// TODO: Remove??
+
 function formatTimestamp(ts) {
   if (!ts || ts.length < 15) return ts || '';
   // Example: "20250810_145850"
@@ -99,6 +87,7 @@ function formatTimestamp(ts) {
   const second = ts.slice(13, 15);
   return `${day}/${month}/${year}  ${hour}:${minute}:${second}`;
 }
+
 </script>
 
 <style scoped>
