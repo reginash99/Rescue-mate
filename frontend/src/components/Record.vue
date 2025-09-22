@@ -144,7 +144,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { defineEmits } from 'vue'
 
 const emit = defineEmits(['transcription', 'waitingForRecording'])
 const isRecording = ref(false)
@@ -221,10 +220,7 @@ async function sendAudioToBackend(file) {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch('http://localhost:8000/transcribe-audio/', {
-    method: 'POST',
-    body: formData
-  });
+  const response = await fetch('/transcribe-audio', { method:'POST', body: formData });
 
   if (!response.ok) {
     throw new Error('Failed to get transcription');
