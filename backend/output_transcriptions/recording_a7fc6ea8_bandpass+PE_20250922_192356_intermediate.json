@@ -1,0 +1,43 @@
+{
+  "text": " Kur-Fürstenstraße.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 3.68,
+      "text": " Kur-Fürstenstraße.",
+      "tokens": [
+        50364,
+        16481,
+        12,
+        37,
+        1655,
+        6266,
+        19639,
+        11451,
+        13,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.6308989524841309,
+      "compression_ratio": 0.7142857142857143,
+      "no_speech_prob": 0.01740744709968567,
+      "words": [
+        {
+          "word": " Kur",
+          "start": 0.0,
+          "end": 2.0,
+          "probability": 0.7632285356521606
+        },
+        {
+          "word": "-Fürstenstraße.",
+          "start": 2.0,
+          "end": 3.68,
+          "probability": 0.6381650095184644
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

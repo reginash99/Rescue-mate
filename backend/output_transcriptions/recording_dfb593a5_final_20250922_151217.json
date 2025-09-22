@@ -1,0 +1,105 @@
+{
+  "text": "Wenn ich das richtig jetzt verstanden habe, dann würde das bedeuten.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.1199999999999997,
+      "end": 6.1,
+      "text": " Wenn ich das richtig jetzt verstanden habe, dann würde das bedeuten...",
+      "tokens": [
+        50364,
+        7899,
+        1893,
+        1482,
+        13129,
+        4354,
+        1306,
+        33946,
+        6015,
+        11,
+        3594,
+        11942,
+        1482,
+        22466,
+        7886,
+        485,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.34282880359225804,
+      "compression_ratio": 0.9726027397260274,
+      "no_speech_prob": 0.21050229668617249,
+      "words": [
+        {
+          "word": " Wenn",
+          "start": 1.1199999999999997,
+          "end": 1.7599999999999998,
+          "probability": 0.24966618418693542
+        },
+        {
+          "word": " ich",
+          "start": 1.7599999999999998,
+          "end": 2.4,
+          "probability": 0.9816816449165344
+        },
+        {
+          "word": " das",
+          "start": 2.4,
+          "end": 2.52,
+          "probability": 0.787306547164917
+        },
+        {
+          "word": " richtig",
+          "start": 2.52,
+          "end": 2.72,
+          "probability": 0.913316547870636
+        },
+        {
+          "word": " jetzt",
+          "start": 2.72,
+          "end": 3.02,
+          "probability": 0.5840367078781128
+        },
+        {
+          "word": " verstanden",
+          "start": 3.02,
+          "end": 3.38,
+          "probability": 0.9130358994007111
+        },
+        {
+          "word": " habe,",
+          "start": 3.38,
+          "end": 3.72,
+          "probability": 0.9601970911026001
+        },
+        {
+          "word": " dann",
+          "start": 4.5,
+          "end": 4.68,
+          "probability": 0.8735923767089844
+        },
+        {
+          "word": " würde",
+          "start": 4.68,
+          "end": 4.88,
+          "probability": 0.9859973192214966
+        },
+        {
+          "word": " das",
+          "start": 4.88,
+          "end": 5.12,
+          "probability": 0.9694656729698181
+        },
+        {
+          "word": " bedeuten...",
+          "start": 5.12,
+          "end": 6.1,
+          "probability": 0.8371705611546835
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250922_151217"
+}

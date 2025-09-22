@@ -1,0 +1,85 @@
+{
+  "text": "Ich bin in der Kuhfürstenstraße 29 in Hamburg.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 4.44,
+      "text": " Ich bin in der Kuhfürstenstraße 29 in Hamburg.",
+      "tokens": [
+        50364,
+        3141,
+        5171,
+        294,
+        1163,
+        591,
+        3232,
+        12474,
+        6266,
+        19639,
+        11451,
+        9413,
+        294,
+        34118,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.2517094612121582,
+      "compression_ratio": 0.9056603773584906,
+      "no_speech_prob": 0.004976994823664427,
+      "words": [
+        {
+          "word": " Ich",
+          "start": 0.0,
+          "end": 1.36,
+          "probability": 0.8972802758216858
+        },
+        {
+          "word": " bin",
+          "start": 1.36,
+          "end": 1.6,
+          "probability": 0.9940035939216614
+        },
+        {
+          "word": " in",
+          "start": 1.6,
+          "end": 1.78,
+          "probability": 0.9698722958564758
+        },
+        {
+          "word": " der",
+          "start": 1.78,
+          "end": 1.92,
+          "probability": 0.9573619961738586
+        },
+        {
+          "word": " Kuhfürstenstraße",
+          "start": 1.92,
+          "end": 3.1,
+          "probability": 0.8376166522502899
+        },
+        {
+          "word": " 29",
+          "start": 3.1,
+          "end": 3.66,
+          "probability": 0.960397481918335
+        },
+        {
+          "word": " in",
+          "start": 3.66,
+          "end": 4.1,
+          "probability": 0.9676952958106995
+        },
+        {
+          "word": " Hamburg.",
+          "start": 4.1,
+          "end": 4.44,
+          "probability": 0.9992988109588623
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

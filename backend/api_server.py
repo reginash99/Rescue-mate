@@ -27,6 +27,7 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "output_transcriptions")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+
 def run(cmd, cwd=None):
     p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
     if p.returncode != 0:
@@ -35,8 +36,10 @@ def run(cmd, cwd=None):
         )
     return p
 
+
 def convert_webm_to_wav(webm_path, wav_path):
     run(["ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path])
+
 
 # --- Routes (after app exists) ---
 @app.post("/transcribe-audio")
@@ -72,21 +75,27 @@ async def upload_audio(file: UploadFile = File(...)):
         print("UPLOAD ERROR:", e, "\n", traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
+
 # ---------- Geocoding ----------
 HAMBURG_VIEWBOX = dict(left=8.4, top=53.95, right=10.5, bottom=53.3)
+
 poi_list = [
-    "Elbphilharmonie","Miniatur Wunderland","HafenCity","Landungsbrücken",
-    "Schanzenviertel","St. Pauli","Reeperbahn","Planten un Blomen","Altona",
-    "Hauptbahnhof","Dammtor","Jungfernstieg","Binnenalster","Außenalster",
-    "Rathausmarkt","Speicherstadt","Fischmarkt","Eppendorf","Winterhude",
+    "Elbphilharmonie", "Miniatur Wunderland", "HafenCity", "Landungsbrücken",
+    "Schanzenviertel", "St. Pauli", "Reeperbahn", "Planten un Blomen", "Altona",
+    "Hauptbahnhof", "Dammtor", "Jungfernstieg", "Binnenalster", "Außenalster",
+    "Rathausmarkt", "Speicherstadt", "Fischmarkt", "Eppendorf", "Winterhude",
 ]
+
 street_regex = re.compile(
-    r"\b([A-ZÄÖÜ][a-zäöüß]+(?:[ -][A-ZÄÖÜ][a-zäöüß]+)*\s(?:Straße|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer))\s*(\d+[a-zA-Z]?)?\b"
+    r"\b([A-ZÄÖÜ][a-zäöüß]+(?:[ -][A-ZÄÖÜ][a-zäöüß]+)*\s"
+    r"(?:Straße|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer))"
+    r"\s*(\d+[a-zA-Z]?)?\b"
 )
 suffixless_number_regex = re.compile(
     r"\b([A-ZÄÖÜ][\wÄÖÜäöüß]+(?:[ -][A-ZÄÖÜ][\wÄÖÜäöüß]+){0,3})\s+(\d+[a-zA-Z]?)\b"
 )
 plz_regex = re.compile(r"\b(20\d{3}|21\d{3}|22\d{3})\s*Hamburg\b", re.I)
+
 
 def extract_candidates(text: str) -> List[str]:
     if not text:
@@ -95,19 +104,38 @@ def extract_candidates(text: str) -> List[str]:
 
     if re.search(r"\bHamburg\b", text, re.I):
         cands.add("Hamburg")
+
     for m in street_regex.finditer(text):
         street = " ".join(filter(None, [m.group(1), m.group(2)]))
         cands.add(street)
+
     for m in suffixless_number_regex.finditer(text):
         name = m.group(1)
         cands.add(f"{name} {m.group(2)}")
+
     for poi in poi_list:
         if re.search(rf"\b{re.escape(poi)}\b", text, re.I):
             cands.add(poi)
+
     m = plz_regex.search(text)
     if m:
         cands.add(m.group(0))
+
     return list(cands)
+
+
+def prioritize(cands: Set[str]) -> List[str]:
+    """Order candidates: house numbers > streets > POIs > generic Hamburg"""
+    def score(c: str) -> int:
+        if re.search(r"\d", c):  # has house number
+            return 0
+        if re.search(r"(Straße|Weg|Allee|Platz|Ring|Damm|Gasse|Ufer)", c):
+            return 1
+        if c in poi_list:
+            return 2
+        return 3
+    return sorted(cands, key=score)
+
 
 async def geocode_one(query: str) -> Optional[dict]:
     params = {
@@ -115,7 +143,8 @@ async def geocode_one(query: str) -> Optional[dict]:
         "format": "json",
         "addressdetails": "1",
         "limit": "1",
-        "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
+        "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},"
+                   f"{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
         "bounded": "1",
     }
     headers = {"User-Agent": "hamburg-transcription-geocoder/1.0 (your-email@example.com)"}
@@ -134,9 +163,11 @@ async def geocode_one(query: str) -> Optional[dict]:
         "bbox": x.get("boundingbox"),
     }
 
+
 class GeocodeIn(BaseModel):
     text: Optional[str] = None
     texts: Optional[List[str]] = None
+
 
 @app.post("/geocode")
 async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
@@ -149,8 +180,9 @@ async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
         for c in extract_candidates(t or ""):
             candidates.add(c)
 
+    ordered = prioritize(candidates)
     markers, dbg = [], []
-    for cand in candidates:
+    for cand in ordered:
         try:
             hit = await geocode_one(cand)
             dbg.append({"candidate": cand, "hit": bool(hit)})
@@ -159,7 +191,10 @@ async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
         except Exception as e:
             dbg.append({"candidate": cand, "error": str(e)})
 
-    resp = {"markers": markers, "meta": {"candidates": list(candidates), "count": len(markers)}}
+    resp = {
+        "markers": markers,
+        "meta": {"candidates": ordered, "count": len(markers)},
+    }
     if debug:
         resp["debug"] = dbg
     return resp

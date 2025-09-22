@@ -1,0 +1,52 @@
+{
+  "text": "Kur-Fürsten-Straße.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 3.68,
+      "text": " Kur-Fürsten-Straße.",
+      "tokens": [
+        50364,
+        16481,
+        12,
+        37,
+        1655,
+        6266,
+        12,
+        4520,
+        424,
+        11451,
+        13,
+        50568
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5672562305743878,
+      "compression_ratio": 0.7241379310344828,
+      "no_speech_prob": 0.010310046374797821,
+      "words": [
+        {
+          "word": " Kur",
+          "start": 0.0,
+          "end": 1.98,
+          "probability": 0.8146814107894897
+        },
+        {
+          "word": "-Fürsten",
+          "start": 1.98,
+          "end": 2.86,
+          "probability": 0.5429361462593079
+        },
+        {
+          "word": "-Straße.",
+          "start": 2.86,
+          "end": 3.68,
+          "probability": 0.7958585172891617
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250922_192356"
+}
