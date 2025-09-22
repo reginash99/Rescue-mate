@@ -63,7 +63,7 @@ const showModal = ref(false)
 const isGeocoding = ref(false)
 const markers = ref([])
 
-watch(() => props.data?.text, async (newText) => {
+watch(() => props.data?.transcription, async (newText) => {
   markers.value = []
   if (!newText || !newText.trim()) {
     emit('markers-found', [])
