@@ -1,0 +1,85 @@
+{
+  "text": "Femalingsstraße 13, Eppendorferlandstraße 10, Kurfürstenstraße 13.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.5600000000000018,
+      "end": 6.52,
+      "text": " Femalingsstraße 13, Eppendorferlandstraße 10, Kurfürstenstraße 13.",
+      "tokens": [
+        50364,
+        479,
+        443,
+        304,
+        1109,
+        19639,
+        11451,
+        3705,
+        11,
+        462,
+        427,
+        521,
+        284,
+        612,
+        1661,
+        19639,
+        11451,
+        1266,
+        11,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        3705,
+        13,
+        50704
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.3733892100197928,
+      "compression_ratio": 1.1111111111111112,
+      "no_speech_prob": 0.25227993726730347,
+      "words": [
+        {
+          "word": " Femalingsstraße",
+          "start": 1.5600000000000018,
+          "end": 2.64,
+          "probability": 0.6033437674244245
+        },
+        {
+          "word": " 13,",
+          "start": 2.64,
+          "end": 3.26,
+          "probability": 0.979103147983551
+        },
+        {
+          "word": " Eppendorferlandstraße",
+          "start": 3.5,
+          "end": 4.52,
+          "probability": 0.8584437221288681
+        },
+        {
+          "word": " 10,",
+          "start": 4.52,
+          "end": 4.88,
+          "probability": 0.9839962124824524
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 5.08,
+          "end": 5.98,
+          "probability": 0.8120159924030304
+        },
+        {
+          "word": " 13.",
+          "start": 5.98,
+          "end": 6.52,
+          "probability": 0.9641714692115784
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_135826"
+}

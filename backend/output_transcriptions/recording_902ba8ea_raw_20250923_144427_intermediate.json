@@ -1,0 +1,91 @@
+{
+  "text": "Kurfürstenstraße 13, Hebebrandstraße 2, Eppendorfer-Landstraße 10.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.0800000000000005,
+      "end": 6.18,
+      "text": " Kurfürstenstraße 13, Hebebrandstraße 2, Eppendorfer-Landstraße 10.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        3705,
+        11,
+        634,
+        650,
+        30476,
+        19639,
+        11451,
+        568,
+        11,
+        462,
+        427,
+        521,
+        284,
+        612,
+        12,
+        43,
+        474,
+        19639,
+        11451,
+        1266,
+        13,
+        50774
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.26149197282462283,
+      "compression_ratio": 1.1111111111111112,
+      "no_speech_prob": 0.05820159241557121,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 1.0800000000000005,
+          "end": 2.06,
+          "probability": 0.8911114811897278
+        },
+        {
+          "word": " 13,",
+          "start": 2.06,
+          "end": 2.6,
+          "probability": 0.9725885391235352
+        },
+        {
+          "word": " Hebebrandstraße",
+          "start": 3.06,
+          "end": 3.86,
+          "probability": 0.8625557541847229
+        },
+        {
+          "word": " 2,",
+          "start": 3.86,
+          "end": 4.22,
+          "probability": 0.9858570098876953
+        },
+        {
+          "word": " Eppendorfer",
+          "start": 4.66,
+          "end": 5.18,
+          "probability": 0.9320292830467224
+        },
+        {
+          "word": "-Landstraße",
+          "start": 5.18,
+          "end": 5.84,
+          "probability": 0.7875500917434692
+        },
+        {
+          "word": " 10.",
+          "start": 5.84,
+          "end": 6.18,
+          "probability": 0.9956175088882446
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

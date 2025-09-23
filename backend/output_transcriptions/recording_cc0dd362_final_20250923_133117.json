@@ -1,0 +1,92 @@
+{
+  "text": "Eppendorfer Landstraße 10, Hebewandstraße 2, Flughafen, Jungfernstieg.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 6.16,
+      "text": " Eppendorfer Landstraße 10, Hebewandstraße 2, Flughafen, Jungfernstieg.",
+      "tokens": [
+        50364,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        11,
+        634,
+        650,
+        33114,
+        19639,
+        11451,
+        568,
+        11,
+        33326,
+        1641,
+        6570,
+        11,
+        12739,
+        28958,
+        372,
+        20408,
+        13,
+        50764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.27869010793751686,
+      "compression_ratio": 1.0285714285714285,
+      "no_speech_prob": 0.05171021819114685,
+      "words": [
+        {
+          "word": " Eppendorfer",
+          "start": 0.0,
+          "end": 1.48,
+          "probability": 0.8411778092384339
+        },
+        {
+          "word": " Landstraße",
+          "start": 1.48,
+          "end": 2.2,
+          "probability": 0.7874308029810587
+        },
+        {
+          "word": " 10,",
+          "start": 2.2,
+          "end": 2.62,
+          "probability": 0.9315691590309143
+        },
+        {
+          "word": " Hebewandstraße",
+          "start": 2.92,
+          "end": 3.68,
+          "probability": 0.8647234559059143
+        },
+        {
+          "word": " 2,",
+          "start": 3.68,
+          "end": 4.1,
+          "probability": 0.9917166829109192
+        },
+        {
+          "word": " Flughafen,",
+          "start": 4.62,
+          "end": 5.24,
+          "probability": 0.9707808295885721
+        },
+        {
+          "word": " Jungfernstieg.",
+          "start": 5.48,
+          "end": 6.16,
+          "probability": 0.8747250437736511
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_133117"
+}

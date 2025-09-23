@@ -1,0 +1,120 @@
+{
+  "text": "Eppendorfer Landstraße 10, Hebebrandstraße 2, Gropius Ring 5, Femerling Straße 13.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.9800000000000002,
+      "end": 7.94,
+      "text": " Eppendorfer Landstraße 10, Hebebrandstraße 2, Gropius Ring 5, Femerling Straße 13.",
+      "tokens": [
+        50364,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        11,
+        634,
+        650,
+        30476,
+        19639,
+        11451,
+        568,
+        11,
+        460,
+        1513,
+        4872,
+        19844,
+        1025,
+        11,
+        479,
+        443,
+        260,
+        1688,
+        43817,
+        3705,
+        13,
+        50778
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.387491428490841,
+      "compression_ratio": 1.118421052631579,
+      "no_speech_prob": 0.27305442094802856,
+      "words": [
+        {
+          "word": " Eppendorfer",
+          "start": 0.9800000000000002,
+          "end": 1.82,
+          "probability": 0.7960268676280975
+        },
+        {
+          "word": " Landstraße",
+          "start": 1.82,
+          "end": 2.46,
+          "probability": 0.7598131696383158
+        },
+        {
+          "word": " 10,",
+          "start": 2.46,
+          "end": 2.82,
+          "probability": 0.9169715642929077
+        },
+        {
+          "word": " Hebebrandstraße",
+          "start": 3.2,
+          "end": 4.06,
+          "probability": 0.9141144156455994
+        },
+        {
+          "word": " 2,",
+          "start": 4.06,
+          "end": 4.38,
+          "probability": 0.990056037902832
+        },
+        {
+          "word": " Gropius",
+          "start": 4.8,
+          "end": 5.22,
+          "probability": 0.5802311301231384
+        },
+        {
+          "word": " Ring",
+          "start": 5.22,
+          "end": 5.44,
+          "probability": 0.3433069884777069
+        },
+        {
+          "word": " 5,",
+          "start": 5.44,
+          "end": 5.8,
+          "probability": 0.9159145951271057
+        },
+        {
+          "word": " Femerling",
+          "start": 6.46,
+          "end": 6.94,
+          "probability": 0.6376843377947807
+        },
+        {
+          "word": " Straße",
+          "start": 6.94,
+          "end": 7.22,
+          "probability": 0.5427675843238831
+        },
+        {
+          "word": " 13.",
+          "start": 7.22,
+          "end": 7.94,
+          "probability": 0.9962887763977051
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_142418"
+}

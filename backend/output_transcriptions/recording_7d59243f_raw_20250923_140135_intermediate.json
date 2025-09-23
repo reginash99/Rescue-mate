@@ -1,0 +1,77 @@
+{
+  "text": "Fehmare Linkstraße 13, Eppendorfer Landstraße 10.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.3000000000000007,
+      "end": 5.06,
+      "text": " Fehmare Linkstraße 13, Eppendorfer Landstraße 10.",
+      "tokens": [
+        50364,
+        3697,
+        8587,
+        543,
+        8466,
+        19639,
+        11451,
+        3705,
+        11,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        13,
+        50714
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.39899258386521114,
+      "compression_ratio": 0.9807692307692307,
+      "no_speech_prob": 0.13412447273731232,
+      "words": [
+        {
+          "word": " Fehmare",
+          "start": 1.3000000000000007,
+          "end": 2.22,
+          "probability": 0.5807767957448959
+        },
+        {
+          "word": " Linkstraße",
+          "start": 2.22,
+          "end": 2.84,
+          "probability": 0.687386135260264
+        },
+        {
+          "word": " 13,",
+          "start": 2.84,
+          "end": 3.22,
+          "probability": 0.9199012517929077
+        },
+        {
+          "word": " Eppendorfer",
+          "start": 3.68,
+          "end": 4.14,
+          "probability": 0.9211218237876893
+        },
+        {
+          "word": " Landstraße",
+          "start": 4.14,
+          "end": 4.72,
+          "probability": 0.8485611279805502
+        },
+        {
+          "word": " 10.",
+          "start": 4.72,
+          "end": 5.06,
+          "probability": 0.9904199242591858
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

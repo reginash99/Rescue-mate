@@ -1,0 +1,71 @@
+{
+  "text": "Kurfürstenstraße 29, Eppendorfer Landstraße 10.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.2199999999999998,
+      "end": 4.92,
+      "text": " Kurfürstenstraße 29, Eppendorfer Landstraße 10.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        9413,
+        11,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.27681970596313477,
+      "compression_ratio": 0.9615384615384616,
+      "no_speech_prob": 0.019100772216916084,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 1.2199999999999998,
+          "end": 2.34,
+          "probability": 0.9376005530357361
+        },
+        {
+          "word": " 29,",
+          "start": 2.34,
+          "end": 2.9,
+          "probability": 0.9727607369422913
+        },
+        {
+          "word": " Eppendorfer",
+          "start": 3.54,
+          "end": 4.0,
+          "probability": 0.912991464138031
+        },
+        {
+          "word": " Landstraße",
+          "start": 4.0,
+          "end": 4.62,
+          "probability": 0.7901812692483267
+        },
+        {
+          "word": " 10.",
+          "start": 4.62,
+          "end": 4.92,
+          "probability": 0.982475757598877
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_133948"
+}

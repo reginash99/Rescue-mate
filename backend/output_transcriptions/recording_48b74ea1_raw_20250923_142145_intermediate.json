@@ -1,0 +1,130 @@
+{
+  "text": "Eppendorfer Landstraße 10, Hebebrandstraße 2, Gropiusring 5, Wilhelmsburgereichstraße 3, Femalingsstraße 13.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 9.86,
+      "text": " Eppendorfer Landstraße 10, Hebebrandstraße 2, Gropiusring 5, Wilhelmsburgereichstraße 3, Femalingsstraße 13.",
+      "tokens": [
+        50364,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        11,
+        634,
+        650,
+        30476,
+        19639,
+        11451,
+        568,
+        11,
+        460,
+        1513,
+        4872,
+        2937,
+        1025,
+        11,
+        9483,
+        18063,
+        2592,
+        8342,
+        323,
+        480,
+        19639,
+        11451,
+        805,
+        11,
+        479,
+        443,
+        304,
+        1109,
+        19639,
+        11451,
+        3705,
+        13,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.30575758760625665,
+      "compression_ratio": 1.1546391752577319,
+      "no_speech_prob": 0.2611445188522339,
+      "words": [
+        {
+          "word": " Eppendorfer",
+          "start": 0.0,
+          "end": 1.92,
+          "probability": 0.7988514989614487
+        },
+        {
+          "word": " Landstraße",
+          "start": 1.92,
+          "end": 2.54,
+          "probability": 0.6946829358736674
+        },
+        {
+          "word": " 10,",
+          "start": 2.54,
+          "end": 2.9,
+          "probability": 0.9304282665252686
+        },
+        {
+          "word": " Hebebrandstraße",
+          "start": 3.34,
+          "end": 4.12,
+          "probability": 0.8419614672660828
+        },
+        {
+          "word": " 2,",
+          "start": 4.12,
+          "end": 4.56,
+          "probability": 0.9911229610443115
+        },
+        {
+          "word": " Gropiusring",
+          "start": 5.2,
+          "end": 5.8,
+          "probability": 0.7941140234470367
+        },
+        {
+          "word": " 5,",
+          "start": 5.8,
+          "end": 6.26,
+          "probability": 0.9658401012420654
+        },
+        {
+          "word": " Wilhelmsburgereichstraße",
+          "start": 6.9,
+          "end": 8.02,
+          "probability": 0.8510039933025837
+        },
+        {
+          "word": " 3,",
+          "start": 8.02,
+          "end": 8.34,
+          "probability": 0.9982330799102783
+        },
+        {
+          "word": " Femalingsstraße",
+          "start": 8.7,
+          "end": 9.42,
+          "probability": 0.6258224894603094
+        },
+        {
+          "word": " 13.",
+          "start": 9.42,
+          "end": 9.86,
+          "probability": 0.9968283772468567
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

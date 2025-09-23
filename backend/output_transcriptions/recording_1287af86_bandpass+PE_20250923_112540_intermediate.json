@@ -1,0 +1,58 @@
+{
+  "text": " Hammerlandstraße 2 und Jungfernstieg.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.7200000000000002,
+      "end": 4.36,
+      "text": " Hammerlandstraße 2 und Jungfernstieg.",
+      "tokens": [
+        50364,
+        33722,
+        1661,
+        19639,
+        11451,
+        568,
+        674,
+        12739,
+        28958,
+        372,
+        20408,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.3777646677834647,
+      "compression_ratio": 0.8260869565217391,
+      "no_speech_prob": 0.01664685644209385,
+      "words": [
+        {
+          "word": " Hammerlandstraße",
+          "start": 1.7200000000000002,
+          "end": 2.68,
+          "probability": 0.7724441289901733
+        },
+        {
+          "word": " 2",
+          "start": 2.68,
+          "end": 3.06,
+          "probability": 0.9373857378959656
+        },
+        {
+          "word": " und",
+          "start": 3.06,
+          "end": 3.54,
+          "probability": 0.8100937008857727
+        },
+        {
+          "word": " Jungfernstieg.",
+          "start": 3.54,
+          "end": 4.36,
+          "probability": 0.7450667768716812
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

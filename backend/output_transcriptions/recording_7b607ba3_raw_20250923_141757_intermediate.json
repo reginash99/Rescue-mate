@@ -1,0 +1,70 @@
+{
+  "text": "Kurfürstenstraße 15, Eppendorfer Landstraße 10.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.8000000000000003,
+      "end": 5.14,
+      "text": " Kurfürstenstraße 15, Eppendorfer Landstraße 10.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        2119,
+        11,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        13,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.26678173542022704,
+      "compression_ratio": 0.9803921568627451,
+      "no_speech_prob": 0.02295108325779438,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 1.8000000000000003,
+          "end": 2.72,
+          "probability": 0.9262690067291259
+        },
+        {
+          "word": " 15,",
+          "start": 2.72,
+          "end": 3.04,
+          "probability": 0.9832972288131714
+        },
+        {
+          "word": " Eppendorfer",
+          "start": 3.7,
+          "end": 4.16,
+          "probability": 0.9418524980545044
+        },
+        {
+          "word": " Landstraße",
+          "start": 4.16,
+          "end": 4.78,
+          "probability": 0.8035340408484141
+        },
+        {
+          "word": " 10.",
+          "start": 4.78,
+          "end": 5.14,
+          "probability": 0.9874469637870789
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

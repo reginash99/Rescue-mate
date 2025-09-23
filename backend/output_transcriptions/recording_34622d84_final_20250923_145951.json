@@ -1,0 +1,43 @@
+{
+  "text": "Kurfürstenstraße 13.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.48,
+      "end": 2.9,
+      "text": " Kurfürstenstraße 13.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        3705,
+        13,
+        50539
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5131739616394043,
+      "compression_ratio": 0.7333333333333333,
+      "no_speech_prob": 0.011862806975841522,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 1.48,
+          "end": 2.56,
+          "probability": 0.9086159348487854
+        },
+        {
+          "word": " 13.",
+          "start": 2.56,
+          "end": 2.9,
+          "probability": 0.9673535823822021
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_145951"
+}

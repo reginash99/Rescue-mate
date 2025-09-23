@@ -1,0 +1,61 @@
+{
+  "text": "Kurfürstenstraße 23, Kurfürstenstraße 29.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 4.56,
+      "text": " Kurfürstenstraße 23, Kurfürstenstraße 29.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        6673,
+        11,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        9413,
+        13,
+        50639
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.3814031096065746,
+      "compression_ratio": 1.25,
+      "no_speech_prob": 0.05735559016466141,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 0.0,
+          "end": 2.2,
+          "probability": 0.6776025831699372
+        },
+        {
+          "word": " 23,",
+          "start": 2.2,
+          "end": 2.66,
+          "probability": 0.9732181429862976
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 3.38,
+          "end": 4.26,
+          "probability": 0.9722970485687256
+        },
+        {
+          "word": " 29.",
+          "start": 4.26,
+          "end": 4.56,
+          "probability": 0.9967411160469055
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

@@ -1,0 +1,71 @@
+{
+  "text": "Kurfürstenstraße 29, Haubachstraße 26, Informatikum.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 7.26,
+      "text": " Kurfürstenstraße 29, Haubachstraße 26, Informatikum.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        9413,
+        11,
+        389,
+        1459,
+        32096,
+        19639,
+        11451,
+        7551,
+        11,
+        34301,
+        267,
+        35518,
+        13,
+        50734
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.222429320925758,
+      "compression_ratio": 0.9821428571428571,
+      "no_speech_prob": 0.017971305176615715,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 0.0,
+          "end": 2.44,
+          "probability": 0.9238147497177124
+        },
+        {
+          "word": " 29,",
+          "start": 2.44,
+          "end": 2.7,
+          "probability": 0.9596629738807678
+        },
+        {
+          "word": " Haubachstraße",
+          "start": 3.96,
+          "end": 4.82,
+          "probability": 0.9487184405326843
+        },
+        {
+          "word": " 26,",
+          "start": 4.82,
+          "end": 5.68,
+          "probability": 0.9971801042556763
+        },
+        {
+          "word": " Informatikum.",
+          "start": 6.38,
+          "end": 7.26,
+          "probability": 0.9677565892537435
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

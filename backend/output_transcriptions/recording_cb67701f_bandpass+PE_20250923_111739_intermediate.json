@@ -1,0 +1,76 @@
+{
+  "text": " Wir befinden uns im Informatikum in Hamburg.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.2599999999999998,
+      "end": 4.16,
+      "text": " Wir befinden uns im Informatikum in Hamburg.",
+      "tokens": [
+        50364,
+        4347,
+        21312,
+        10291,
+        2693,
+        566,
+        34301,
+        267,
+        35518,
+        294,
+        34118,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.2034116472516741,
+      "compression_ratio": 0.8461538461538461,
+      "no_speech_prob": 0.017423907294869423,
+      "words": [
+        {
+          "word": " Wir",
+          "start": 1.2599999999999998,
+          "end": 2.02,
+          "probability": 0.9353848695755005
+        },
+        {
+          "word": " befinden",
+          "start": 2.02,
+          "end": 2.48,
+          "probability": 0.9967824518680573
+        },
+        {
+          "word": " uns",
+          "start": 2.48,
+          "end": 2.74,
+          "probability": 0.9922226071357727
+        },
+        {
+          "word": " im",
+          "start": 2.74,
+          "end": 2.94,
+          "probability": 0.9859720468521118
+        },
+        {
+          "word": " Informatikum",
+          "start": 2.94,
+          "end": 3.68,
+          "probability": 0.9913476308186849
+        },
+        {
+          "word": " in",
+          "start": 3.68,
+          "end": 3.86,
+          "probability": 0.9913452863693237
+        },
+        {
+          "word": " Hamburg.",
+          "start": 3.86,
+          "end": 4.16,
+          "probability": 0.9993370175361633
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

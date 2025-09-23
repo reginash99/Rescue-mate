@@ -1,0 +1,101 @@
+{
+  "text": "Kurfürstenstraße 13, Eppendorfer Landstraße 10, Hebebrandstraße 2, Jungfernstieg.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.2800000000000002,
+      "end": 8.66,
+      "text": " Kurfürstenstraße 13, Eppendorfer Landstraße 10, Hebebrandstraße 2, Jungfernstieg.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        3705,
+        11,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        11,
+        634,
+        650,
+        30476,
+        19639,
+        11451,
+        568,
+        11,
+        12739,
+        28958,
+        372,
+        20408,
+        13,
+        50814
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.23501983284950256,
+      "compression_ratio": 1.1333333333333333,
+      "no_speech_prob": 0.0735064297914505,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 1.2800000000000002,
+          "end": 2.5,
+          "probability": 0.8870230317115784
+        },
+        {
+          "word": " 13,",
+          "start": 2.5,
+          "end": 3.16,
+          "probability": 0.874570906162262
+        },
+        {
+          "word": " Eppendorfer",
+          "start": 3.76,
+          "end": 4.36,
+          "probability": 0.9289249658584595
+        },
+        {
+          "word": " Landstraße",
+          "start": 4.36,
+          "end": 5.1,
+          "probability": 0.7688154478867849
+        },
+        {
+          "word": " 10,",
+          "start": 5.1,
+          "end": 5.48,
+          "probability": 0.9908428192138672
+        },
+        {
+          "word": " Hebebrandstraße",
+          "start": 6.1,
+          "end": 7.0,
+          "probability": 0.8924366593360901
+        },
+        {
+          "word": " 2,",
+          "start": 7.0,
+          "end": 7.38,
+          "probability": 0.9904967546463013
+        },
+        {
+          "word": " Jungfernstieg.",
+          "start": 7.98,
+          "end": 8.66,
+          "probability": 0.8625690191984177
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_140225"
+}

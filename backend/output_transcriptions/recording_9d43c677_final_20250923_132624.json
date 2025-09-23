@@ -1,0 +1,118 @@
+{
+  "text": "Eppendorfer Landstraße 10, Wilhelmsburger Reichsstraße 3, Kurfürstenstraße 23, Kurfürstenstraße 25.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 9.42,
+      "text": " Eppendorfer Landstraße 10, Wilhelmsburger Reichsstraße 3, Kurfürstenstraße 23, Kurfürstenstraße 25.",
+      "tokens": [
+        50364,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        11,
+        9483,
+        18063,
+        2592,
+        41787,
+        33111,
+        82,
+        19639,
+        11451,
+        805,
+        11,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        6673,
+        11,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        3552,
+        13,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.2070903778076172,
+      "compression_ratio": 1.3291139240506329,
+      "no_speech_prob": 0.11546880006790161,
+      "words": [
+        {
+          "word": " Eppendorfer",
+          "start": 0.0,
+          "end": 2.26,
+          "probability": 0.8115299224853516
+        },
+        {
+          "word": " Landstraße",
+          "start": 2.26,
+          "end": 2.94,
+          "probability": 0.7384069959322611
+        },
+        {
+          "word": " 10,",
+          "start": 2.94,
+          "end": 3.42,
+          "probability": 0.9194920659065247
+        },
+        {
+          "word": " Wilhelmsburger",
+          "start": 4.1,
+          "end": 4.6,
+          "probability": 0.9762357175350189
+        },
+        {
+          "word": " Reichsstraße",
+          "start": 4.6,
+          "end": 5.64,
+          "probability": 0.9161974191665649
+        },
+        {
+          "word": " 3,",
+          "start": 5.64,
+          "end": 6.08,
+          "probability": 0.9944708347320557
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 6.34,
+          "end": 7.22,
+          "probability": 0.8840141534805298
+        },
+        {
+          "word": " 23,",
+          "start": 7.22,
+          "end": 7.88,
+          "probability": 0.9970865845680237
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 8.4,
+          "end": 9.16,
+          "probability": 0.962058711051941
+        },
+        {
+          "word": " 25.",
+          "start": 9.16,
+          "end": 9.42,
+          "probability": 0.9987083673477173
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_132624"
+}

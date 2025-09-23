@@ -1,0 +1,63 @@
+{
+  "text": "Femerlingstraße 13, Kurfürstenstraße 29.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 4.48,
+      "text": " Femerlingstraße 13, Kurfürstenstraße 29.",
+      "tokens": [
+        50364,
+        479,
+        443,
+        260,
+        1688,
+        19639,
+        11451,
+        3705,
+        11,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        9413,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.3808259169260661,
+      "compression_ratio": 0.9555555555555556,
+      "no_speech_prob": 0.09509435296058655,
+      "words": [
+        {
+          "word": " Femerlingstraße",
+          "start": 0.0,
+          "end": 2.08,
+          "probability": 0.6842052588860194
+        },
+        {
+          "word": " 13,",
+          "start": 2.08,
+          "end": 2.54,
+          "probability": 0.952480673789978
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 3.04,
+          "end": 4.02,
+          "probability": 0.9318924188613892
+        },
+        {
+          "word": " 29.",
+          "start": 4.02,
+          "end": 4.48,
+          "probability": 0.42594948410987854
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_135345"
+}

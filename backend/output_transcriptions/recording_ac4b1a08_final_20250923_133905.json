@@ -1,0 +1,95 @@
+{
+  "text": "Gropius Ring 4, Wilhelmsburger Reichstraße 3, Femalingsstraße 13.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 6.66,
+      "text": " Gropius Ring 4, Wilhelmsburger Reichstraße 3, Femalingsstraße 13.",
+      "tokens": [
+        50364,
+        460,
+        1513,
+        4872,
+        19844,
+        1017,
+        11,
+        9483,
+        18063,
+        2592,
+        41787,
+        33111,
+        19639,
+        11451,
+        805,
+        11,
+        479,
+        443,
+        304,
+        1109,
+        19639,
+        11451,
+        3705,
+        13,
+        50714
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.33727715565608096,
+      "compression_ratio": 0.9852941176470589,
+      "no_speech_prob": 0.05905706062912941,
+      "words": [
+        {
+          "word": " Gropius",
+          "start": 0.0,
+          "end": 1.64,
+          "probability": 0.7410574555397034
+        },
+        {
+          "word": " Ring",
+          "start": 1.64,
+          "end": 1.8,
+          "probability": 0.8051361441612244
+        },
+        {
+          "word": " 4,",
+          "start": 1.8,
+          "end": 2.24,
+          "probability": 0.5022544860839844
+        },
+        {
+          "word": " Wilhelmsburger",
+          "start": 2.86,
+          "end": 3.38,
+          "probability": 0.9211407154798508
+        },
+        {
+          "word": " Reichstraße",
+          "start": 3.38,
+          "end": 4.12,
+          "probability": 0.9266437093416849
+        },
+        {
+          "word": " 3,",
+          "start": 4.12,
+          "end": 4.58,
+          "probability": 0.9803197383880615
+        },
+        {
+          "word": " Femalingsstraße",
+          "start": 5.4,
+          "end": 6.18,
+          "probability": 0.652666300535202
+        },
+        {
+          "word": " 13.",
+          "start": 6.18,
+          "end": 6.66,
+          "probability": 0.9941459894180298
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_133905"
+}

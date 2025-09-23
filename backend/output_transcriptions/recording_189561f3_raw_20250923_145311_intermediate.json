@@ -1,0 +1,69 @@
+{
+  "text": "Appendorfer Landstraße 10, Kurfürstenstraße 13.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 4.82,
+      "text": " Appendorfer Landstraße 10, Kurfürstenstraße 13.",
+      "tokens": [
+        50364,
+        3132,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        11,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        3705,
+        13,
+        50714
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.3851347973472194,
+      "compression_ratio": 0.9803921568627451,
+      "no_speech_prob": 0.050969138741493225,
+      "words": [
+        {
+          "word": " Appendorfer",
+          "start": 0.0,
+          "end": 1.5,
+          "probability": 0.853532500565052
+        },
+        {
+          "word": " Landstraße",
+          "start": 1.5,
+          "end": 2.18,
+          "probability": 0.7321973641713461
+        },
+        {
+          "word": " 10,",
+          "start": 2.18,
+          "end": 2.54,
+          "probability": 0.8822615146636963
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 3.38,
+          "end": 4.42,
+          "probability": 0.8895390272140503
+        },
+        {
+          "word": " 13.",
+          "start": 4.42,
+          "end": 4.82,
+          "probability": 0.9930490255355835
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

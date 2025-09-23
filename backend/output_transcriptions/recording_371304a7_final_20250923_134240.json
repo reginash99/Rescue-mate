@@ -1,0 +1,81 @@
+{
+  "text": "Kurfürstenstraße 23, Kurfürstenstraße 29, Kurfürstenstraße 45.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 6.78,
+      "text": " Kurfürstenstraße 23, Kurfürstenstraße 29, Kurfürstenstraße 45.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        6673,
+        11,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        9413,
+        11,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        6905,
+        13,
+        50714
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.18191905816396078,
+      "compression_ratio": 1.7,
+      "no_speech_prob": 0.15350225567817688,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 0.0,
+          "end": 2.32,
+          "probability": 0.8532089352607727
+        },
+        {
+          "word": " 23,",
+          "start": 2.32,
+          "end": 2.64,
+          "probability": 0.9738392233848572
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 3.52,
+          "end": 4.42,
+          "probability": 0.9862563014030457
+        },
+        {
+          "word": " 29,",
+          "start": 4.42,
+          "end": 4.62,
+          "probability": 0.9968333840370178
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 5.44,
+          "end": 6.34,
+          "probability": 0.9942791223526001
+        },
+        {
+          "word": " 45.",
+          "start": 6.34,
+          "end": 6.78,
+          "probability": 0.9971799850463867
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_134240"
+}

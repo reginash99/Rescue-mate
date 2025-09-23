@@ -1,0 +1,114 @@
+{
+  "text": "Eppendorfer Landstraße 10, Hebebrandstraße 2, Gropius Ring 5, Femalingsstraße 13.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 8.36,
+      "text": " Eppendorfer Landstraße 10, Hebebrandstraße 2, Gropius Ring 5, Femalingsstraße 13.",
+      "tokens": [
+        50364,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        11,
+        634,
+        650,
+        30476,
+        19639,
+        11451,
+        568,
+        11,
+        460,
+        1513,
+        4872,
+        19844,
+        1025,
+        11,
+        479,
+        443,
+        304,
+        1109,
+        19639,
+        11451,
+        3705,
+        13,
+        50794
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.35331857905668373,
+      "compression_ratio": 1.12,
+      "no_speech_prob": 0.4275110960006714,
+      "words": [
+        {
+          "word": " Eppendorfer",
+          "start": 0.0,
+          "end": 1.62,
+          "probability": 0.8088063538074494
+        },
+        {
+          "word": " Landstraße",
+          "start": 1.62,
+          "end": 2.32,
+          "probability": 0.6416550874710083
+        },
+        {
+          "word": " 10,",
+          "start": 2.32,
+          "end": 2.66,
+          "probability": 0.9346885085105896
+        },
+        {
+          "word": " Hebebrandstraße",
+          "start": 3.22,
+          "end": 4.14,
+          "probability": 0.9155224204063416
+        },
+        {
+          "word": " 2,",
+          "start": 4.14,
+          "end": 4.5,
+          "probability": 0.9919270277023315
+        },
+        {
+          "word": " Gropius",
+          "start": 5.18,
+          "end": 5.68,
+          "probability": 0.8841442068417867
+        },
+        {
+          "word": " Ring",
+          "start": 5.68,
+          "end": 5.88,
+          "probability": 0.3768499791622162
+        },
+        {
+          "word": " 5,",
+          "start": 5.88,
+          "end": 6.22,
+          "probability": 0.9080455303192139
+        },
+        {
+          "word": " Femalingsstraße",
+          "start": 6.88,
+          "end": 7.84,
+          "probability": 0.6340410610040029
+        },
+        {
+          "word": " 13.",
+          "start": 7.84,
+          "end": 8.36,
+          "probability": 0.9962226152420044
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

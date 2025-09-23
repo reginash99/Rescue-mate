@@ -1,0 +1,91 @@
+{
+  "text": "Eppendorfer Landstraße 10, Hebebrandstraße 2, Flughafen, Jungfernstieg.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 6.36,
+      "text": " Eppendorfer Landstraße 10, Hebebrandstraße 2, Flughafen, Jungfernstieg.",
+      "tokens": [
+        50364,
+        462,
+        427,
+        521,
+        284,
+        612,
+        6607,
+        19639,
+        11451,
+        1266,
+        11,
+        634,
+        650,
+        30476,
+        19639,
+        11451,
+        568,
+        11,
+        33326,
+        1641,
+        6570,
+        11,
+        12739,
+        28958,
+        372,
+        20408,
+        13,
+        50714
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.28878080433812636,
+      "compression_ratio": 1.028169014084507,
+      "no_speech_prob": 0.04663166031241417,
+      "words": [
+        {
+          "word": " Eppendorfer",
+          "start": 0.0,
+          "end": 1.76,
+          "probability": 0.8569051623344421
+        },
+        {
+          "word": " Landstraße",
+          "start": 1.76,
+          "end": 2.4,
+          "probability": 0.8089373509089152
+        },
+        {
+          "word": " 10,",
+          "start": 2.4,
+          "end": 2.76,
+          "probability": 0.9530957937240601
+        },
+        {
+          "word": " Hebebrandstraße",
+          "start": 3.44,
+          "end": 4.12,
+          "probability": 0.7982113122940063
+        },
+        {
+          "word": " 2,",
+          "start": 4.12,
+          "end": 4.48,
+          "probability": 0.9911332726478577
+        },
+        {
+          "word": " Flughafen,",
+          "start": 4.88,
+          "end": 5.48,
+          "probability": 0.9715865055720011
+        },
+        {
+          "word": " Jungfernstieg.",
+          "start": 5.7,
+          "end": 6.36,
+          "probability": 0.9312592446804047
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

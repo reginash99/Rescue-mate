@@ -1,0 +1,77 @@
+{
+  "text": "Wir befinden uns im Informatikum in Hamburg.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.2000000000000002,
+      "end": 4.18,
+      "text": " Wir befinden uns im Informatikum in Hamburg.",
+      "tokens": [
+        50364,
+        4347,
+        21312,
+        10291,
+        2693,
+        566,
+        34301,
+        267,
+        35518,
+        294,
+        34118,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1977871826716832,
+      "compression_ratio": 0.8461538461538461,
+      "no_speech_prob": 0.011675170622766018,
+      "words": [
+        {
+          "word": " Wir",
+          "start": 1.2000000000000002,
+          "end": 2.0,
+          "probability": 0.9595887660980225
+        },
+        {
+          "word": " befinden",
+          "start": 2.0,
+          "end": 2.48,
+          "probability": 0.9977260828018188
+        },
+        {
+          "word": " uns",
+          "start": 2.48,
+          "end": 2.74,
+          "probability": 0.9931260347366333
+        },
+        {
+          "word": " im",
+          "start": 2.74,
+          "end": 2.94,
+          "probability": 0.9888346791267395
+        },
+        {
+          "word": " Informatikum",
+          "start": 2.94,
+          "end": 3.68,
+          "probability": 0.9910963575045267
+        },
+        {
+          "word": " in",
+          "start": 3.68,
+          "end": 3.86,
+          "probability": 0.993834376335144
+        },
+        {
+          "word": " Hamburg.",
+          "start": 3.86,
+          "end": 4.18,
+          "probability": 0.9993485808372498
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250923_111740"
+}
