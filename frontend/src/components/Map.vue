@@ -1,82 +1,121 @@
 <template>
-  <div id="map" :style="{ width: '100%', height: '100%' }">
+  <div id="map" style="width:100%; height:100%;">
     <VMap
+      ref="vmap"
       :center="center"
       :zoom="zoom"
-      :style="{ width: '100%', height: '100%' }"
-      @ready="onMapReady"
+      style="width:100%; height:100%;"
     >
       <VMapOsmTileLayer />
       <VMapZoomControl />
-
-      <!-- Render markers if any -->
-      <VMapMarker
-        v-for="(m, i) in markers"
-        :key="i"
-        :latlng="[m.lat, m.lng]"
-        :tooltip="m.label"
-      />
+      <!-- no VMapMarker; we add markers via Leaflet API -->
     </VMap>
-
-    <!-- Overlay notice if no markers -->
-<!--     <div v-if="!markers.length" id="map_not_found">
-      <p>Address not available</p>
-    </div> -->
   </div>
 </template>
 
 <script setup>
-import { VMap, VMapOsmTileLayer, VMapZoomControl, VMapMarker } from 'vue-map-ui'
-import { watch, ref } from 'vue'
+import { VMap, VMapOsmTileLayer, VMapZoomControl } from 'vue-map-ui'
+import { ref, watch, nextTick, onMounted } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+
+// Ensure Leaflet default marker icons resolve under Vite
+delete L.Icon.Default.prototype._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).href,
+  iconUrl:       new URL('leaflet/dist/images/marker-icon.png', import.meta.url).href,
+  shadowUrl:     new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).href,
+})
 
 const props = defineProps({
+  // [{ lat: number, lng: number, label?: string }]
   markers: { type: Array, default: () => [] },
-});
+})
 
-const center = ref([53.551086, 9.993682]) // Hamburg Rathaus default
-const zoom = ref(12)
+const center = ref([53.551086, 9.993682]) // Hamburg fallback
+const zoom   = ref(12)
 
-const mapRef = ref(null)
+const vmap   = ref(null)   // <VMap> ref
+const mapRef = ref(null)   // Leaflet map instance
+let markersLayer = null    // L.LayerGroup for pins
 
-function onMapReady(mapInstance) {
-  mapRef.value = mapInstance?.leafletObject || mapInstance
-  maybeFitBounds()
-}
+onMounted(async () => {
+  await nextTick()
+  mapRef.value = vmap.value?.leafletObject || vmap.value?.map || null
+  if (!mapRef.value) {
+    // try once more on next tick (some builds expose it slightly later)
+    setTimeout(() => {
+      mapRef.value = vmap.value?.leafletObject || vmap.value?.map || null
+      if (!mapRef.value) return
+      markersLayer = L.layerGroup().addTo(mapRef.value)
+      renderMarkersAndFit()
+    }, 0)
+  } else {
+    markersLayer = L.layerGroup().addTo(mapRef.value)
+    renderMarkersAndFit()
+  }
+})
 
-watch(() => props.markers, () => {
-  maybeFitBounds()
-}, { deep: true })
+// Re-render markers + fit whenever data changes
+watch(
+  () => props.markers,
+  async () => {
+    if (!mapRef.value || !markersLayer) return
+    await nextTick()
+    renderMarkersAndFit()
+  },
+  { deep: true }
+)
 
-function maybeFitBounds() {
-  if (!mapRef.value || !props.markers?.length) return
-  const L = window.L
-  const bounds = props.markers.reduce((acc, m) => {
-    const latlng = [m.lat, m.lng]
-    if (!acc) return L.latLngBounds([latlng, latlng])
-    acc.extend(latlng)
-    return acc
-  }, null)
-  if (bounds) {
-    mapRef.value.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 })
+function renderMarkersAndFit() {
+  markersLayer.clearLayers()
+
+  const ms = (props.markers || []).filter(m =>
+    typeof m?.lat === 'number' && typeof m?.lng === 'number'
+  )
+  if (!ms.length) return
+
+  const latlngs = []
+
+  for (const m of ms) {
+    const ll = [m.lat, m.lng]
+    latlngs.push(ll)
+
+    const label = String(m?.label ?? '').trim()
+    const marker = L.marker(ll)
+
+    // Hover tooltip (sticky so it follows the cursor); Popup on click (sticky)
+    if (label) {
+      marker
+        .bindTooltip(label, {
+          direction: 'top',
+          sticky: true,
+          opacity: 0.95,
+          interactive: true,
+        })
+        .bindPopup(`<strong>${escapeHtml(label)}</strong>`)
+      // Force visibility on interactions (some UIs suppress default behavior)
+      marker.on('mouseover', () => marker.openTooltip())
+      marker.on('mouseout',  () => marker.closeTooltip())
+      marker.on('click',     () => marker.openPopup())
+    }
+
+    marker.addTo(markersLayer)
+  }
+
+  // Auto-fit to all markers (zoom out if far apart, in if close)
+  const bounds = L.latLngBounds(latlngs)
+  if (latlngs.length === 1) {
+    mapRef.value.setView(latlngs[0], Math.min(mapRef.value.getMaxZoom?.() || 18, 16))
+  } else {
+    mapRef.value.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 })
   }
 }
-</script>
 
-<style>
-#map_not_found {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width:100%;
-  height:100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(128, 128, 128, 0.2);
-  pointer-events: none;
+// tiny helper to avoid HTML injection
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]))
 }
-#map_not_found p {
-  font-size: 24px;
-  color: black;
-}
-</style>
+</script>

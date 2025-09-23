@@ -165,7 +165,8 @@ async def geocode_one(query: str) -> Optional[dict]:
         "format": "json",
         "addressdetails": "1",
         "limit": "1",
-        "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
+        "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},"
+                   f"{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
         "bounded": "1",
     }
     headers = {"User-Agent": "hamburg-transcription-geocoder/1.0 (your-email@example.com)"}
@@ -176,13 +177,29 @@ async def geocode_one(query: str) -> Optional[dict]:
     if not data:
         return None
     x = data[0]
+    addr = x.get("address", {})
+    label_parts = []
+    if "road" in addr:
+        street = addr["road"]
+        if "house_number" in addr:
+            street += f" {addr['house_number']}"
+            label_parts.append(street)
+
+    if "postcode" in addr:
+        label_parts.append(addr["postcode"])
+    if "city" in addr:
+        label_parts.append(addr["city"])
+
+    label = ", ".join(label_parts) if label_parts else x.get("display_name")
+
     return {
-        "label": x.get("display_name"),
+        "label": label,
         "lat": float(x["lat"]),
         "lng": float(x["lon"]),
         "source": "nominatim",
         "bbox": x.get("boundingbox"),
-    }
+        "raw_address": addr,  # optional: keep the structured address
+}
 
 class GeocodeIn(BaseModel):
     text: Optional[str] = None
