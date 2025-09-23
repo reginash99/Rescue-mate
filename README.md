@@ -121,7 +121,13 @@ The functions we used are:
 
 # DATABASE
 
-We use posgresql 17.6 for our database system, which means you have to [install](https://www.postgresql.org/download/) it.
+We use posgresql 17.6 for our database system.
+
+Since we use WSL, install the database within your WSL system with the following command: 
+
+```
+sudo apt install postgresql
+```
 
 Start postgresql in wsl:
 ``` 
@@ -142,9 +148,12 @@ Got to the following path within your wsl:
 sudo nano /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
 ```
 And change the following to enable the connection via password authentification:
-from  <br>
-local   all    postgres   peer <br>
-to <br>
+from  
+
+local   all    postgres   peer 
+
+to 
+
 local   all    postgres   md5
 
 Afterwards, restart posgresql:
@@ -156,7 +165,7 @@ Additionally, the python library psycopg has to be installed:
 In the following installation instruction examples, the database is called rescue_mate and it is listening on port 5432 but the values can be adjusted.
 
 ```
-npm install psycopg2
+conda install psycopg 
 ```
 the database can be installed within a terminal 
 
@@ -172,15 +181,20 @@ there is one table called transcription which can be installed within a terminal
 psql -U postgres -p 5432 -d rescue_mate -f migrations/schema.sql 
 ```
 
-for the connection to the database, an .env file in the backend folder is required with the following structure:
+for the connection to the database, create an .env file called .env in the backend folder with the following structure:
 
-DB_NAME="DB_NAME_PLACEHOLDER" <br>
-USER="USER_PLACEHOLDER" <br>
-PASSWORD="PASSWORD_PLACEHOLDER" <br>
-HOST="HOST_PLACEHOLDER"<br>
-PORT="PORT_PLACEHOLDER"
+DB_NAME="DB_NAME_PLACEHOLDER" 
 
-Usually, in postgresql the default port is 5432 and the default user is postgres. <br>
+DB_USER="USER_PLACEHOLDER" 
+
+DB_PASSWORD="PASSWORD_PLACEHOLDER" 
+
+DB_HOST="HOST_PLACEHOLDER"
+
+DB_PORT="PORT_PLACEHOLDER"
+
+Usually, in postgresql the default port is 5432 and the default user is postgres. 
+
 Important is that the port is not listening to other running processes.
 
 to read the .env file, the following package has to be installed:
@@ -188,12 +202,6 @@ to read the .env file, the following package has to be installed:
 ```
 pip install python-dotenv
 ```
-
-we have three transcations that interact with the DB
-insert_record(timestamp, transcription)
-delete_records() (all records are deleted that are older than 24h)
-select_records() 
-
 ## FRONTEND
 # Map
 
