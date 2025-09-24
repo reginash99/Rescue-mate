@@ -10,6 +10,7 @@
       <div :class="['transcription-text', { shrunk: panelOpen }]">
         <div v-if="data">
           <p v-if="data['transcription'] && data['status']">{{ data["transcription"] }}</p>
+          <!-- <p v-else-if="data['transcription'] == '.'"><i>No transcription available.</i></p> -->
           <p v-else><i>No transcription available.</i></p>
         </div>
         <div v-else>
@@ -22,7 +23,7 @@
       </div>
       <div class="side-panel" v-if="panelOpen">
         <div v-if="data">
-          <div v-if="data['text'] && data['text'].trim() !== ''">
+          <div v-if="data['transcription'] && data['transcription'].trim() !== ''">
             <p><i>No updates available</i></p>
           </div>
         </div>

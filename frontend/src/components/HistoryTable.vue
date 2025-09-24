@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { onMounted,ref } from 'vue';
+import { ref } from 'vue';
 
 
 defineProps({
@@ -73,20 +73,17 @@ defineProps({
   }
 })
 
+const showModal = ref(false)
+const selectedItem = ref(null)
 
-
-
-function formatTimestamp(ts) {
-  if (!ts || ts.length < 15) return ts || '';
-  // Example: "20250810_145850"
-  const year = ts.slice(0, 4);
-  const month = ts.slice(4, 6);
-  const day = ts.slice(6, 8);
-  const hour = ts.slice(9, 11);
-  const minute = ts.slice(11, 13);
-  const second = ts.slice(13, 15);
-  return `${day}/${month}/${year}  ${hour}:${minute}:${second}`;
+function openModal(item) { 
+    showModal.value = true
+    selectedItem.value = item 
 }
+
+function closeModal() { 
+    showModal.value = false
+    selectedItem.value = null}
 
 </script>
 
