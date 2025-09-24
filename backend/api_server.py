@@ -1,4 +1,3 @@
-import asyncio
 import os, re, glob, uuid, subprocess, traceback
 from typing import List, Set, Optional
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
@@ -8,9 +7,11 @@ from pydantic import BaseModel
 import httpx
 import datetime
 import json
-from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record,create_new_record, add_audio_path, select_intermediate_result, select_all_transcripts
+from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record, create_new_record, add_audio_path, select_transcriptions, select_intermediate_result
 import dotenv
 import unicodedata
+import asyncio
+from fastapi import Request
 
 def normalize_query(q: str) -> str:
     if not q:
@@ -127,26 +128,21 @@ def convert_webm_to_wav(webm_path, wav_path):
 #         current_id = str(get_latest_id())
 #         add_audio_path(current_id, wav_location,0) # 0 for input audio path
 
-#         # Run the inference pipeline, passing the unique file as input
-#         # (You may need to modify pretrained.sh and inference.py to accept a specific file)
-#         subprocess.run(["sh", "pretrained.sh", wav_filename,current_id], cwd=backend_dir, check=True)
+#         # Update environment variables for subprocess
+#         env = os.environ.copy()
+#         env.update({
+#             "INPUT_AUDIO_DIR": UPLOAD_DIR,
+#             "OUTPUT_AUDIO_DIR": OUTPUT_AUDIO_DIR
+#         })
 
-#         # Find the latest JSON transcription
-#         '''transcription_files = glob.glob("./output_transcriptions/*.json")
-#         latest_transcription = max(transcription_files, key=os.path.getmtime)
-#         with open(latest_transcription, "r", encoding="utf-8") as f:
-#             transcription_data = f.read()
-#             transcription_data_json = json.loads(transcription_data)
+#         subprocess.run([
+#             "sh", "pretrained.sh", wav_filename, current_id, UPLOAD_DIR, OUTPUT_AUDIO_DIR
+#         ], cwd=backend_dir, check=True, env=env)
 
-#         #flag_status =  '1' if transcription_data_json['status'] !== '' else '0'
-#         flag_status = True # placeholder until status is added to json structure    
-#         # Insert record into the database
-#         insert_record(transcription_data_json['timestamp'], transcription_data_json['text'], flag_status)
-#         #insert_record(datetime.datetime.now(), transcription_data_json['text'])
-#         current_id = get_id(transcription_data_json['timestamp'], transcription_data_json['text'],flag_status)'''
-
+     
 #         # delete all records older that 24 hours
-#         #delete_records()
+#         old_records = delete_records()
+#         delete_old_records(old_records)
         
 #         json_data = select_record(current_id)
 #         print(json_data)
@@ -155,9 +151,11 @@ def convert_webm_to_wav(webm_path, wav_path):
 #     except Exception as e:
 #         print("UPLOAD ERROR:", e, "\n", traceback.format_exc())
 #         raise HTTPException(status_code=500, detail=str(e))
+    
 
+pending_responses = {}
 
-
+@app.post("/transcribe-audio/")
 @app.post("/transcribe-audio")
 async def upload_audio(file: UploadFile = File(...)):
     try:
@@ -179,7 +177,7 @@ async def upload_audio(file: UploadFile = File(...)):
         # DB: create new record
         create_new_record()
         current_id = str(get_latest_id())
-        add_audio_path(current_id, wav_location,0) # 0 for input audio path
+        add_audio_path(current_id, wav_location, 0)
 
         # Update environment variables for subprocess
         env = os.environ.copy()
@@ -188,22 +186,61 @@ async def upload_audio(file: UploadFile = File(...)):
             "OUTPUT_AUDIO_DIR": OUTPUT_AUDIO_DIR
         })
 
-        subprocess.run([
-            "sh", "pretrained.sh", wav_filename, current_id, UPLOAD_DIR, OUTPUT_AUDIO_DIR
-        ], cwd=backend_dir, check=True, env=env)
+        # Launch inference
+        subprocess.Popen(
+            [
+                "python", "inference.py",
+                "--output_folder", OUTPUT_AUDIO_DIR,
+                "--input_folder", UPLOAD_DIR,
+                "--checkpoint_file", "ckpts/SEMamba_advanced.pth",
+                "--config", "recipes/SEMamba_advanced/SEMamba_advanced.yaml",
+                "--post_processing_PCS", "False",
+                "--file", wav_filename,
+                "--current_id", current_id
+            ],
+            cwd=os.path.abspath(os.path.dirname(__file__))
+        )
 
-     
         # delete all records older that 24 hours
         old_records = delete_records()
         delete_old_records(old_records)
         
-        json_data = select_record(current_id)
-        print(json_data)
 
-        return JSONResponse(content={"transcription": json_data})
+        # Suspend until inference notifies us
+        loop = asyncio.get_running_loop()
+        fut = loop.create_future()
+        pending_responses[current_id] = fut
+        return await fut
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.post("/transcription-ready")
+async def transcription_ready(request: Request):
+    """Called by inference.py when raw transcript is ready"""
+    data = await request.json()
+    current_id = str(data["id"])
+    record = select_intermediate_result(current_id, 1)
+
+    fut = pending_responses.pop(current_id, None)
+    if fut:
+        fut.set_result(JSONResponse(content={
+            "transcription": record,
+            "id": int(current_id)
+        }))
+    return {"status": "ok"}
+
+
+@app.get("/get-intermediate-transcript/{id}")
+async def get_intermediate_transcript(id: int):
+    try:
+        transcripts = select_transcriptions(id)
+
+        return JSONResponse(content={"transcripts": transcripts})
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/get-history/")

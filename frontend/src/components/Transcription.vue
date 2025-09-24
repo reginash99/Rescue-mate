@@ -12,8 +12,8 @@
     <div v-if="props.data?.transcription">
       <p>{{ props.data.transcription ?? "…" }}</p>
 
-      <small v-if="props.data.timestamp">
-        {{ props.data.timestamp }}
+      <small v-if="props.data.transcription.timestamp">
+        {{ props.data.transcription.timestamp }}
       </small>
   </div>
   
@@ -28,8 +28,13 @@
 
 <div class="side-panel" v-if="panelOpen">
   <div v-if="updates.length > 0">
-    <div v-for="(u, i) in updates" :key="i">
-      <p>{{ u.stage }}: {{ u.text }}</p>
+    <div v-for="(u, i) in updates" :key="i"> 
+      <p v-if="u.bp_preemp_transcr">{{ u.bp_preemp_transcr }}</p>
+      <p v-else-if="u.mamba_bp_transcr">{{ u.mamba_bp_transcr }}</p> 
+      <p v-else-if="u.mamba_bp_preemp_transcr">{{ u.mamba_bp_preemp_transcr }}</p> 
+      <p v-else-if="u.mamba_bp_preemp_deepfilternet_transcr">{{ u.mamba_bp_preemp_deepfilternet_transcr }}</p> 
+      <p v-else-if="u.bp_transcr">{{ u.bp_transcr }}</p> 
+
     </div>
   </div>
   <div v-else>
@@ -99,10 +104,11 @@ function startPolling(id) {
   stopPolling()
   pollInterval = setInterval(async () => {
     try {
-      const res = await fetch(`/get-intermediate-transcript/${id}`)
+      const res = await fetch(`http://127.0.0.1:8000/get-intermediate-transcript/${id}`)
       if (!res.ok) return
       const json = await res.json()
       updates.value = json.transcripts || []
+          
     } catch (e) {
       console.error("Polling error:", e)
     }
@@ -116,7 +122,6 @@ function stopPolling() {
   }
 }
 
-// When we get a new ID from backend, start polling
 watch(() => props.data?.id, (newId) => {
   if (newId) startPolling(newId)
   else stopPolling()
