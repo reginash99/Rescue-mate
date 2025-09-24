@@ -12,14 +12,7 @@ import dotenv
 
 dotenv.load_dotenv()
 
-UPLOAD_DIR = "./input_audio/"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-
 app = FastAPI()
-
-# backend/api_server.py
-
 
 
 # --- create app FIRST ---
@@ -35,11 +28,17 @@ app.add_middleware(
 )
 
 # --- Paths & helpers ---
+# Base directory for backend files
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-UPLOAD_DIR = os.path.join(BASE_DIR, "input_audio")
-OUTPUT_DIR = os.path.join(BASE_DIR, "output_transcriptions")
+
+# Directories can be overridden with environment variables when deploying to a server
+UPLOAD_DIR = os.getenv("INPUT_AUDIO_DIR", os.path.join(BASE_DIR, "input_audio"))
+OUTPUT_AUDIO_DIR = os.getenv("OUTPUT_AUDIO_DIR", os.path.join(BASE_DIR, "output_audio"))
+OUTPUT_TRANSCRIPT_DIR = os.getenv("OUTPUT_TRANSCRIPT_DIR", os.path.join(BASE_DIR, "output_transcriptions"))
+
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(OUTPUT_AUDIO_DIR, exist_ok=True)
+
 
 def run(cmd, cwd=None):
     p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
@@ -49,8 +48,11 @@ def run(cmd, cwd=None):
         )
     return p
 
+
 def convert_webm_to_wav(webm_path, wav_path):
     run(["ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path])
+
+
 
 # --- Routes (after app exists) ---
 @app.post("/transcribe-audio")
@@ -83,26 +85,21 @@ async def upload_audio(file: UploadFile = File(...)):
         current_id = str(get_latest_id())
         add_audio_path(current_id, wav_location,0) # 0 for input audio path
 
-        # Run the inference pipeline, passing the unique file as input
-        # (You may need to modify pretrained.sh and inference.py to accept a specific file)
-        subprocess.run(["sh", "pretrained.sh", wav_filename,current_id], cwd=backend_dir, check=True)
+        # Update environment variables for subprocess
+        env = os.environ.copy()
+        env.update({
+            "INPUT_AUDIO_DIR": UPLOAD_DIR,
+            "OUTPUT_AUDIO_DIR": OUTPUT_AUDIO_DIR
+        })
 
-        # Find the latest JSON transcription
-        '''transcription_files = glob.glob("./output_transcriptions/*.json")
-        latest_transcription = max(transcription_files, key=os.path.getmtime)
-        with open(latest_transcription, "r", encoding="utf-8") as f:
-            transcription_data = f.read()
-            transcription_data_json = json.loads(transcription_data)
+        subprocess.run([
+            "sh", "pretrained.sh", wav_filename, current_id, UPLOAD_DIR, OUTPUT_AUDIO_DIR
+        ], cwd=backend_dir, check=True, env=env)
 
-        #flag_status =  '1' if transcription_data_json['status'] !== '' else '0'
-        flag_status = True # placeholder until status is added to json structure    
-        # Insert record into the database
-        insert_record(transcription_data_json['timestamp'], transcription_data_json['text'], flag_status)
-        #insert_record(datetime.datetime.now(), transcription_data_json['text'])
-        current_id = get_id(transcription_data_json['timestamp'], transcription_data_json['text'],flag_status)'''
-
+     
         # delete all records older that 24 hours
-        #delete_records()
+        old_records = delete_records()
+        delete_old_records(old_records)
         
         json_data = select_record(current_id)
         print(json_data)
@@ -114,12 +111,13 @@ async def upload_audio(file: UploadFile = File(...)):
     
 @app.get("/get-history/")
 async def get_history(): 
-    #delete_records()
+
+    # delete all records older that 24 hours
+    old_records = delete_records()
+    delete_old_records(old_records)
+
     records = select_records()
     return JSONResponse(content={"history": records})
-
-# temporary endpoint to simulate transcription insertion -- mocking the current transcription process
-#@app.post("/transcribe-audio/")
 
 
 # ---------- Geocoding ----------
@@ -230,6 +228,25 @@ async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
     if debug:
         resp["debug"] = dbg
     return resp
+
+# function to delete audio files older than 24 hours from records
+def delete_old_records(records):
+    for record in records:
+        #0 id, 1 inputpath, 2 outputpath
+        print("deleting files from record with id: ", record[0])
+
+        print("deleting input audio file: ", record[1])
+        try:
+            os.remove(record[1])
+        except Exception as e:
+            print("could not delete input audio file: ", e)
+
+        print("deleting output audio file: ", record[2])
+        try:
+            os.remove(record[2])
+            
+        except Exception as e:
+            print("could not delete input audio file: ", e)
 
 # @app.get("/get-audio/{filename}")
 # async def get_audio(filename: str):
