@@ -1,65 +1,26 @@
-import os, re, glob, uuid, subprocess, traceback
+import os, re, uuid, subprocess, traceback
 from typing import List, Set, Optional
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
-import datetime
 import json
-from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record,create_new_record, add_audio_path
 import dotenv
 import unicodedata
 
-def normalize_query(q: str) -> str:
-    if not q:
-        return q
-    s = q.strip()
-
-    # unify common suffix spellings
-    s = re.sub(r'\bStr\.\b', 'Straße', s, flags=re.IGNORECASE)
-    s = re.sub(r'\bStrasse\b', 'Straße', s, flags=re.IGNORECASE)
-
-    # two-way ß/ss variants
-    return s
-
-def variants(q: str) -> list[str]:
-    """Return a few spelling variants to try with Nominatim."""
-    if not q:
-        return []
-
-    s = normalize_query(q)
-
-    out = {s}
-
-    # ß <-> ss
-    out.add(s.replace('ß', 'ss'))
-    out.add(s.replace('ss', 'ß'))
-
-    # de-accent version (ä->a etc.) for lenient search
-    deacc = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
-    out.add(deacc)
-
-    # very common missing-'t' in '...stenstraße' (e.g. Kurfürsenstraße -> Kurfürstenstraße)
-    out.add(re.sub(r'senstraße\b', 'stenstraße', s, flags=re.IGNORECASE))
-
-    # collapse double spaces
-    out = {re.sub(r'\s+', ' ', v).strip() for v in out}
-
-    # keep short non-empty
-    return [v for v in out if v]
-
-
+# --- DB helpers (assumed to be available in your project) ---
+from db import (
+    insert_record, delete_records, select_records, get_id, get_latest_id,
+    select_record, create_new_record, add_audio_path
+)
 
 dotenv.load_dotenv()
 
+# --- App ---
 app = FastAPI()
 
-
-# --- create app FIRST ---
-app = FastAPI()
-
-# --- CORS (optional if you proxy through Vite) ---
+# --- CORS (dev) ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
@@ -69,17 +30,14 @@ app.add_middleware(
 )
 
 # --- Paths & helpers ---
-# Base directory for backend files
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-# Directories can be overridden with environment variables when deploying to a server
 UPLOAD_DIR = os.getenv("INPUT_AUDIO_DIR", os.path.join(BASE_DIR, "input_audio"))
 OUTPUT_AUDIO_DIR = os.getenv("OUTPUT_AUDIO_DIR", os.path.join(BASE_DIR, "output_audio"))
 OUTPUT_TRANSCRIPT_DIR = os.getenv("OUTPUT_TRANSCRIPT_DIR", os.path.join(BASE_DIR, "output_transcriptions"))
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(OUTPUT_AUDIO_DIR, exist_ok=True)
-
 
 def run(cmd, cwd=None):
     p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
@@ -89,13 +47,38 @@ def run(cmd, cwd=None):
         )
     return p
 
-
 def convert_webm_to_wav(webm_path, wav_path):
     run(["ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path])
 
+def normalize_query(q: str) -> str:
+    if not q:
+        return q
+    s = q.strip()
+    # unify common suffix spellings
+    s = re.sub(r'\bStr\.\b', 'Straße', s, flags=re.IGNORECASE)
+    s = re.sub(r'\bStrasse\b', 'Straße', s, flags=re.IGNORECASE)
+    return s
 
+def variants(q: str) -> list[str]:
+    """Return a few spelling variants to try with Nominatim."""
+    if not q:
+        return []
+    s = normalize_query(q)
+    out = {s}
+    # ß <-> ss
+    out.add(s.replace('ß', 'ss'))
+    out.add(s.replace('ss', 'ß'))
+    # de-accent version (ä->a etc.) for lenient search
+    deacc = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
+    out.add(deacc)
+    # very common missing-'t' in '...stenstraße' (e.g. Kurfürsenstraße -> Kurfürstenstraße)
+    out.add(re.sub(r'senstraße\b', 'stenstraße', s, flags=re.IGNORECASE))
+    # collapse double spaces
+    out = {re.sub(r'\s+', ' ', v).strip() for v in out}
+    # keep short non-empty
+    return [v for v in out if v]
 
-# --- Routes (after app exists) ---
+# --- Routes ---
 @app.post("/transcribe-audio")
 @app.post("/transcribe-audio/")
 async def upload_audio(file: UploadFile = File(...)):
@@ -105,26 +88,28 @@ async def upload_audio(file: UploadFile = File(...)):
         ext = ext or ".webm"
         webm_name = f"{base}_{unique_id}{ext}"
         webm_path = os.path.join(UPLOAD_DIR, webm_name)
-        unique_filename = f"{base}_{unique_id}{ext}"
-        file_location = os.path.join(UPLOAD_DIR, unique_filename)
 
         with open(webm_path, "wb") as f:
             f.write(await file.read())
 
-        # Convert to WAV if needed
-        base, _ = os.path.splitext(unique_filename)
-        wav_filename = f"{base}.wav"
+        # Convert to WAV
+        base_noext, _ = os.path.splitext(webm_name)
+        wav_filename = f"{base_noext}.wav"
         wav_location = os.path.join(UPLOAD_DIR, wav_filename)
-        convert_webm_to_wav(file_location, wav_location)
+        convert_webm_to_wav(webm_path, wav_location)
 
-        os.remove(file_location)
+        # remove original webm
+        try:
+            os.remove(webm_path)
+        except Exception:
+            pass
 
         backend_dir = os.path.abspath(os.path.dirname(__file__))
 
-        # Initialize database with a new record to get an ID for intermediate updates
+        # Initialize DB record to get an ID for intermediate updates
         create_new_record()
         current_id = str(get_latest_id())
-        add_audio_path(current_id, wav_location,0) # 0 for input audio path
+        add_audio_path(current_id, wav_location, 0)  # 0: input audio path
 
         # Update environment variables for subprocess
         env = os.environ.copy()
@@ -133,70 +118,90 @@ async def upload_audio(file: UploadFile = File(...)):
             "OUTPUT_AUDIO_DIR": OUTPUT_AUDIO_DIR
         })
 
-        subprocess.run([
-            "sh", "pretrained.sh", wav_filename, current_id, UPLOAD_DIR, OUTPUT_AUDIO_DIR
-        ], cwd=backend_dir, check=True, env=env)
+        # Run your pipeline
+        subprocess.run(
+            ["sh", "pretrained.sh", wav_filename, current_id, UPLOAD_DIR, OUTPUT_AUDIO_DIR],
+            cwd=backend_dir,
+            check=True,
+            env=env
+        )
 
-     
-        # delete all records older that 24 hours
+        # delete all records older than 24 hours (and their files)
         old_records = delete_records()
         delete_old_records(old_records)
-        
-        json_data = select_record(current_id)
-        print(json_data)
 
+        json_data = select_record(current_id)
         return JSONResponse(content={"transcription": json_data})
+
     except Exception as e:
         print("UPLOAD ERROR:", e, "\n", traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
-    
-@app.get("/get-history/")
-async def get_history(): 
 
-    # delete all records older that 24 hours
+@app.get("/get-history")
+@app.get("/get-history/")
+async def get_history():
+    # delete all records older than 24 hours
     old_records = delete_records()
     delete_old_records(old_records)
-
     records = select_records()
     return JSONResponse(content={"history": records})
 
-
 # ---------- Geocoding ----------
 HAMBURG_VIEWBOX = dict(left=8.4, top=53.95, right=10.5, bottom=53.3)
+
 poi_list = [
     "Elbphilharmonie","Miniatur Wunderland","HafenCity","Landungsbrücken",
     "Schanzenviertel","St. Pauli","Reeperbahn","Planten un Blomen","Altona",
     "Hauptbahnhof","Dammtor","Jungfernstieg","Binnenalster","Außenalster",
     "Rathausmarkt","Speicherstadt","Fischmarkt","Eppendorf","Winterhude",
 ]
-street_regex = re.compile(
-    r"\b([A-ZÄÖÜ][a-zäöüß]+(?:[ -][A-ZÄÖÜ][a-zäöüß]+)*\s(?:Straße|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer))\s*(\d+[a-zA-Z]?)?\b"
-)
-suffixless_number_regex = re.compile(
-    r"\b([A-ZÄÖÜ][\wÄÖÜäöüß]+(?:[ -][A-ZÄÖÜ][\wÄÖÜäöüß]+){0,3})\s+(\d+[a-zA-Z]?)\b"
-)
-plz_regex = re.compile(r"\b(20\d{3}|21\d{3}|22\d{3})\s*Hamburg\b", re.I)
 
-def extract_candidates(text: str) -> List[str]:
-    if not text:
-        return []
-    cands: Set[str] = set()
+# Suffixes we care about (also handle "...stieg")
+SUFFIX_WORD = r"(?:Stra(?:ße|sse)|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer|Stieg)"
 
-    if re.search(r"\bHamburg\b", text, re.I):
-        cands.add("Hamburg")
-    for m in street_regex.finditer(text):
-        street = " ".join(filter(None, [m.group(1), m.group(2)]))
-        cands.add(street)
-    for m in suffixless_number_regex.finditer(text):
-        name = m.group(1)
-        cands.add(f"{name} {m.group(2)}")
+# 1) Attached form: "Kurfürstenstraße 29", "Jungfernstieg 12", "Jungfernstieg"
+ATTACHED = re.compile(
+    rf"\b([A-ZÄÖÜ][\wÄÖÜäöüß\-]*(?:{SUFFIX_WORD}))(?:\s+(\d+[a-zA-Z]?))?\b",
+    re.IGNORECASE | re.UNICODE,
+)
+
+# 2) Separated form: "Kurfürsten Straße 29"
+SEPARATED = re.compile(
+    rf"\b([A-ZÄÖÜ][\wÄÖÜäöüß\-]+(?:[ -][A-ZÄÖÜ][\wÄÖÜäöüß\-]+)*)\s{SUFFIX_WORD}(?:\s+(\d+[a-zA-Z]?))?\b",
+    re.IGNORECASE | re.UNICODE,
+)
+
+def extract_candidates(text: str) -> list[str]:
+    cands: set[str] = set()
+    t = text or ""
+
+    # streets: attached suffix
+    for m in ATTACHED.finditer(t):
+        street, num = m.groups()
+        cands.add(street if not num else f"{street} {num}")
+
+    # streets: separated suffix (reconstruct exact surface form)
+    for m in SEPARATED.finditer(t):
+        s = t[m.start():m.end()]
+        cands.add(s.strip())
+
+    # POIs
     for poi in poi_list:
-        if re.search(rf"\b{re.escape(poi)}\b", text, re.I):
+        if re.search(rf"\b{re.escape(poi)}\b", t, re.IGNORECASE):
             cands.add(poi)
-    m = plz_regex.search(text)
-    if m:
-        cands.add(m.group(0))
-    return list(cands)
+
+    # last resort: comma/semicolon chunks with a suffix token somewhere
+    if not cands:
+        for chunk in re.split(r"[;,]", t):
+            if re.search(SUFFIX_WORD, chunk, re.IGNORECASE):
+                cands.add(chunk.strip())
+
+    # absolute fallback: try the whole string (Nominatim is tolerant)
+    if not cands and t.strip():
+        cands.add(t.strip())
+
+    # collapse spaces
+    return [re.sub(r"\s+", " ", c).strip() for c in cands if c.strip()]
 
 async def geocode_one(query: str) -> Optional[dict]:
     cand_list = variants(query)
@@ -257,30 +262,10 @@ async def geocode_one(query: str) -> Optional[dict]:
             "source": "nominatim",
             "bbox": x.get("boundingbox"),
             "raw_address": addr,
-            "q_used": q,     # optional: helps debug which variant matched
+            "q_used": q,  # helps debug which variant matched
         }
 
     return None
-
-SUFFIX = r"(Stra(?:ße|sse)|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer)"
-
-street_with_optional_number = re.compile(
-    rf"\b([A-ZÄÖÜ][\wÄÖÜäöüß\-]+(?:[ -][A-ZÄÖÜ][\wÄÖÜäöüß\-]+)*)\s{SUFFIX}(?:\s+(\d+[a-zA-Z]?))?\b",
-    re.IGNORECASE | re.UNICODE
-)
-
-def extract_candidates(text: str) -> list[str]:
-    cands: set[str] = set()
-    for m in street_with_optional_number.finditer(text or ""):
-        name, suf, num = m.groups()
-        street = f"{name} {suf}" + (f" {num}" if num else "")
-        cands.add(street)
-    # also split commas as last resort
-    for chunk in re.split(r"[;,]", text or ""):
-        if re.search(SUFFIX, chunk, re.I):
-            cands.add(chunk.strip())
-    return list(cands)
-
 
 class GeocodeIn(BaseModel):
     text: Optional[str] = None
@@ -294,8 +279,7 @@ async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
 
     candidates: Set[str] = set()
     for t in texts:
-        for c in extract_candidates(t or ""):
-            candidates.add(c)
+        candidates.update(extract_candidates(t))
 
     markers, dbg = [], []
     for cand in candidates:
@@ -312,28 +296,22 @@ async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
         resp["debug"] = dbg
     return resp
 
-# function to delete audio files older than 24 hours from records
+# --- delete audio files referenced by old records ---
 def delete_old_records(records):
     for record in records:
-        #0 id, 1 inputpath, 2 outputpath
+        # expected tuple: (id, inputpath, outputpath)
         print("deleting files from record with id: ", record[0])
 
-        print("deleting input audio file: ", record[1])
         try:
-            os.remove(record[1])
+            if record[1]:
+                print("deleting input audio file: ", record[1])
+                os.remove(record[1])
         except Exception as e:
             print("could not delete input audio file: ", e)
 
-        print("deleting output audio file: ", record[2])
         try:
-            os.remove(record[2])
-            
+            if record[2]:
+                print("deleting output audio file: ", record[2])
+                os.remove(record[2])
         except Exception as e:
-            print("could not delete input audio file: ", e)
-
-# @app.get("/get-audio/{filename}")
-# async def get_audio(filename: str):
-#     file_path = os.path.join(UPLOAD_DIR, filename)
-#     if not os.path.exists(file_path):
-#         return {"error": "File not found"}
-#     return FileResponse(file_path)
+            print("could not delete output audio file: ", e)
