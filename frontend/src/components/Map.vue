@@ -68,11 +68,19 @@ watch(
 )
 
 function renderMarkersAndFit() {
+  if (!mapRef.value || !markersLayer) return
+
   markersLayer.clearLayers()
 
-  const ms = (props.markers || []).filter(m =>
-    typeof m?.lat === 'number' && typeof m?.lng === 'number'
-  )
+  // 1) Coerce lat/lng to numbers and drop invalids
+  const ms = (props.markers || [])
+    .map(m => ({
+      ...m,
+      lat: Number(m.lat),
+      lng: Number(m.lng),
+    }))
+    .filter(m => Number.isFinite(m.lat) && Number.isFinite(m.lng))
+
   if (!ms.length) return
 
   const latlngs = []
@@ -80,21 +88,16 @@ function renderMarkersAndFit() {
   for (const m of ms) {
     const ll = [m.lat, m.lng]
     latlngs.push(ll)
+    console.log('ll:', ll)
 
     const label = String(m?.label ?? '').trim()
-    const marker = L.marker(ll)
+    const marker = L.marker(ll, { zIndexOffset: 1000 }) // 3) keep above tiles
 
-    // Hover tooltip (sticky so it follows the cursor); Popup on click (sticky)
     if (label) {
       marker
-        .bindTooltip(label, {
-          direction: 'top',
-          sticky: true,
-          opacity: 0.95,
-          interactive: true,
-        })
-        .bindPopup(`<strong>${escapeHtml(label)}</strong>`)
-      // Force visibility on interactions (some UIs suppress default behavior)
+        .bindTooltip(label, { direction: 'top', sticky: true, opacity: 0.95 })
+        .bindPopup(label)
+
       marker.on('mouseover', () => marker.openTooltip())
       marker.on('mouseout',  () => marker.closeTooltip())
       marker.on('click',     () => marker.openPopup())
@@ -103,19 +106,35 @@ function renderMarkersAndFit() {
     marker.addTo(markersLayer)
   }
 
-  // Auto-fit to all markers (zoom out if far apart, in if close)
-  const bounds = L.latLngBounds(latlngs)
+  // 2) If the map container changed size (grid/panels), force Leaflet to recalc
+  mapRef.value.invalidateSize(false)
+
+  // Fit after invalidateSize, and once more on next tick just in case
+  fitNow(latlngs)
+  setTimeout(() => fitNow(latlngs), 0)
+}
+
+
+function fitNow(latlngs) {
+  if (!latlngs.length) return
   if (latlngs.length === 1) {
     mapRef.value.setView(latlngs[0], Math.min(mapRef.value.getMaxZoom?.() || 18, 16))
   } else {
+    const bounds = L.latLngBounds(latlngs)
     mapRef.value.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 })
   }
 }
 
+
 // tiny helper to avoid HTML injection
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]))
+function escapeHtml(s = '') {
+  return String(s).replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[ch]));
 }
+
 </script>

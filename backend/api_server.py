@@ -9,6 +9,47 @@ import datetime
 import json
 from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record,create_new_record, add_audio_path
 import dotenv
+import unicodedata
+
+def normalize_query(q: str) -> str:
+    if not q:
+        return q
+    s = q.strip()
+
+    # unify common suffix spellings
+    s = re.sub(r'\bStr\.\b', 'Straße', s, flags=re.IGNORECASE)
+    s = re.sub(r'\bStrasse\b', 'Straße', s, flags=re.IGNORECASE)
+
+    # two-way ß/ss variants
+    return s
+
+def variants(q: str) -> list[str]:
+    """Return a few spelling variants to try with Nominatim."""
+    if not q:
+        return []
+
+    s = normalize_query(q)
+
+    out = {s}
+
+    # ß <-> ss
+    out.add(s.replace('ß', 'ss'))
+    out.add(s.replace('ss', 'ß'))
+
+    # de-accent version (ä->a etc.) for lenient search
+    deacc = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
+    out.add(deacc)
+
+    # very common missing-'t' in '...stenstraße' (e.g. Kurfürsenstraße -> Kurfürstenstraße)
+    out.add(re.sub(r'senstraße\b', 'stenstraße', s, flags=re.IGNORECASE))
+
+    # collapse double spaces
+    out = {re.sub(r'\s+', ' ', v).strip() for v in out}
+
+    # keep short non-empty
+    return [v for v in out if v]
+
+
 
 dotenv.load_dotenv()
 
@@ -158,46 +199,88 @@ def extract_candidates(text: str) -> List[str]:
     return list(cands)
 
 async def geocode_one(query: str) -> Optional[dict]:
-    params = {
-        "q": f"{query}, Hamburg",
-        "format": "json",
-        "addressdetails": "1",
-        "limit": "1",
-        "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},"
-                   f"{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
-        "bounded": "1",
-    }
-    headers = {"User-Agent": "hamburg-transcription-geocoder/1.0 (your-email@example.com)"}
-    async with httpx.AsyncClient(timeout=10.0, headers=headers) as client:
-        r = await client.get("https://nominatim.openstreetmap.org/search", params=params)
-    r.raise_for_status()
-    data = r.json()
-    if not data:
-        return None
-    x = data[0]
-    addr = x.get("address", {})
-    label_parts = []
-    if "road" in addr:
-        street = addr["road"]
-        if "house_number" in addr:
-            street += f" {addr['house_number']}"
-            label_parts.append(street)
+    cand_list = variants(query)
+    headers = {"User-Agent": "hamburg-transcription-geocoder/1.0 (you@example.com)"}
 
-    if "postcode" in addr:
-        label_parts.append(addr["postcode"])
-    if "city" in addr:
-        label_parts.append(addr["city"])
+    for q in cand_list:
+        params = {
+            "q": f"{q}, Hamburg",
+            "format": "json",
+            "addressdetails": "1",
+            "limit": "1",
+            "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},"
+                       f"{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
+            "bounded": "1",
+            "accept-language": "de",
+            "countrycodes": "de",
+        }
+        try:
+            async with httpx.AsyncClient(timeout=10.0, headers=headers) as client:
+                r = await client.get("https://nominatim.openstreetmap.org/search", params=params)
+            r.raise_for_status()
+            data = r.json()
+        except Exception:
+            continue
 
-    label = ", ".join(label_parts) if label_parts else x.get("display_name")
+        if not data:
+            continue
 
-    return {
-        "label": label,
-        "lat": float(x["lat"]),
-        "lng": float(x["lon"]),
-        "source": "nominatim",
-        "bbox": x.get("boundingbox"),
-        "raw_address": addr,  # optional: keep the structured address
-}
+        x = data[0]
+        lat, lon = x.get("lat"), x.get("lon")
+        if lat is None or lon is None:
+            bbox = x.get("boundingbox")
+            if not bbox or len(bbox) != 4:
+                continue
+            lat = (float(bbox[0]) + float(bbox[1])) / 2.0
+            lon = (float(bbox[2]) + float(bbox[3])) / 2.0
+        else:
+            lat, lon = float(lat), float(lon)
+
+        # pretty label
+        addr = x.get("address", {})
+        city = addr.get("city") or addr.get("town") or addr.get("village") or "Hamburg"
+        street = addr.get("road")
+        house  = addr.get("house_number")
+        parts = []
+        if street:
+            parts.append(f"{street}{(' ' + house) if house else ''}")
+        if addr.get("postcode"):
+            parts.append(addr["postcode"])
+        if city:
+            parts.append(city)
+        label = ", ".join(parts) if parts else x.get("display_name")
+
+        return {
+            "label": label,
+            "lat": lat,
+            "lng": lon,
+            "source": "nominatim",
+            "bbox": x.get("boundingbox"),
+            "raw_address": addr,
+            "q_used": q,     # optional: helps debug which variant matched
+        }
+
+    return None
+
+SUFFIX = r"(Stra(?:ße|sse)|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer)"
+
+street_with_optional_number = re.compile(
+    rf"\b([A-ZÄÖÜ][\wÄÖÜäöüß\-]+(?:[ -][A-ZÄÖÜ][\wÄÖÜäöüß\-]+)*)\s{SUFFIX}(?:\s+(\d+[a-zA-Z]?))?\b",
+    re.IGNORECASE | re.UNICODE
+)
+
+def extract_candidates(text: str) -> list[str]:
+    cands: set[str] = set()
+    for m in street_with_optional_number.finditer(text or ""):
+        name, suf, num = m.groups()
+        street = f"{name} {suf}" + (f" {num}" if num else "")
+        cands.add(street)
+    # also split commas as last resort
+    for chunk in re.split(r"[;,]", text or ""):
+        if re.search(SUFFIX, chunk, re.I):
+            cands.add(chunk.strip())
+    return list(cands)
+
 
 class GeocodeIn(BaseModel):
     text: Optional[str] = None
