@@ -39,17 +39,20 @@ def delete_records():
     ) as conn:
         
         with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
-            
-     
-            if cur.fetchone()[0]:
-                print("table exists")
-                cur.execute("delete from transcription where timestamp < now() - interval '1 day';")
-                conn.commit()
-                print("deleted")
-            else:
-                print("table has to be created")
+
+            cur.execute(
+                "create temporary table delete_transcriptions (id int, input_audio_path text, output_audio_path text);" \
+                "insert into delete_transcriptions (id, input_audio_path, output_audio_path) " \
+                "select id,input_audio_path,output_audio_path from transcription where timestamp <= now() - interval '1 day' order by id desc;"
+            )
+           
+            cur.execute("select * from delete_transcriptions")
+            records = cur.fetchall()
+
+            cur.execute("delete from transcription where id in (select id from delete_transcriptions)"
+            )
+        
+            return records
                 
 
 def select_records():
@@ -84,7 +87,7 @@ def select_records():
                     })
     return json_data
 
-def select_record(id):
+def select_transcriptions(id):
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
         user=os.getenv("DB_USER"),
@@ -99,6 +102,42 @@ def select_record(id):
             
      
             if cur.fetchone()[0]:
+                cur.execute("select final_transcription, raw_transcr,bp_preemp_transcr, mamba_bp_transcr, "\
+                            "mamba_bp_preemp_transcr, mamba_bp_preemp_deepfilternet_transcr, bp_transcr from transcription where id = %s;", (id,))
+                
+                row = cur.fetchone()
+                
+                stages = [
+                ("raw", row[0]),
+                ("bandpass", row[1]),
+                ("bandpass+PE", row[2]),
+                ("mamba+bp", row[3]),
+                ("mamba+bp+PE", row[4]),
+                ("mamba+bp+PE+dfn", row[5]),
+                ("final", row[6]),
+            ]
+
+            result = []
+            for stage, text in stages:
+                if text and text.strip():
+                    result.append({"stage": stage, "text": text})
+        return result
+
+def select_record(id):
+    with psycopg.connect(
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
+    ) as conn:
+
+        with conn.cursor() as cur:
+            table_name = 'transcription'
+            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
+
+
+            if cur.fetchone()[0]:
                 print("table exists")
                 cur.execute("select * from transcription where id = %s;", (id,))
                 conn.commit()
@@ -109,7 +148,8 @@ def select_record(id):
 
                 if not records:
                     return {}
-                
+                cur.execute("select * from transcription where id = %s;", (id,))
+
                 json_data = {
                         'id': row[0],
                         'timestamp': row[1].strftime("%d.%m.%Y  %H:%M:%S"),
@@ -278,7 +318,6 @@ def select_intermediate_result(id, column_index):
                         print("No valid column index provided.")
                         return
             return cur.fetchall()[0]
-#insert_record('2025-09-07 00:12:00', 'This is a test transcription.',False) # just a test that the inserting function works
-#delete_records()
 
-#insert_intermediate_record('This is a test raw transcription to test the id.',1)
+
+    

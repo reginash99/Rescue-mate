@@ -10,17 +10,51 @@ import datetime
 import json
 from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record,create_new_record, add_audio_path, select_intermediate_result, select_all_transcripts
 import dotenv
+import unicodedata
+
+def normalize_query(q: str) -> str:
+    if not q:
+        return q
+    s = q.strip()
+
+    # unify common suffix spellings
+    s = re.sub(r'\bStr\.\b', 'Straße', s, flags=re.IGNORECASE)
+    s = re.sub(r'\bStrasse\b', 'Straße', s, flags=re.IGNORECASE)
+
+    # two-way ß/ss variants
+    return s
+
+def variants(q: str) -> list[str]:
+    """Return a few spelling variants to try with Nominatim."""
+    if not q:
+        return []
+
+    s = normalize_query(q)
+
+    out = {s}
+
+    # ß <-> ss
+    out.add(s.replace('ß', 'ss'))
+    out.add(s.replace('ss', 'ß'))
+
+    # de-accent version (ä->a etc.) for lenient search
+    deacc = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
+    out.add(deacc)
+
+    # very common missing-'t' in '...stenstraße' (e.g. Kurfürsenstraße -> Kurfürstenstraße)
+    out.add(re.sub(r'senstraße\b', 'stenstraße', s, flags=re.IGNORECASE))
+
+    # collapse double spaces
+    out = {re.sub(r'\s+', ' ', v).strip() for v in out}
+
+    # keep short non-empty
+    return [v for v in out if v]
+
+
 
 dotenv.load_dotenv()
 
-UPLOAD_DIR = "./input_audio/"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-
 app = FastAPI()
-
-# backend/api_server.py
-
 
 
 # --- create app FIRST ---
@@ -36,11 +70,17 @@ app.add_middleware(
 )
 
 # --- Paths & helpers ---
+# Base directory for backend files
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-UPLOAD_DIR = os.path.join(BASE_DIR, "input_audio")
-OUTPUT_DIR = os.path.join(BASE_DIR, "output_transcriptions")
+
+# Directories can be overridden with environment variables when deploying to a server
+UPLOAD_DIR = os.getenv("INPUT_AUDIO_DIR", os.path.join(BASE_DIR, "input_audio"))
+OUTPUT_AUDIO_DIR = os.getenv("OUTPUT_AUDIO_DIR", os.path.join(BASE_DIR, "output_audio"))
+OUTPUT_TRANSCRIPT_DIR = os.getenv("OUTPUT_TRANSCRIPT_DIR", os.path.join(BASE_DIR, "output_transcriptions"))
+
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(OUTPUT_AUDIO_DIR, exist_ok=True)
+
 
 def run(cmd, cwd=None):
     p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
@@ -50,8 +90,11 @@ def run(cmd, cwd=None):
         )
     return p
 
+
 def convert_webm_to_wav(webm_path, wav_path):
     run(["ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path])
+
+
 
 # --- Routes (after app exists) ---
 # @app.post("/transcribe-audio")
@@ -136,47 +179,28 @@ async def upload_audio(file: UploadFile = File(...)):
         # DB: create new record
         create_new_record()
         current_id = str(get_latest_id())
-        add_audio_path(current_id, wav_location, 0)
+        add_audio_path(current_id, wav_location,0) # 0 for input audio path
 
-        # Kick off inference pipeline in background
-        subprocess.Popen(
-            [
-                "python", "inference.py",
-                "--output_folder", "output_audio",
-                "--input_folder", "input_audio",
-                "--checkpoint_file", "ckpts/SEMamba_advanced.pth",
-                "--config", "recipes/SEMamba_advanced/SEMamba_advanced.yaml",
-                "--post_processing_PCS", "False",
-                "--file", wav_filename,
-                "--current_id", current_id
-            ],
-            cwd=os.path.abspath(os.path.dirname(__file__))
-        )
+        # Update environment variables for subprocess
+        env = os.environ.copy()
+        env.update({
+            "INPUT_AUDIO_DIR": UPLOAD_DIR,
+            "OUTPUT_AUDIO_DIR": OUTPUT_AUDIO_DIR
+        })
 
-        # --- wait for raw transcript flag ---
-        for _ in range(50):  # e.g. check up to 50 times (≈5s total if 100ms sleep)
-            record = select_record(current_id)
-            if record and record.get("success_status") is True:
-                # we have at least raw transcription
-                return JSONResponse(content={
-                    "transcription": record,
-                    "id": int(current_id)
-                })
-            await asyncio.sleep(0.1)
+        subprocess.run([
+            "sh", "pretrained.sh", wav_filename, current_id, UPLOAD_DIR, OUTPUT_AUDIO_DIR
+        ], cwd=backend_dir, check=True, env=env)
 
-        # if still nothing after timeout, return empty + id
-        return JSONResponse(content={"transcription": None, "id": int(current_id)})
+     
+        # delete all records older that 24 hours
+        old_records = delete_records()
+        delete_old_records(old_records)
+        
+        json_data = select_record(current_id)
+        print(json_data)
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-
-@app.get("/get-intermediate-transcript/{id}")
-async def get_updates(id: int):
-    try:
-        transcripts = select_all_transcripts(id)
-        return JSONResponse(content={"transcripts": transcripts})
+        return JSONResponse(content={"transcription": json_data})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -184,12 +208,13 @@ async def get_updates(id: int):
 
 @app.get("/get-history/")
 async def get_history(): 
-    #delete_records()
+
+    # delete all records older that 24 hours
+    old_records = delete_records()
+    delete_old_records(old_records)
+
     records = select_records()
     return JSONResponse(content={"history": records})
-
-# temporary endpoint to simulate transcription insertion -- mocking the current transcription process
-#@app.post("/transcribe-audio/")
 
 
 # ---------- Geocoding ----------
@@ -230,46 +255,88 @@ def extract_candidates(text: str) -> List[str]:
     return list(cands)
 
 async def geocode_one(query: str) -> Optional[dict]:
-    params = {
-        "q": f"{query}, Hamburg",
-        "format": "json",
-        "addressdetails": "1",
-        "limit": "1",
-        "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},"
-                   f"{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
-        "bounded": "1",
-    }
-    headers = {"User-Agent": "hamburg-transcription-geocoder/1.0 (your-email@example.com)"}
-    async with httpx.AsyncClient(timeout=10.0, headers=headers) as client:
-        r = await client.get("https://nominatim.openstreetmap.org/search", params=params)
-    r.raise_for_status()
-    data = r.json()
-    if not data:
-        return None
-    x = data[0]
-    addr = x.get("address", {})
-    label_parts = []
-    if "road" in addr:
-        street = addr["road"]
-        if "house_number" in addr:
-            street += f" {addr['house_number']}"
-            label_parts.append(street)
+    cand_list = variants(query)
+    headers = {"User-Agent": "hamburg-transcription-geocoder/1.0 (you@example.com)"}
 
-    if "postcode" in addr:
-        label_parts.append(addr["postcode"])
-    if "city" in addr:
-        label_parts.append(addr["city"])
+    for q in cand_list:
+        params = {
+            "q": f"{q}, Hamburg",
+            "format": "json",
+            "addressdetails": "1",
+            "limit": "1",
+            "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},"
+                       f"{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
+            "bounded": "1",
+            "accept-language": "de",
+            "countrycodes": "de",
+        }
+        try:
+            async with httpx.AsyncClient(timeout=10.0, headers=headers) as client:
+                r = await client.get("https://nominatim.openstreetmap.org/search", params=params)
+            r.raise_for_status()
+            data = r.json()
+        except Exception:
+            continue
 
-    label = ", ".join(label_parts) if label_parts else x.get("display_name")
+        if not data:
+            continue
 
-    return {
-        "label": label,
-        "lat": float(x["lat"]),
-        "lng": float(x["lon"]),
-        "source": "nominatim",
-        "bbox": x.get("boundingbox"),
-        "raw_address": addr,  # optional: keep the structured address
-}
+        x = data[0]
+        lat, lon = x.get("lat"), x.get("lon")
+        if lat is None or lon is None:
+            bbox = x.get("boundingbox")
+            if not bbox or len(bbox) != 4:
+                continue
+            lat = (float(bbox[0]) + float(bbox[1])) / 2.0
+            lon = (float(bbox[2]) + float(bbox[3])) / 2.0
+        else:
+            lat, lon = float(lat), float(lon)
+
+        # pretty label
+        addr = x.get("address", {})
+        city = addr.get("city") or addr.get("town") or addr.get("village") or "Hamburg"
+        street = addr.get("road")
+        house  = addr.get("house_number")
+        parts = []
+        if street:
+            parts.append(f"{street}{(' ' + house) if house else ''}")
+        if addr.get("postcode"):
+            parts.append(addr["postcode"])
+        if city:
+            parts.append(city)
+        label = ", ".join(parts) if parts else x.get("display_name")
+
+        return {
+            "label": label,
+            "lat": lat,
+            "lng": lon,
+            "source": "nominatim",
+            "bbox": x.get("boundingbox"),
+            "raw_address": addr,
+            "q_used": q,     # optional: helps debug which variant matched
+        }
+
+    return None
+
+SUFFIX = r"(Stra(?:ße|sse)|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer)"
+
+street_with_optional_number = re.compile(
+    rf"\b([A-ZÄÖÜ][\wÄÖÜäöüß\-]+(?:[ -][A-ZÄÖÜ][\wÄÖÜäöüß\-]+)*)\s{SUFFIX}(?:\s+(\d+[a-zA-Z]?))?\b",
+    re.IGNORECASE | re.UNICODE
+)
+
+def extract_candidates(text: str) -> list[str]:
+    cands: set[str] = set()
+    for m in street_with_optional_number.finditer(text or ""):
+        name, suf, num = m.groups()
+        street = f"{name} {suf}" + (f" {num}" if num else "")
+        cands.add(street)
+    # also split commas as last resort
+    for chunk in re.split(r"[;,]", text or ""):
+        if re.search(SUFFIX, chunk, re.I):
+            cands.add(chunk.strip())
+    return list(cands)
+
 
 class GeocodeIn(BaseModel):
     text: Optional[str] = None
@@ -300,6 +367,25 @@ async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
     if debug:
         resp["debug"] = dbg
     return resp
+
+# function to delete audio files older than 24 hours from records
+def delete_old_records(records):
+    for record in records:
+        #0 id, 1 inputpath, 2 outputpath
+        print("deleting files from record with id: ", record[0])
+
+        print("deleting input audio file: ", record[1])
+        try:
+            os.remove(record[1])
+        except Exception as e:
+            print("could not delete input audio file: ", e)
+
+        print("deleting output audio file: ", record[2])
+        try:
+            os.remove(record[2])
+            
+        except Exception as e:
+            print("could not delete input audio file: ", e)
 
 # @app.get("/get-audio/{filename}")
 # async def get_audio(filename: str):
