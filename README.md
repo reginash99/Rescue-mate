@@ -267,6 +267,39 @@ The text "No data received yet." is displyed by default and the text "No transcr
 
 To show a history of transcriptions, a table with unique IDs, a timestamp, and a status (successful - not empty transcription, fail - empty transcription) is displayed.
 
+# USER
+
+## Microphone permissions
+Ensure that you have **allowed microphone permissions** for the website. A recording cannot be started otherwise. **Reload the page** after allowing permissions for the microphone.
+
+## Starting a Recording
+Click on the red "Start recording" button to start a recording. An audio spectrum/wave will be appear and the button's text will change to 'Stop recording' to indicate that the recording has started. A processing buffer will also appear in the trancription box during processing.
+
+Record your audio and click the same button to stop the recording. Once the audio is recorded, it will be sent to the backend for processing. This may take a few seconds, depending on the length of the audio. 
+
+A new audio cannot be recorded during this processing, therefore, the recording button is disable (will be greyed and cannot be clicked on). The button will be enabled again once the processing is complete.
+
+## Transcription
+Once the transcription is available, it will appear in the transcription view. In case the audio could not be transcribed, "No transcription available" text will be displayed instead.
+
+## History
+Records of each trancription along with a unique *ID*, a *timestamp* (at the time the recording is started), and a *status* are saved in the database and displayed in the History table in the frontend. A _View_ button can be seen in each row of the displayed record. Click on this _View_ button to view the trancription of the selected record.
+
+### Status
+A _Success_ status is displayed in case a transcription is available for the recorded audio. A _Failed_ status is displayed otherwise.
+
+### Saving Records
+All records of the trancriptions are **deleted after 24 hours**. The recorded audios themselves are not saved, only the trancriptions, IDs, and timestamps are saved.
+
+## Map
+In case any address(es) is **detected in the transcription** of the recording that exists in the region of Hamburg, it will be displayed in the map with a pin. Hovering on the pin will display the address detected.
+
+## Resizing
+The components can be resized to your liking by dragging the bottom right corner of the recording box that is also highlighted by two lines. The maximum and minimum widths are set according to the size of your screen.
+
+## Themes
+The theme of the webite follows the theme of your browser. There are two themes available, dark and light.
+
 
 ## Citation
 
