@@ -62,7 +62,6 @@ def whisper_decode(model, audio_array, language=None):
 
 def inference(args, device):
 
-    
     # current id for database access
     current_id = int(args.current_id)
 
@@ -114,7 +113,7 @@ def inference(args, device):
         #FIRST RAW TRANSCRIPT IS GENERATED HERE and saved at best_result - NO FILTERS APPLIED
         best_result = whisper_decode(whisper_model, best_audio)
         best_result["text"] = cleanup_repetition(best_result["text"])
-        save_intermediate_transcript(base, stage, best_result)
+        #save_intermediate_transcript(base, stage, best_result)
         print(f"Stage RAW text: {best_result.get('text','').strip()}")
 
         # Here is where we insert the raw transcript into the database
@@ -127,7 +126,7 @@ def inference(args, device):
         if quality == "clean":
             print("Audio classified as clean -> skipping filtering.")
             stage = "final"
-            save_intermediate_transcript(base, stage, best_result)
+            #save_intermediate_transcript(base, stage, best_result)
 
         # ===== Stage 2: Band-pass (conditional) =====
         elif quality == "moderate":
@@ -135,13 +134,11 @@ def inference(args, device):
             bp_audio = bandpass_filter(best_audio)
             bp_result = whisper_decode(whisper_model, bp_audio)
             stage = "bandpass"
-            save_intermediate_transcript(base, stage, bp_result)
+            #save_intermediate_transcript(base, stage, bp_result)
             best_result = compare_and_update(best_result, bp_result, stage)
             best_audio = bp_audio
 
             insert_intermediate_record(bp_result["text"].strip(), 6,current_id)
-            if(bp_result["text"]):
-                set_success_status(current_id, True)
                    
          # ===== Stage 3: Band-pass + Pre-emphasis (conditional) =====
         elif quality == "muffled":
@@ -150,14 +147,12 @@ def inference(args, device):
             pe_audio = pre_emphasis(bp_audio)
             pe_result = whisper_decode(whisper_model, pe_audio)
             stage = "bandpass+PE"
-            save_intermediate_transcript(base, stage, pe_result)
+            #save_intermediate_transcript(base, stage, pe_result)
             best_result = compare_and_update(best_result, pe_result, stage)
             best_audio = pe_audio
 
             insert_intermediate_record(pe_result["text"].strip(), 2,current_id)
-            if(pe_result["text"]):
-                set_success_status(current_id, True)  
-
+           
         # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
         elif quality == "noisy":  #run SEMamba only when noisy enough
             print("Audio is noisy, applying SEmamba and bandpass.")
@@ -206,26 +201,22 @@ def inference(args, device):
         
             
             mamba_result = whisper_decode(whisper_model, mamba_audio)
-            save_intermediate_transcript(base, stage, mamba_result)
+            #save_intermediate_transcript(base, stage, mamba_result)
             best_result = compare_and_update(best_result, mamba_result, stage)
             best_audio = mamba_audio
             insert_intermediate_record(mamba_result["text"].strip(), 3,current_id)
-            if(mamba_result["text"]):
-                set_success_status(current_id, True)  
-
+            
             if hf_ratio < 0.02:
                 print("Post-Mamba audio still muffled -> applying pre-emphasis.")
                 mamba_audio = pre_emphasis(mamba_audio)
                 stage += "+PE"
                 mamba_pe_result = whisper_decode(whisper_model, mamba_audio) 
-                save_intermediate_transcript(base, stage, mamba_pe_result)
+                #save_intermediate_transcript(base, stage, mamba_pe_result)
                 best_result = compare_and_update(best_result, mamba_pe_result, stage)
                 best_audio = mamba_audio
 
                 insert_intermediate_record(mamba_pe_result["text"].strip(), 4,current_id)
-                if(mamba_pe_result["text"]):
-                    set_success_status(current_id, True)  
-
+               
             # ===== Stage 5: DeepFilterNet (conditional) =====
             snr_post = estimate_snr_vad(best_audio, sr=16000)
             flatness_post = librosa.feature.spectral_flatness(S=np.abs(librosa.stft(best_audio))).mean()
@@ -243,13 +234,11 @@ def inference(args, device):
                 
                 dfn_audio, _ = librosa.load(dfn_path, sr=16000, mono=True)
                 dfn_result = whisper_decode(whisper_model, dfn_audio)
-                save_intermediate_transcript(base, stage, dfn_result)
+                #save_intermediate_transcript(base, stage, dfn_result)
                 best_result = compare_and_update(best_result, dfn_result, stage)
                 best_audio = dfn_audio
 
                 insert_intermediate_record(dfn_result["text"].strip(), 5,current_id)
-                if(dfn_result["text"]):
-                    set_success_status(current_id, True)  
                 
                 os.remove(dfn_path)
 
@@ -258,15 +247,13 @@ def inference(args, device):
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         best_result["timestamp"] = timestamp
         best_result["text"] = cleanup_repetition(best_result["text"])
-        save_intermediate_transcript(base, "final", best_result)
+        #save_intermediate_transcript(base, "final", best_result)
 
         add_audio_path(current_id, final_wav_out,1) # 1 for output audio path
 
         # Here is where we insert the final transcript into the database
         insert_intermediate_record(best_result["text"].strip(), 0,current_id)
-        if(best_result["text"]):
-            set_success_status(current_id, True) 
-
+        
         print(f"\nFINAL TEXT   : {best_result.get('text','').strip()}")
         print(f"SAVED WAV    : {final_wav_out}")
         print(f"SAVED JSON   : {base}")
