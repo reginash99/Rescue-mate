@@ -202,6 +202,17 @@ to read the .env file, the following package has to be installed:
 ```
 pip install python-dotenv
 ```
+
+#SERVER
+
+For deploying the application, it is necessary to add two environment variables to the .env file with the following structure:
+
+INPUT_AUDIO_DIR="PATH_WITHIN_SERVER_TO_STORE_AUDIO_INPUTS"
+
+OUTPUT_AUDIO_DIR="PATH_WITHIN_SERVER_TO_STORE_AUDIO_OUTPUTS"
+
+The audio files are deleted after 24h
+
 ## FRONTEND
 # Map
 

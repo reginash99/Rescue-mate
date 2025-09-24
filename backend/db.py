@@ -87,7 +87,7 @@ def select_records():
                     })
     return json_data
 
-def select_record(id):
+def select_transcriptions(id):
     with psycopg.connect(
         dbname=os.getenv("DB_NAME"),
         user=os.getenv("DB_USER"),
@@ -122,6 +122,41 @@ def select_record(id):
                 if text and text.strip():
                     result.append({"stage": stage, "text": text})
         return result
+
+def select_record(id):
+    with psycopg.connect(
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
+    ) as conn:
+
+        with conn.cursor() as cur:
+            table_name = 'transcription'
+            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
+
+
+            if cur.fetchone()[0]:
+                print("table exists")
+                cur.execute("select * from transcription where id = %s;", (id,))
+                conn.commit()
+
+                records = cur.fetchall()
+                row = records[0]
+                #create json from records
+
+                if not records:
+                    return {}
+                cur.execute("select * from transcription where id = %s;", (id,))
+
+                json_data = {
+                        'id': row[0],
+                        'timestamp': row[1].strftime("%d.%m.%Y  %H:%M:%S"),
+                        'transcription': row[2],
+                        'status': row[3]
+                    }
+    return json_data
 
 def get_id(timestamp, transcription,status):
     with psycopg.connect(
