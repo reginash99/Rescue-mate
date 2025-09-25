@@ -134,6 +134,8 @@ def score_transcript(result, baseline_len=None):
 # ------------------------------
 
 def compare_and_update(old_result, new_result, stage_name, semantic_weight=2.0):
+    new_or_old=""
+
     if old_result is None:
         return new_result
 
@@ -147,7 +149,8 @@ def compare_and_update(old_result, new_result, stage_name, semantic_weight=2.0):
             print(f"[COMPARE] {stage_name}: new transcript looks like nonsense, rejecting.\n")
             old_result["text"] = old_clean
             old_result["text"]= cleanup_repetition(old_result["text"])
-            return old_result
+            new_or_old="new is nonsense"
+            return old_result, new_or_old
 
     sim = semantic_similarity(new_clean, old_clean)
 
@@ -167,9 +170,11 @@ def compare_and_update(old_result, new_result, stage_name, semantic_weight=2.0):
         print("→ New transcript is better, replacing old one.\n")
         new_result["text"] = new_clean
         new_result["text"]= cleanup_repetition(new_result["text"])
-        return new_result
+        new_or_old="new"
+        return new_result, new_or_old
     else:
         print("→ Old transcript is better, keeping it.\n")
         old_result["text"] = old_clean
         old_result["text"]= cleanup_repetition(old_result["text"])
-        return old_result
+        new_or_old="old"
+        return old_result, new_or_old

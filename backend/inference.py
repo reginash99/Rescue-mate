@@ -161,10 +161,17 @@ def inference(args, device):
         bp_result = whisper_decode(whisper_model, bp_audio)
         stage = "bandpass"
         #save_intermediate_transcript(base, stage, bp_result)
-        best_result = compare_and_update(best_result, bp_result, stage)
+        best_result, new_or_old = compare_and_update(best_result, bp_result, stage)
         best_audio = bp_audio
 
         insert_intermediate_record(bp_result["text"].strip(), 6,current_id)
+
+        if(new_or_old=="new is nonsense"):
+            send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+        elif(new_or_old=="new"):
+            send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+        elif(new_or_old=="old"):
+            send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
                 
         # ===== Stage 3: Band-pass + Pre-emphasis (conditional) =====
     elif quality == "muffled":
@@ -175,10 +182,17 @@ def inference(args, device):
         pe_result = whisper_decode(whisper_model, pe_audio)
         stage = "bandpass+PE"
         #save_intermediate_transcript(base, stage, pe_result)
-        best_result = compare_and_update(best_result, pe_result, stage)
+        best_result, new_or_old = compare_and_update(best_result, pe_result, stage)
         best_audio = pe_audio
 
         insert_intermediate_record(pe_result["text"].strip(), 2,current_id)
+
+        if(new_or_old=="new is nonsense"):
+            send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+        elif(new_or_old=="new"):
+            send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+        elif(new_or_old=="old"):
+            send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
         
     # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
     elif quality == "noisy":  #run SEMamba only when noisy enough
@@ -230,9 +244,16 @@ def inference(args, device):
         
         mamba_result = whisper_decode(whisper_model, mamba_audio)
         #save_intermediate_transcript(base, stage, mamba_result)
-        best_result = compare_and_update(best_result, mamba_result, stage)
+        best_result, new_or_old = compare_and_update(best_result, mamba_result, stage)
         best_audio = mamba_audio
         insert_intermediate_record(mamba_result["text"].strip(), 3,current_id)
+
+        if(new_or_old=="new is nonsense"):
+            send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+        elif(new_or_old=="new"):
+            send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+        elif(new_or_old=="old"):
+            send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
         
         if hf_ratio < 0.02:
             print("Post-Mamba audio still muffled -> applying pre-emphasis.")
@@ -241,10 +262,17 @@ def inference(args, device):
             stage += "+PE"
             mamba_pe_result = whisper_decode(whisper_model, mamba_audio) 
             #save_intermediate_transcript(base, stage, mamba_pe_result)
-            best_result = compare_and_update(best_result, mamba_pe_result, stage)
+            best_result, new_or_old = compare_and_update(best_result, mamba_pe_result, stage)
             best_audio = mamba_audio
 
             insert_intermediate_record(mamba_pe_result["text"].strip(), 4,current_id)
+
+            if(new_or_old=="new is nonsense"):
+                send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+            elif(new_or_old=="new"):
+                send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+            elif(new_or_old=="old"):
+                send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
             
         # ===== Stage 5: DeepFilterNet (conditional) =====
         snr_post = estimate_snr_vad(best_audio, sr=16000)
@@ -265,10 +293,17 @@ def inference(args, device):
             dfn_audio, _ = librosa.load(dfn_path, sr=16000, mono=True)
             dfn_result = whisper_decode(whisper_model, dfn_audio)
             #save_intermediate_transcript(base, stage, dfn_result)
-            best_result = compare_and_update(best_result, dfn_result, stage)
+            best_result, new_or_old = compare_and_update(best_result, dfn_result, stage)
             best_audio = dfn_audio
 
             insert_intermediate_record(dfn_result["text"].strip(), 5,current_id)
+
+            if(new_or_old=="new is nonsense"):
+                send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+            elif(new_or_old=="new"):
+                send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+            elif(new_or_old=="old"):
+                send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
             
             os.remove(dfn_path)
 
@@ -281,7 +316,6 @@ def inference(args, device):
 
     add_audio_path(current_id, final_wav_out,1) # 1 for output audio path
 
-    # Here is where we insert the final transcript into the database
     insert_intermediate_record(best_result["text"].strip(), 0,current_id)
     
     print(f"\nFINAL TEXT   : {best_result.get('text','').strip()}")
