@@ -71,8 +71,7 @@ def variants(q: str) -> list[str]:
     # de-accent version (ä->a etc.) for lenient search
     deacc = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
     out.add(deacc)
-    # very common missing-'t' in '...stenstraße' (e.g. Kurfürsenstraße -> Kurfürstenstraße)
-    out.add(re.sub(r'senstraße\b', 'stenstraße', s, flags=re.IGNORECASE))
+
     # collapse double spaces
     out = {re.sub(r'\s+', ' ', v).strip() for v in out}
     # keep short non-empty
