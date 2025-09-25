@@ -135,6 +135,10 @@ html, body {
   max-width: calc(100vw - 30vw);
 }
 
+.transcript {
+  resize: vertical !important;
+}
+
 @media (max-width: 900px) {
   .grid-container {
     grid-template-columns: 1fr;

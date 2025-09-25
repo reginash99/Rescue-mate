@@ -7,50 +7,59 @@
         </svg>
     </button>
 
-<div class="transcription">
-  <div :class="['transcription-text', { shrunk: panelOpen }]">
-    <div v-if="props.data?.transcription">
-      <p>{{ props.data.transcription ?? "…" }}</p>
+    <div class="transcription">
+      <div :class="['transcription-text', { shrunk: panelOpen }]">
+        <div v-if="props.data?.transcription">
+          <p>{{ props.data.transcription ?? "…" }}</p>
 
-      <small v-if="props.data.transcription.timestamp">
-        {{ props.data.transcription.timestamp }}
-      </small>
-  </div>
-  
-  <div v-else>
-    <p><i>Press the record button to transcribe your audio</i></p>
-  </div>
-  <div v-if="status" class="overlay">
-    <div class="spinner"></div>
-    <div class="overlay-text">Processing…</div>
-  </div>
-</div>
+          <small v-if="props.data.transcription.timestamp">
+            {{ props.data.transcription.timestamp }}
+          </small>
+        </div>
+      
+        <div v-else>
+          <p><i>Press the record button to transcribe your audio</i></p>
+        </div>
+        <div v-if="status" class="overlay">
+          <div class="spinner"></div>
+          <div class="overlay-text">Processing…</div>
+        </div>
+      </div>
 
-<div class="side-panel" v-if="panelOpen">
-  <div v-if="updates.length > 0">
-    <div v-for="(u, i) in updates" :key="i"> 
-      <p v-if="u.bp_preemp_transcr">{{ u.bp_preemp_transcr }}</p>
-      <p v-else-if="u.mamba_bp_transcr">{{ u.mamba_bp_transcr }}</p> 
-      <p v-else-if="u.mamba_bp_preemp_transcr">{{ u.mamba_bp_preemp_transcr }}</p> 
-      <p v-else-if="u.mamba_bp_preemp_deepfilternet_transcr">{{ u.mamba_bp_preemp_deepfilternet_transcr }}</p> 
-      <p v-else-if="u.bp_transcr">{{ u.bp_transcr }}</p> 
+      <div class="side-panel" v-if="panelOpen">
+        <div v-if="updates.length > 0">
+          <div v-for="(u, i) in updates" :key="i"> 
+            <p v-if="u.bp_preemp_transcr">{{ u.bp_preemp_transcr }}</p>
+            <p v-else-if="u.mamba_bp_transcr">{{ u.mamba_bp_transcr }}</p> 
+            <p v-else-if="u.mamba_bp_preemp_transcr">{{ u.mamba_bp_preemp_transcr }}</p> 
+            <p v-else-if="u.mamba_bp_preemp_deepfilternet_transcr">{{ u.mamba_bp_preemp_deepfilternet_transcr }}</p> 
+            <p v-else-if="u.bp_transcr">{{ u.bp_transcr }}</p> 
 
-    </div>
-  </div>
-  <div v-else>
-    <p><i>No updates available</i></p>
-  </div>
-</div>
-
-  
+          </div>
+        </div>
+        <div v-else>
+          <p><i>No updates available</i></p>
+        </div>
+      </div>
       <button class="btn floating-btn" @click="panelOpen = !panelOpen">
         <img src="./media/notification.png"></img>
         <span v-if="!panelOpen">!</span>
       </button>
     </div>
-    <!-- <div class="updates" v-if="panelOpen">
-      <p>Showing update for transcript...</p>
-    </div> -->
+
+
+
+<div class="updates-div">
+  <p v-if="logs.length === 0"><i>No log messages yet…</i></p>
+  <div v-else>
+    <p v-for="(log, i) in logs" :key="i">
+      [{{ log.timestamp }}] {{ log.message }}
+    </p>
+  </div>
+</div>
+
+
+
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-content">
         <button class="modal-close" @click="closeModal">×</button>
@@ -75,8 +84,10 @@ const panelOpen = ref(false)
 const showModal = ref(false)
 const isGeocoding = ref(false)
 const markers = ref([])
-const updates = ref([]) // array of stage transcripts
+const updates = ref([]) 
+const logs = ref([])
 let pollInterval = null
+let logPollInterval = null
 
 // Watch raw transcription for geocoding
 watch(() => props.data?.transcription, async (newVal) => {
@@ -105,6 +116,7 @@ function startPolling(id) {
   pollInterval = setInterval(async () => {
     try {
       const res = await fetch(`http://127.0.0.1:8000/get-intermediate-transcript/${id}`)
+      
       if (!res.ok) return
       const json = await res.json()
       updates.value = json.transcripts || []
@@ -122,12 +134,45 @@ function stopPolling() {
   }
 }
 
+function startLogPolling(id) {
+  stopLogPolling()
+  logPollInterval = setInterval(async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/get-logs/${id}`)
+      if (!res.ok) return
+      const json = await res.json()
+      
+      logs.value = json.logs || []
+    } catch (e) {
+      console.error("Log polling error:", e)
+    }
+  }, 3000)
+}
+
+function stopLogPolling() {
+  if (logPollInterval) {
+    clearInterval(logPollInterval)
+    logPollInterval = null
+  }
+}
+
+
+
 watch(() => props.data?.id, (newId) => {
-  if (newId) startPolling(newId)
-  else stopPolling()
+  if (newId) {
+    startPolling(newId)
+    startLogPolling(newId) 
+   }
+   else{
+    stopPolling()
+    stopLogPolling()
+   } 
 })
 
-onUnmounted(() => stopPolling())
+onUnmounted(() => {
+  stopPolling()
+  stopLogPolling()
+})
 
 function openModal() { showModal.value = true }
 function closeModal() { showModal.value = false }
@@ -143,6 +188,7 @@ function closeModal() { showModal.value = false }
   height: 100%;
   width: 100%;
   position: relative;
+  overflow: auto;
 }
 
 .transcription-main h1 {
@@ -156,8 +202,7 @@ function closeModal() { showModal.value = false }
   display: flex;
   padding: 15px;
   font-size: x-large;
-  min-height: 300px;
-  height: 100%;
+  height: 80%;
   background-color: var(--secondary-background);
   margin: 15px;
   border-radius: 15px;
@@ -230,13 +275,13 @@ function closeModal() { showModal.value = false }
 }
 
 /* Updates caption */
-.updates {
+.updates-div {
   position: relative;
   left: 20px;
   margin-top: -5px;
   margin-bottom: -12px;
-  opacity: 0;
-  animation: fadeInCaption 0.5s cubic-bezier(.77,0,.18,1) forwards;
+  opacity: 1;
+  /* animation: fadeInCaption 0.5s cubic-bezier(.77,0,.18,1) forwards; */
 }
 
 @keyframes fadeInCaption {

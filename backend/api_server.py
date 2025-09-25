@@ -56,6 +56,7 @@ def variants(q: str) -> list[str]:
 dotenv.load_dotenv()
 
 app = FastAPI()
+logs_store = {}
 
 
 # --- create app FIRST ---
@@ -241,6 +242,34 @@ async def get_intermediate_transcript(id: int):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/log-update")
+async def log_update(request: Request):
+    data = await request.json()
+    current_id = str(data["id"])
+    message = data["message"]
+    
+    # Store in DB or just push into memory
+    #add_log_message(current_id, message)
+
+
+    if current_id not in logs_store:
+        logs_store[current_id] = []
+    logs_store[current_id].append({
+        "message": message,
+        "timestamp": datetime.datetime.now().strftime("%H:%M:%S")
+    })
+
+    return JSONResponse(content={"ok": True})
+
+
+@app.get("/get-logs/{id}")
+async def get_logs(id: int):
+    current_id = str(id)
+    logs = logs_store.get(current_id, [])
+    return JSONResponse(content={"logs": logs})
 
 
 @app.get("/get-history/")

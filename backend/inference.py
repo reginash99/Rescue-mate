@@ -26,6 +26,17 @@ dotenv.load_dotenv()
 h = None
 device = None 
 
+
+def send_log_to_frontend(current_id, message):
+    try:
+        post("http://127.0.0.1:8000/log-update", json={
+            "id": current_id,
+            "message": message
+        })
+    except Exception as e:
+        print("Failed to send log:", e)
+
+
 # ------------------------------
 # Whisper config
 # ------------------------------
@@ -117,6 +128,7 @@ def inference(args, device):
         #save_intermediate_transcript(base, stage, best_result)
         print(f"Stage RAW text: {best_result.get('text','').strip()}")
 
+
         # Here is where we insert the raw transcript into the database
         insert_intermediate_record(best_result["text"].strip(), 1,current_id)
         if(best_result["text"]):
@@ -131,15 +143,20 @@ def inference(args, device):
         print("Failed to notify API:", e)
     
     quality, snr_db, flatness,hf_ratio = classify_audio_quality(best_audio, sr=sr)
+    
+    send_log_to_frontend(current_id, "Checking audio quality...")
 
     if quality == "clean":
         print("Audio classified as clean -> skipping filtering.")
         stage = "final"
+        send_log_to_frontend(current_id, "Audio classified as clean -> skipping filtering.")
         #save_intermediate_transcript(base, stage, best_result)
 
     # ===== Stage 2: Band-pass (conditional) =====
     elif quality == "moderate":
         print("Audio is moderately noisy, applying bandpass.")
+        send_log_to_frontend(current_id, "Audio is moderately noisy, applying bandpass.")
+        
         bp_audio = bandpass_filter(best_audio)
         bp_result = whisper_decode(whisper_model, bp_audio)
         stage = "bandpass"
@@ -152,6 +169,7 @@ def inference(args, device):
         # ===== Stage 3: Band-pass + Pre-emphasis (conditional) =====
     elif quality == "muffled":
         print("Audio is muffled, applying bandpass and pre-emphasis.")
+        send_log_to_frontend(current_id, "Audio is muffled, applying bandpass and pre-emphasis.")
         bp_audio = bandpass_filter(best_audio)
         pe_audio = pre_emphasis(bp_audio)
         pe_result = whisper_decode(whisper_model, pe_audio)
@@ -165,6 +183,7 @@ def inference(args, device):
     # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
     elif quality == "noisy":  #run SEMamba only when noisy enough
         print("Audio is noisy, applying SEmamba and bandpass.")
+        send_log_to_frontend(current_id, "Audio is noisy, applying SEmamba and bandpass.")
         stage = "SEMamba+BP"
     
     # If clip is long (> 4 minutes) use chunked processing to avoid OOM
@@ -217,6 +236,7 @@ def inference(args, device):
         
         if hf_ratio < 0.02:
             print("Post-Mamba audio still muffled -> applying pre-emphasis.")
+            send_log_to_frontend(current_id, "Post-Mamba audio still muffled -> applying pre-emphasis.")
             mamba_audio = pre_emphasis(mamba_audio)
             stage += "+PE"
             mamba_pe_result = whisper_decode(whisper_model, mamba_audio) 
@@ -232,6 +252,7 @@ def inference(args, device):
         if snr_post < 15 and flatness_post < 0.01:
             print(f"SNR Post={snr_post:.2f} dB, flatness post={flatness_post:.4f}")
             print("Audio is still noisy, applying DeepFilterNet.")
+            send_log_to_frontend(current_id, "Audio is still noisy, applying DeepFilterNet.") 
             stage = "DeepFilterNet"
 
             tmp_dir = "tmp"
