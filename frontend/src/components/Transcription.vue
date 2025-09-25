@@ -49,14 +49,17 @@
 
 
 
-<div class="updates-div">
-  <p v-if="logs.length === 0"><i>No log messages yet…</i></p>
-  <div v-else>
-    <p v-for="(log, i) in logs" :key="i">
-      [{{ log.timestamp }}] {{ log.message }}
-    </p>
-  </div>
-</div>
+    <div class="updates-div">
+      <p v-if="logs.length === 0"><i>No log messages yet… </i></p>
+      <div v-else>
+        <!-- <p>
+          [{{ logs[logs.length - 1].timestamp }}] {{ logs[logs.length - 1].message }}
+        </p> -->
+        <p v-for="(log, i) in logs" :key="i">
+          [{{ log.timestamp }}] {{ log.message }}
+        </p>
+      </div>
+    </div>
 
 
 
@@ -120,7 +123,6 @@ function startPolling(id) {
       if (!res.ok) return
       const json = await res.json()
       updates.value = json.transcripts || []
-          
     } catch (e) {
       console.error("Polling error:", e)
     }
@@ -138,6 +140,9 @@ function startLogPolling(id) {
   stopLogPolling()
   logPollInterval = setInterval(async () => {
     try {
+          if (logs.length > 0) {
+            logs = []
+        }
       const res = await fetch(`http://127.0.0.1:8000/get-logs/${id}`)
       if (!res.ok) return
       const json = await res.json()
@@ -188,7 +193,6 @@ function closeModal() { showModal.value = false }
   height: 100%;
   width: 100%;
   position: relative;
-  overflow: auto;
 }
 
 .transcription-main h1 {
@@ -281,6 +285,10 @@ function closeModal() { showModal.value = false }
   margin-top: -5px;
   margin-bottom: -12px;
   opacity: 1;
+  max-height: 80px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  max-width: 1320px;
   /* animation: fadeInCaption 0.5s cubic-bezier(.77,0,.18,1) forwards; */
 }
 
