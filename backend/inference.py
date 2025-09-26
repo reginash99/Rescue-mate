@@ -17,6 +17,7 @@ from helpers_and_filters import bandpass_filter, pre_emphasis, run_deepfilternet
 from transcription_comparison import cleanup_repetition, compare_and_update
 from db import insert_intermediate_record,set_success_status,add_audio_path
 import dotenv
+from requests import post
 
 # Load environment variables for database connection
 dotenv.load_dotenv()
@@ -24,6 +25,17 @@ dotenv.load_dotenv()
 
 h = None
 device = None 
+
+
+def send_log_to_frontend(current_id, message):
+    try:
+        post("http://127.0.0.1:8000/log-update", json={
+            "id": current_id,
+            "message": message
+        })
+    except Exception as e:
+        print("Failed to send log:", e)
+
 
 # ------------------------------
 # Whisper config
@@ -62,7 +74,6 @@ def whisper_decode(model, audio_array, language=None):
 
 def inference(args, device):
 
-    
     # current id for database access
     current_id = int(args.current_id)
 
@@ -114,162 +125,197 @@ def inference(args, device):
         #FIRST RAW TRANSCRIPT IS GENERATED HERE and saved at best_result - NO FILTERS APPLIED
         best_result = whisper_decode(whisper_model, best_audio)
         best_result["text"] = cleanup_repetition(best_result["text"])
-        save_intermediate_transcript(base, stage, best_result)
+        #save_intermediate_transcript(base, stage, best_result)
         print(f"Stage RAW text: {best_result.get('text','').strip()}")
+
 
         # Here is where we insert the raw transcript into the database
         insert_intermediate_record(best_result["text"].strip(), 1,current_id)
         if(best_result["text"]):
             set_success_status(current_id, True)  
         
-        quality, snr_db, flatness,hf_ratio = classify_audio_quality(best_audio, sr=sr)
+        # notify API that raw transcription is ready
+    try:
+        post("http://127.0.0.1:8000/transcription-ready", json={
+            "id": current_id
+        })
+    except Exception as e:
+        print("Failed to notify API:", e)
+    
+    quality, snr_db, flatness,hf_ratio = classify_audio_quality(best_audio, sr=sr)
+    
+    send_log_to_frontend(current_id, "Checking audio quality...")
 
-        if quality == "clean":
-            print("Audio classified as clean -> skipping filtering.")
-            stage = "final"
-            save_intermediate_transcript(base, stage, best_result)
+    if quality == "clean":
+        print("Audio classified as clean -> skipping filtering.")
+        stage = "final"
+        send_log_to_frontend(current_id, "Audio classified as clean -> skipping filtering.")
+        #save_intermediate_transcript(base, stage, best_result)
 
-        # ===== Stage 2: Band-pass (conditional) =====
-        elif quality == "moderate":
-            print("Audio is moderately noisy, applying bandpass.")
-            bp_audio = bandpass_filter(best_audio)
-            bp_result = whisper_decode(whisper_model, bp_audio)
-            stage = "bandpass"
-            save_intermediate_transcript(base, stage, bp_result)
-            best_result = compare_and_update(best_result, bp_result, stage)
-            best_audio = bp_audio
-
-            insert_intermediate_record(bp_result["text"].strip(), 6,current_id)
-            if(bp_result["text"]):
-                set_success_status(current_id, True)
-                   
-         # ===== Stage 3: Band-pass + Pre-emphasis (conditional) =====
-        elif quality == "muffled":
-            print("Audio is muffled, applying bandpass and pre-emphasis.")
-            bp_audio = bandpass_filter(best_audio)
-            pe_audio = pre_emphasis(bp_audio)
-            pe_result = whisper_decode(whisper_model, pe_audio)
-            stage = "bandpass+PE"
-            save_intermediate_transcript(base, stage, pe_result)
-            best_result = compare_and_update(best_result, pe_result, stage)
-            best_audio = pe_audio
-
-            insert_intermediate_record(pe_result["text"].strip(), 2,current_id)
-            if(pe_result["text"]):
-                set_success_status(current_id, True)  
-
-        # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
-        elif quality == "noisy":  #run SEMamba only when noisy enough
-            print("Audio is noisy, applying SEmamba and bandpass.")
-            stage = "SEMamba+BP"
+    # ===== Stage 2: Band-pass (conditional) =====
+    elif quality == "moderate":
+        print("Audio is moderately noisy, applying bandpass.")
+        send_log_to_frontend(current_id, "Audio is moderately noisy, applying bandpass.")
         
-        # If clip is long (> 4 minutes) use chunked processing to avoid OOM
-            clip_seconds = len(best_audio) / float(sr)
-            if clip_seconds > 4 * 60:
-                print(f"Long clip ({clip_seconds/60:.2f} min) detected: using chunked SEMamba denoise.")
-                mamba_audio = semamba_denoise_chunks(best_audio, sr, model, device, n_fft, hop_size, win_size, compress_factor=0.8, chunk_size_sec=8.0, overlap_sec=2.0)
-          
-            else:
-                noisy_wav = torch.FloatTensor(best_audio).to(device)
-                norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
+        bp_audio = bandpass_filter(best_audio)
+        bp_result = whisper_decode(whisper_model, bp_audio)
+        stage = "bandpass"
+        best_result, new_or_old = compare_and_update(best_result, bp_result, stage)
+        best_audio = bp_audio
+
+        insert_intermediate_record(bp_result["text"].strip(), 6,current_id)
+
+        if(new_or_old=="new is nonsense"):
+            send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+        elif(new_or_old=="new"):
+            send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+        elif(new_or_old=="old"):
+            send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
                 
-                noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
-                noisy_amp, noisy_pha, _ = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor=0.8)
-                
-                noisy_amp = noisy_amp.to(device).half()
-                noisy_pha = noisy_pha.to(device).half()
+        # ===== Stage 3: Band-pass + Pre-emphasis (conditional) =====
+    elif quality == "muffled":
+        print("Audio is muffled, applying bandpass and pre-emphasis.")
+        send_log_to_frontend(current_id, "Audio is muffled, applying bandpass and pre-emphasis.")
+        bp_audio = bandpass_filter(best_audio)
+        pe_audio = pre_emphasis(bp_audio)
+        pe_result = whisper_decode(whisper_model, pe_audio)
+        stage = "bandpass+PE"
+        best_result, new_or_old = compare_and_update(best_result, pe_result, stage)
+        best_audio = pe_audio
 
-                amp_g, pha_g, _ = model(noisy_amp, noisy_pha)
-                mamba_audio = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor=0.8)
-                #mamba_audio = (mamba_audio / norm_factor).squeeze().cpu().detach().numpy()
+        insert_intermediate_record(pe_result["text"].strip(), 2,current_id)
 
-                mamba_audio = (mamba_audio / norm_factor.cpu().item())
-                mamba_audio = mamba_audio.squeeze().cpu().detach().numpy()
-
-                mamba_audio = mamba_audio / (np.max(np.abs(mamba_audio)) + 1e-9)
-
-                del amp_g, pha_g, noisy_amp, noisy_pha
-                torch.cuda.empty_cache()
-                
-            # --- Always bandpass after SEMamba ---
-            mamba_audio = bandpass_filter(mamba_audio, 80, 7000)
-
-            # --- Conditional pre-emphasis ---
-            fft = np.abs(np.fft.rfft(mamba_audio))**2
-            freqs = np.fft.rfftfreq(len(mamba_audio), 1/sr)
-            hf_energy = fft[(freqs > 3000) & (freqs < 8000)].sum()
-            lf_energy = fft[freqs <= 3000].sum()
-            hf_ratio = hf_energy / (lf_energy + 1e-9)
-
-            if args.post_processing_PCS:
-                mamba_audio = cal_pcs(mamba_audio)
+        if(new_or_old=="new is nonsense"):
+            send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+        elif(new_or_old=="new"):
+            send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+        elif(new_or_old=="old"):
+            send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
         
+    # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
+    elif quality == "noisy":  #run SEMamba only when noisy enough
+        print("Audio is noisy, applying SEmamba and bandpass.")
+        send_log_to_frontend(current_id, "Audio is noisy, applying SEmamba and bandpass.")
+        stage = "SEMamba+BP"
+    
+    # If clip is long (> 4 minutes) use chunked processing to avoid OOM
+        clip_seconds = len(best_audio) / float(sr)
+        if clip_seconds > 4 * 60:
+            print(f"Long clip ({clip_seconds/60:.2f} min) detected: using chunked SEMamba denoise.")
+            mamba_audio = semamba_denoise_chunks(best_audio, sr, model, device, n_fft, hop_size, win_size, compress_factor=0.8, chunk_size_sec=8.0, overlap_sec=2.0)
+        
+        else:
+            noisy_wav = torch.FloatTensor(best_audio).to(device)
+            norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
             
-            mamba_result = whisper_decode(whisper_model, mamba_audio)
-            save_intermediate_transcript(base, stage, mamba_result)
-            best_result = compare_and_update(best_result, mamba_result, stage)
+            noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
+            noisy_amp, noisy_pha, _ = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor=0.8)
+            
+            noisy_amp = noisy_amp.to(device).half()
+            noisy_pha = noisy_pha.to(device).half()
+
+            amp_g, pha_g, _ = model(noisy_amp, noisy_pha)
+            mamba_audio = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor=0.8)
+            #mamba_audio = (mamba_audio / norm_factor).squeeze().cpu().detach().numpy()
+
+            mamba_audio = (mamba_audio / norm_factor.cpu().item())
+            mamba_audio = mamba_audio.squeeze().cpu().detach().numpy()
+
+            mamba_audio = mamba_audio / (np.max(np.abs(mamba_audio)) + 1e-9)
+
+            del amp_g, pha_g, noisy_amp, noisy_pha
+            torch.cuda.empty_cache()
+            
+        # --- Always bandpass after SEMamba ---
+        mamba_audio = bandpass_filter(mamba_audio, 80, 7000)
+
+        # --- Conditional pre-emphasis ---
+        fft = np.abs(np.fft.rfft(mamba_audio))**2
+        freqs = np.fft.rfftfreq(len(mamba_audio), 1/sr)
+        hf_energy = fft[(freqs > 3000) & (freqs < 8000)].sum()
+        lf_energy = fft[freqs <= 3000].sum()
+        hf_ratio = hf_energy / (lf_energy + 1e-9)
+
+        if args.post_processing_PCS:
+            mamba_audio = cal_pcs(mamba_audio)
+    
+        
+        mamba_result = whisper_decode(whisper_model, mamba_audio)
+        best_result, new_or_old = compare_and_update(best_result, mamba_result, stage)
+        best_audio = mamba_audio
+        insert_intermediate_record(mamba_result["text"].strip(), 3,current_id)
+
+        if(new_or_old=="new is nonsense"):
+            send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+        elif(new_or_old=="new"):
+            send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+        elif(new_or_old=="old"):
+            send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
+        
+        if hf_ratio < 0.02:
+            print("Post-Mamba audio still muffled -> applying pre-emphasis.")
+            send_log_to_frontend(current_id, "Post-Mamba audio still muffled -> applying pre-emphasis.")
+            mamba_audio = pre_emphasis(mamba_audio)
+            stage += "+PE"
+            mamba_pe_result = whisper_decode(whisper_model, mamba_audio) 
+            best_result, new_or_old = compare_and_update(best_result, mamba_pe_result, stage)
             best_audio = mamba_audio
-            insert_intermediate_record(mamba_result["text"].strip(), 3,current_id)
-            if(mamba_result["text"]):
-                set_success_status(current_id, True)  
 
-            if hf_ratio < 0.02:
-                print("Post-Mamba audio still muffled -> applying pre-emphasis.")
-                mamba_audio = pre_emphasis(mamba_audio)
-                stage += "+PE"
-                mamba_pe_result = whisper_decode(whisper_model, mamba_audio) 
-                save_intermediate_transcript(base, stage, mamba_pe_result)
-                best_result = compare_and_update(best_result, mamba_pe_result, stage)
-                best_audio = mamba_audio
+            insert_intermediate_record(mamba_pe_result["text"].strip(), 4,current_id)
 
-                insert_intermediate_record(mamba_pe_result["text"].strip(), 4,current_id)
-                if(mamba_pe_result["text"]):
-                    set_success_status(current_id, True)  
+            if(new_or_old=="new is nonsense"):
+                send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+            elif(new_or_old=="new"):
+                send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+            elif(new_or_old=="old"):
+                send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
+            
+        # ===== Stage 5: DeepFilterNet (conditional) =====
+        snr_post = estimate_snr_vad(best_audio, sr=16000)
+        flatness_post = librosa.feature.spectral_flatness(S=np.abs(librosa.stft(best_audio))).mean()
+        if snr_post < 15 and flatness_post < 0.01:
+            print(f"SNR Post={snr_post:.2f} dB, flatness post={flatness_post:.4f}")
+            print("Audio is still noisy, applying DeepFilterNet.")
+            send_log_to_frontend(current_id, "Audio is still noisy, applying DeepFilterNet.") 
+            stage = "DeepFilterNet"
 
-            # ===== Stage 5: DeepFilterNet (conditional) =====
-            snr_post = estimate_snr_vad(best_audio, sr=16000)
-            flatness_post = librosa.feature.spectral_flatness(S=np.abs(librosa.stft(best_audio))).mean()
-            if snr_post < 15 and flatness_post < 0.01:
-                print(f"SNR Post={snr_post:.2f} dB, flatness post={flatness_post:.4f}")
-                print("Audio is still noisy, applying DeepFilterNet.")
-                stage = "DeepFilterNet"
+            tmp_dir = "tmp"
+            os.makedirs(tmp_dir, exist_ok=True)
+            dfn_path = os.path.join(tmp_dir, f"{base}_dfn.wav")
+            sf.write(dfn_path, best_audio, 16000, 'PCM_16')
+            
+            run_deepfilternet(dfn_path, tmp_dir)
+            
+            dfn_audio, _ = librosa.load(dfn_path, sr=16000, mono=True)
+            dfn_result = whisper_decode(whisper_model, dfn_audio)
+            #save_intermediate_transcript(base, stage, dfn_result)
+            best_result, new_or_old = compare_and_update(best_result, dfn_result, stage)
+            best_audio = dfn_audio
 
-                tmp_dir = "tmp"
-                os.makedirs(tmp_dir, exist_ok=True)
-                dfn_path = os.path.join(tmp_dir, f"{base}_dfn.wav")
-                sf.write(dfn_path, best_audio, 16000, 'PCM_16')
-                
-                run_deepfilternet(dfn_path, tmp_dir)
-                
-                dfn_audio, _ = librosa.load(dfn_path, sr=16000, mono=True)
-                dfn_result = whisper_decode(whisper_model, dfn_audio)
-                save_intermediate_transcript(base, stage, dfn_result)
-                best_result = compare_and_update(best_result, dfn_result, stage)
-                best_audio = dfn_audio
+            insert_intermediate_record(dfn_result["text"].strip(), 5,current_id)
 
-                insert_intermediate_record(dfn_result["text"].strip(), 5,current_id)
-                if(dfn_result["text"]):
-                    set_success_status(current_id, True)  
-                
-                os.remove(dfn_path)
+            if(new_or_old=="new is nonsense"):
+                send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
+            elif(new_or_old=="new"):
+                send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
+            elif(new_or_old=="old"):
+                send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
+            
+            os.remove(dfn_path)
 
-        # Save final
-        sf.write(final_wav_out, best_audio, 16000, 'PCM_16')
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        best_result["timestamp"] = timestamp
-        best_result["text"] = cleanup_repetition(best_result["text"])
-        save_intermediate_transcript(base, "final", best_result)
+    # Save final
+    sf.write(final_wav_out, best_audio, 16000, 'PCM_16')
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    best_result["timestamp"] = timestamp
+    best_result["text"] = cleanup_repetition(best_result["text"])
 
-        add_audio_path(current_id, final_wav_out,1) # 1 for output audio path
+    add_audio_path(current_id, final_wav_out,1) # 1 for output audio path
 
-        # Here is where we insert the final transcript into the database
-        insert_intermediate_record(best_result["text"].strip(), 0,current_id)
-        if(best_result["text"]):
-            set_success_status(current_id, True) 
-
-        print(f"\nFINAL TEXT   : {best_result.get('text','').strip()}")
-        print(f"SAVED WAV    : {final_wav_out}")
-        print(f"SAVED JSON   : {base}")
+    insert_intermediate_record(best_result["text"].strip(), 0,current_id)
+    
+    print(f"\nFINAL TEXT   : {best_result.get('text','').strip()}")
+    print(f"SAVED WAV    : {final_wav_out}")
+    print(f"SAVED JSON   : {base}")
 
 
 def main():
@@ -288,7 +334,6 @@ def main():
     if torch.cuda.is_available():
         device = torch.device('cuda')
     else:
-        #device = torch.device('cpu')
         raise RuntimeError("Currently, CPU mode is not supported.")
         
     inference(args, device)

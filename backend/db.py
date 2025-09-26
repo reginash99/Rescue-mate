@@ -103,25 +103,26 @@ def select_transcriptions(id):
      
             if cur.fetchone()[0]:
                 cur.execute("select final_transcription, raw_transcr,bp_preemp_transcr, mamba_bp_transcr, "\
-                            "mamba_bp_preemp_transcr, mamba_bp_preemp_deepfilternet_transcr, bp_transcr from transcription where id = %s;", (id,))
+                            "mamba_bp_preemp_transcr, mamba_bp_preemp_deepfilternet_transcr, bp_transcr,timestamp from transcription where id = %s;", (id,))
                 
-                row = cur.fetchone()
-                
-                stages = [
-                ("raw", row[0]),
-                ("bandpass", row[1]),
-                ("bandpass+PE", row[2]),
-                ("mamba+bp", row[3]),
-                ("mamba+bp+PE", row[4]),
-                ("mamba+bp+PE+dfn", row[5]),
-                ("final", row[6]),
-            ]
+                sql_results = cur.fetchall()
+            
 
-            result = []
-            for stage, text in stages:
-                if text and text.strip():
-                    result.append({"stage": stage, "text": text})
-        return result
+            results = []
+            for result in sql_results:
+                results.append({
+                    'final_transcription': result[0],
+                    'raw_transcr': result[1],
+                    'bp_preemp_transcr': result[2],
+                    'mamba_bp_transcr': result[3],
+                    'mamba_bp_preemp_transcr': result[4],
+                    'mamba_bp_preemp_deepfilternet_transcr': result[5],
+                    'bp_transcr': result[6],
+                    'timestamp': result[7].strftime("%d.%m.%Y  %H:%M:%S"),
+                    'id': id
+                })
+        return results
+    
 
 def select_record(id):
     with psycopg.connect(
@@ -303,7 +304,7 @@ def select_intermediate_result(id, column_index):
                     case 0:
                         cur.execute("select final_transcription,successful_transcription from transcription where id = %s;", (id,))
                     case 1:
-                        cur.execute("select raw_transcr,successful_transcription from transcription where id = %s;", (id,))
+                        cur.execute("select raw_transcr, timestamp from transcription where id = %s;", (id,))
                     case 2:
                         cur.execute("select bp_preemp_transcr,successful_transcription from transcription where id = %s;", (id,))
                     case 3:
@@ -317,7 +318,24 @@ def select_intermediate_result(id, column_index):
                     case _:
                         print("No valid column index provided.")
                         return
-            return cur.fetchall()[0]
+                    
+
+                records = cur.fetchall()
+                row = records[0]
+                #create json from records
+
+                if not records:
+                    return {}
+                cur.execute("select * from transcription where id = %s;", (id,))
+
+                json_data = {
+                        'id': id,
+                        'timestamp': row[1].strftime("%d.%m.%Y  %H:%M:%S"),
+                        'transcription': row[0],
+                    }
+                
+                return json_data
+
 
 
     

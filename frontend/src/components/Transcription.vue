@@ -6,13 +6,17 @@
         <path d="m9.708 6.075-3.024.379-.108.502.595.108c.387.093.464.232.38.619l-.975 4.577c-.255 1.183.14 1.74 1.067 1.74.72 0 1.554-.332 1.933-.789l.116-.549c-.263.232-.65.325-.905.325-.363 0-.494-.255-.402-.704zm.091-2.755a1.32 1.32 0 1 1-2.64 0 1.32 1.32 0 0 1 2.64 0"/>
         </svg>
     </button>
+
     <div class="transcription">
       <div :class="['transcription-text', { shrunk: panelOpen }]">
-        <div v-if="data">
-          <p v-if="data['transcription'] && data['status']">{{ data["transcription"] }}</p>
-          <!-- <p v-else-if="data['transcription'] == '.'"><i>No transcription available.</i></p> -->
-          <p v-else><i>No transcription available.</i></p>
+        <div v-if="props.data?.transcription">
+          <p>{{ props.data.transcription ?? "…" }}</p>
+
+          <small v-if="props.data.transcription.timestamp">
+            {{ props.data.transcription.timestamp }}
+          </small>
         </div>
+      
         <div v-else>
           <p><i>Press the record button to transcribe your audio</i></p>
         </div>
@@ -21,10 +25,16 @@
           <div class="overlay-text">Processing…</div>
         </div>
       </div>
+
       <div class="side-panel" v-if="panelOpen">
-        <div v-if="data">
-          <div v-if="data['transcription'] && data['transcription'].trim() !== ''">
-            <p><i>No updates available</i></p>
+        <div v-if="updates.length > 0">
+          <div v-for="(u, i) in updates" :key="i"> 
+            <p v-if="u.bp_preemp_transcr">{{ u.bp_preemp_transcr }}</p>
+            <p v-else-if="u.mamba_bp_transcr">{{ u.mamba_bp_transcr }}</p> 
+            <p v-else-if="u.mamba_bp_preemp_transcr">{{ u.mamba_bp_preemp_transcr }}</p> 
+            <p v-else-if="u.mamba_bp_preemp_deepfilternet_transcr">{{ u.mamba_bp_preemp_deepfilternet_transcr }}</p> 
+            <p v-else-if="u.bp_transcr">{{ u.bp_transcr }}</p> 
+
           </div>
         </div>
         <div v-else>
@@ -36,9 +46,23 @@
         <span v-if="!panelOpen">!</span>
       </button>
     </div>
-    <!-- <div class="updates" v-if="panelOpen">
-      <p>Showing update for transcript...</p>
-    </div> -->
+
+
+
+    <div class="updates-div">
+      <p v-if="logs.length === 0"><i>No log messages yet… </i></p>
+      <div v-else>
+        <!-- <p>
+          [{{ logs[logs.length - 1].timestamp }}] {{ logs[logs.length - 1].message }}
+        </p> -->
+        <p v-for="(log, i) in logs" :key="i">
+          [{{ log.timestamp }}] {{ log.message }}
+        </p>
+      </div>
+    </div>
+
+
+
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-content">
         <button class="modal-close" @click="closeModal">×</button>
@@ -50,11 +74,11 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 import { geocodeTranscription } from '@/composables/useGeocode.js'
 
 const props = defineProps({
-  data: Object,
+  data: Object, // contains { transcription, id, status, timestamp }
   status: { type: Boolean, default: false },
 })
 const emit = defineEmits(['markers-found'])
@@ -63,16 +87,22 @@ const panelOpen = ref(false)
 const showModal = ref(false)
 const isGeocoding = ref(false)
 const markers = ref([])
+const updates = ref([]) 
+const logs = ref([])
+let pollInterval = null
+let logPollInterval = null
 
-watch(() => props.data?.transcription, async (newText) => {
+// Watch raw transcription for geocoding
+watch(() => props.data?.transcription, async (newVal) => {
+const text = typeof newVal === "string" ? newVal : newVal?.transcription
   markers.value = []
-  if (!newText || !newText.trim()) {
+  if (!text || !text.trim()) {
     emit('markers-found', [])
     return
   }
   try {
     isGeocoding.value = true
-    const { markers: m } = await geocodeTranscription(newText)
+    const { markers: m } = await geocodeTranscription(text)
     markers.value = m || []
     emit('markers-found', markers.value)
   } catch (e) {
@@ -83,9 +113,76 @@ watch(() => props.data?.transcription, async (newText) => {
   }
 })
 
+// Poll backend for updates
+function startPolling(id) {
+  stopPolling()
+  pollInterval = setInterval(async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/get-intermediate-transcript/${id}`)
+      
+      if (!res.ok) return
+      const json = await res.json()
+      updates.value = json.transcripts || []
+    } catch (e) {
+      console.error("Polling error:", e)
+    }
+  }, 3000)
+}
+
+function stopPolling() {
+  if (pollInterval) {
+    clearInterval(pollInterval)
+    pollInterval = null
+  }
+}
+
+function startLogPolling(id) {
+  stopLogPolling()
+  logPollInterval = setInterval(async () => {
+    try {
+          if (logs.length > 0) {
+            logs = []
+        }
+      const res = await fetch(`http://127.0.0.1:8000/get-logs/${id}`)
+      if (!res.ok) return
+      const json = await res.json()
+      
+      logs.value = json.logs || []
+    } catch (e) {
+      console.error("Log polling error:", e)
+    }
+  }, 3000)
+}
+
+function stopLogPolling() {
+  if (logPollInterval) {
+    clearInterval(logPollInterval)
+    logPollInterval = null
+  }
+}
+
+
+
+watch(() => props.data?.id, (newId) => {
+  if (newId) {
+    startPolling(newId)
+    startLogPolling(newId) 
+   }
+   else{
+    stopPolling()
+    stopLogPolling()
+   } 
+})
+
+onUnmounted(() => {
+  stopPolling()
+  stopLogPolling()
+})
+
 function openModal() { showModal.value = true }
 function closeModal() { showModal.value = false }
 </script>
+
 
 
 <style scoped>
@@ -109,8 +206,7 @@ function closeModal() { showModal.value = false }
   display: flex;
   padding: 15px;
   font-size: x-large;
-  min-height: 300px;
-  height: 100%;
+  height: 80%;
   background-color: var(--secondary-background);
   margin: 15px;
   border-radius: 15px;
@@ -183,13 +279,17 @@ function closeModal() { showModal.value = false }
 }
 
 /* Updates caption */
-.updates {
+.updates-div {
   position: relative;
   left: 20px;
   margin-top: -5px;
   margin-bottom: -12px;
-  opacity: 0;
-  animation: fadeInCaption 0.5s cubic-bezier(.77,0,.18,1) forwards;
+  opacity: 1;
+  max-height: 80px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  max-width: 1320px;
+  /* animation: fadeInCaption 0.5s cubic-bezier(.77,0,.18,1) forwards; */
 }
 
 @keyframes fadeInCaption {
