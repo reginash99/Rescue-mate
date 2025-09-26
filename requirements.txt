@@ -1,12 +1,10 @@
-openai-whisper
 fastapi
 uvicorn
 python-multipart
 packaging
 librosa
-soundfile
+pysoundfile
 pyyaml
-argparse
 tensorboard
 pesq
 einops
@@ -15,3 +13,9 @@ torchaudio==2.2.2
 webrtcvad
 dotenv
 psycopg
+webrtcvad
+openai-whisper
+sentence-transformers
+deepfilternet
+fastapi
+uvicorn

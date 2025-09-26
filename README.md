@@ -14,7 +14,7 @@ For SE Mamba (the code is inside the backend folder), a Linux-based system is re
 WSL, conda, Pytorch, Torchaudio, and Cuda are required. 
 
 
-First it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use these commands one by one:  
+Firstly, it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use these commands one by one to first install pytorch, torchaudio and cuda-toolkit:  
 
 
 `conda install pytorch=2.2.2 -c conda-forge -c pytorch -c nvidia`
@@ -23,21 +23,18 @@ First it is recommended to install miniconda on Ubuntu. Then create a conda virt
 
 `conda install cuda-toolkit=12.1 -c conda-forge -c pytorch -c nvidia`
 
-`conda install sentence-transformers`
 
-As stated in the requirements.txt file inside the project root folder (as well as cuda-toolkit (or pytorch-cuda, or both), version 12.1)
-
-
-Then, install all the packages listed in requirements.txt (located inside the project root folder). Use pysoundfile instead of soundfile and skip argparse, torch, and torchaudio. You might need to uninstall triton then reinstall it again, version 2.2.0 using pip instead of conda. You might also need to downgrade numpy to 1.26.
-Use the command: 
-
-`conda install packaging librosa pysoundfile pyyaml tensorboard pesq einops -c conda-forge -c pytorch -c nvidia`
+Install all the packages stated in the requirements.txt file inside the project root folder using the same command style: conda install... (excluding openai-whisper and deepfilernet, see below), and make sure to include all the channels: -c conda-forge, -c pytorch, -c nvidia (sometimes you might need to install pytorch-cuda as well, version 12.1). 
 
 
-Sometimes when installing them in a single command it may cause issues. If this happens, try to install them separately, for example: conda install python-multipart -c conda-forge -c pytorch -c nvidia, conda install packaging -c conda-forge -c pytorch -c nvidia etc.
+Install openai-whisper and deepfilternet by using pip instead of conda. Install openai-whisper, sentence-transformers, deepfilternet, fastapi, uvicorn only after you finish building mamba_ssm.  
 
 
-We are also using the package webrtcvad to determine whether the audio contains speech. To install this, run the command: `conda install -c conda-forge webrtcvad`
+Sometimes when installing them in a single command it may cause issues. If this happens, try to install them one by one, for example: conda install python-multipart -c conda-forge -c pytorch -c nvidia, conda install packaging -c conda-forge -c pytorch -c nvidia etc.
+
+
+If you get errors including the package triton, you might need to uninstall it then reinstall it again, version 2.2.0 using pip instead of conda. 
+You might also need to downgrade numpy to 1.26.
 
 
 Then we need to build the mamba_ssm by running (inside the backend folder): 
@@ -51,6 +48,12 @@ If you run into trouble with nvcc run these in the terminal:
 `sudo rm /usr/local/cuda/bin/nvcc`
 
 
+And see if you get a value, if not then you need to install nvcc or reinstall pytorch, torchaudio and torchvision. 
+
+
+If you still have issues with cuda even though it is installed, these commands help the system recognize and find where it is installed: 
+
+
 `export CUDA_HOME=$CONDA_PREFIX`
 
 `export PATH="$CUDA_HOME/bin:$PATH"`
@@ -60,26 +63,21 @@ If you run into trouble with nvcc run these in the terminal:
 `export C_INCLUDE_PATH="$CUDA_HOME/include"`
 
 
-To backup your current environment run: 
+To backup your current environment (if you need it just in case) run: 
 conda list --explicit > env-backup.txt
 
 
 # Whisper
-Install using the command: `pip install openai-whisper`.
 After each check and subsequent filter combo is deemed appropriate, Whisper is used to transcribe. The transcription from whisper is used by several functions to calculate a score by using both average log probability and a multilingual sentence transformer model that validates how 'correct' it is and essentially how much sense it makes context wise. This score is then used to compare this script with the next one to determine which is best. In the end, only the best one is written/saved.
+
 
 Whisper is also fine tuned with parameters and a prompt in german (the prompt might still need work).
 Extra functions are also implemented to ensure the repetition of words or sentences whisper does sometimes doesnt happen again.
 
 
-We tried faster-whisper as well, but the resulting transcription was not that much different from the one we get with whisper so we decided not to use it. 
-
-
 # Filters
-We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. To install this you need to run the command: `pip install deepfilternet`. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
+We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
 
-
-We  changed mamba's model parameter hop_size (they are samples between successive frames) from 100 to 200. 
 
 With these changes we managed to make the entire pipeline run in under approximately 30 seconds for a 1 minute audio input, which is a great improvement from the initial 3 minutes that this took.
 
@@ -90,23 +88,17 @@ So far we have changed the way files are processed so that only the last added i
 
 
 # FASTAPI
-In order for the api to work, you need to run these commands (all of these inside your conda environment): 
-
-
-`conda install fastapi -c conda-forge -c pytorch -c nvidia`
-`conda install uvicorn -c conda-forge -c pytorch -c nvidia`
-`conda install python-multipart c conda-forge -c pytorch -c nvidia`
-
-
 This is how to start the backend server (run it on wsl ubuntu, inside the backend folder): uvicorn api_server:app --reload. 
 
 
-Keep in mind that pretrained.sh needs to be encoded in CRLF. Look at the bottom right of your screen, next to the UTF-8 while you are in the file pretrained.sh. Being inside the file pretrained.sh is important, the encoding does not work for the entire project, it is file dependant. After you change the encoding to CRLF it will appear as if you have made changes to the pretrained.sh, this is fine. If you still get errors, try changing it back to LF, then save then try again. Change between them (LF and CRLF) and save when you face errors. 
+If you face issues with the pretrained.sh encoding: Look at the bottom right of your screen, next to the UTF-8 while you are in the file pretrained.sh. Being inside the file pretrained.sh is important, the encoding does not work for the entire project, it is file dependant. After you change the encoding between them (LF and CRLF) it will appear as if you have made changes to the pretrained.sh, this is fine, save and make sure you have stopped the server. If you still get errors, try changing it back to what it was before, then save then try again.
 
 
 # Checks for filters 
 
 We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. 
+
+
 To fix this issue, we implemented several functions that calculate the noise and quality of the input audio, if it reaches certain levels, then only certain filters are applied.  Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
 
 
