@@ -160,7 +160,6 @@ def inference(args, device):
         bp_audio = bandpass_filter(best_audio)
         bp_result = whisper_decode(whisper_model, bp_audio)
         stage = "bandpass"
-        #save_intermediate_transcript(base, stage, bp_result)
         best_result, new_or_old = compare_and_update(best_result, bp_result, stage)
         best_audio = bp_audio
 
@@ -181,7 +180,6 @@ def inference(args, device):
         pe_audio = pre_emphasis(bp_audio)
         pe_result = whisper_decode(whisper_model, pe_audio)
         stage = "bandpass+PE"
-        #save_intermediate_transcript(base, stage, pe_result)
         best_result, new_or_old = compare_and_update(best_result, pe_result, stage)
         best_audio = pe_audio
 
@@ -243,7 +241,6 @@ def inference(args, device):
     
         
         mamba_result = whisper_decode(whisper_model, mamba_audio)
-        #save_intermediate_transcript(base, stage, mamba_result)
         best_result, new_or_old = compare_and_update(best_result, mamba_result, stage)
         best_audio = mamba_audio
         insert_intermediate_record(mamba_result["text"].strip(), 3,current_id)
@@ -261,7 +258,6 @@ def inference(args, device):
             mamba_audio = pre_emphasis(mamba_audio)
             stage += "+PE"
             mamba_pe_result = whisper_decode(whisper_model, mamba_audio) 
-            #save_intermediate_transcript(base, stage, mamba_pe_result)
             best_result, new_or_old = compare_and_update(best_result, mamba_pe_result, stage)
             best_audio = mamba_audio
 
@@ -312,7 +308,6 @@ def inference(args, device):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     best_result["timestamp"] = timestamp
     best_result["text"] = cleanup_repetition(best_result["text"])
-    #save_intermediate_transcript(base, "final", best_result)
 
     add_audio_path(current_id, final_wav_out,1) # 1 for output audio path
 
@@ -339,7 +334,6 @@ def main():
     if torch.cuda.is_available():
         device = torch.device('cuda')
     else:
-        #device = torch.device('cpu')
         raise RuntimeError("Currently, CPU mode is not supported.")
         
     inference(args, device)

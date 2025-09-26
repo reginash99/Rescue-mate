@@ -1,4 +1,4 @@
-import os, re, glob, uuid, subprocess, traceback
+import os, re, uuid, subprocess
 from typing import List, Set, Optional
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.responses import JSONResponse
@@ -12,6 +12,39 @@ import dotenv
 import unicodedata
 import asyncio
 from fastapi import Request
+
+
+dotenv.load_dotenv()
+
+app = FastAPI()
+logs_store = {}
+pending_responses = {}
+
+
+# --- create app FIRST ---
+app = FastAPI()
+
+# --- CORS (optional if you proxy through Vite) ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# --- Paths & helpers ---
+# Base directory for backend files
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# Directories can be overridden with environment variables when deploying to a server
+UPLOAD_DIR = os.getenv("INPUT_AUDIO_DIR", os.path.join(BASE_DIR, "input_audio"))
+OUTPUT_AUDIO_DIR = os.getenv("OUTPUT_AUDIO_DIR", os.path.join(BASE_DIR, "output_audio"))
+OUTPUT_TRANSCRIPT_DIR = os.getenv("OUTPUT_TRANSCRIPT_DIR", os.path.join(BASE_DIR, "output_transcriptions"))
+
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(OUTPUT_AUDIO_DIR, exist_ok=True)
+
 
 def normalize_query(q: str) -> str:
     if not q:
@@ -52,38 +85,6 @@ def variants(q: str) -> list[str]:
     return [v for v in out if v]
 
 
-
-dotenv.load_dotenv()
-
-app = FastAPI()
-logs_store = {}
-
-
-# --- create app FIRST ---
-app = FastAPI()
-
-# --- CORS (optional if you proxy through Vite) ---
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# --- Paths & helpers ---
-# Base directory for backend files
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
-# Directories can be overridden with environment variables when deploying to a server
-UPLOAD_DIR = os.getenv("INPUT_AUDIO_DIR", os.path.join(BASE_DIR, "input_audio"))
-OUTPUT_AUDIO_DIR = os.getenv("OUTPUT_AUDIO_DIR", os.path.join(BASE_DIR, "output_audio"))
-OUTPUT_TRANSCRIPT_DIR = os.getenv("OUTPUT_TRANSCRIPT_DIR", os.path.join(BASE_DIR, "output_transcriptions"))
-
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(OUTPUT_AUDIO_DIR, exist_ok=True)
-
-
 def run(cmd, cwd=None):
     p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
     if p.returncode != 0:
@@ -97,64 +98,6 @@ def convert_webm_to_wav(webm_path, wav_path):
     run(["ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path])
 
 
-
-# --- Routes (after app exists) ---
-# @app.post("/transcribe-audio")
-# @app.post("/transcribe-audio/")
-# async def upload_audio(file: UploadFile = File(...)):
-#     try:
-#         unique_id = uuid.uuid4().hex[:8]
-#         base, ext = os.path.splitext(file.filename or "audio.webm")
-#         ext = ext or ".webm"
-#         webm_name = f"{base}_{unique_id}{ext}"
-#         webm_path = os.path.join(UPLOAD_DIR, webm_name)
-#         unique_filename = f"{base}_{unique_id}{ext}"
-#         file_location = os.path.join(UPLOAD_DIR, unique_filename)
-
-#         with open(webm_path, "wb") as f:
-#             f.write(await file.read())
-
-#         # Convert to WAV if needed
-#         base, _ = os.path.splitext(unique_filename)
-#         wav_filename = f"{base}.wav"
-#         wav_location = os.path.join(UPLOAD_DIR, wav_filename)
-#         convert_webm_to_wav(file_location, wav_location)
-
-#         os.remove(file_location)
-
-#         backend_dir = os.path.abspath(os.path.dirname(__file__))
-
-#         # Initialize database with a new record to get an ID for intermediate updates
-#         create_new_record()
-#         current_id = str(get_latest_id())
-#         add_audio_path(current_id, wav_location,0) # 0 for input audio path
-
-#         # Update environment variables for subprocess
-#         env = os.environ.copy()
-#         env.update({
-#             "INPUT_AUDIO_DIR": UPLOAD_DIR,
-#             "OUTPUT_AUDIO_DIR": OUTPUT_AUDIO_DIR
-#         })
-
-#         subprocess.run([
-#             "sh", "pretrained.sh", wav_filename, current_id, UPLOAD_DIR, OUTPUT_AUDIO_DIR
-#         ], cwd=backend_dir, check=True, env=env)
-
-     
-#         # delete all records older that 24 hours
-#         old_records = delete_records()
-#         delete_old_records(old_records)
-        
-#         json_data = select_record(current_id)
-#         print(json_data)
-
-#         return JSONResponse(content={"transcription": json_data})
-#     except Exception as e:
-#         print("UPLOAD ERROR:", e, "\n", traceback.format_exc())
-#         raise HTTPException(status_code=500, detail=str(e))
-    
-
-pending_responses = {}
 
 @app.post("/transcribe-audio/")
 @app.post("/transcribe-audio")
@@ -452,10 +395,3 @@ def delete_old_records(records):
             
         except Exception as e:
             print("could not delete input audio file: ", e)
-
-# @app.get("/get-audio/{filename}")
-# async def get_audio(filename: str):
-#     file_path = os.path.join(UPLOAD_DIR, filename)
-#     if not os.path.exists(file_path):
-#         return {"error": "File not found"}
-#     return FileResponse(file_path)
