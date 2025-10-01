@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
 import json
-from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record, create_new_record, add_audio_path, select_transcriptions, select_intermediate_result
+from db import delete_records, select_records, get_latest_id, create_new_record, add_audio_path, select_transcriptions, select_intermediate_result
 import dotenv
 import unicodedata
 import asyncio

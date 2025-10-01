@@ -4,38 +4,20 @@ import os
 
 dotenv.load_dotenv()
 
-
-def insert_record(timestamp, transcription,status):
-    with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
-    ) as conn:
-
-        with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
-            
-     
-            if cur.fetchone()[0]:
-                print("table exists")
-                cur.execute("insert into transcription (timestamp,final_transcription,successful_transcription) values (%s,%s,%s);",(timestamp, transcription,status,))
-                conn.commit()
-                print("inserted")
-            else:
-                print("table has to be created")
-                
+DB_Name = os.getenv("DB_NAME")
+DB_User=os.getenv("DB_USER")
+DB_Password=os.getenv("DB_PASSWORD")
+DB_Host=os.getenv("DB_HOST")
+DB_Port=os.getenv("DB_PORT")
 
           
 def delete_records():
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
         
         with conn.cursor() as cur:
@@ -57,55 +39,45 @@ def delete_records():
 
 def select_records():
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
 
         with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
             
-     
-            if cur.fetchone()[0]:
-                print("table exists")
-                cur.execute("select id, timestamp,final_transcription,successful_transcription from transcription order by id desc;")
-                conn.commit()
-
+                cur.execute("select id, timestamp,final_transcription,successful_transcription,raw_transcr from transcription order by id desc;")
                 records = cur.fetchall()
 
-                #create json from records
+                #provide records for json-conversion
                 json_data = []
                 for row in records:
                     json_data.append({
                         'id': row[0],
                         'timestamp': row[1].strftime("%d.%m.%Y  %H:%M:%S"),
                         'transcription': row[2],
-                        'status': row[3]
+                        'status': row[3],
+                        'raw_transcription': row[4]
                     })
     return json_data
 
 def select_transcriptions(id):
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
 
         with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
+           
+            cur.execute("select final_transcription, raw_transcr,bp_preemp_transcr, mamba_bp_transcr, "\
+                        "mamba_bp_preemp_transcr, mamba_bp_preemp_deepfilternet_transcr, bp_transcr,timestamp from transcription where id = %s;", (id,))
             
-     
-            if cur.fetchone()[0]:
-                cur.execute("select final_transcription, raw_transcr,bp_preemp_transcr, mamba_bp_transcr, "\
-                            "mamba_bp_preemp_transcr, mamba_bp_preemp_deepfilternet_transcr, bp_transcr,timestamp from transcription where id = %s;", (id,))
-                
-                sql_results = cur.fetchall()
+            sql_results = cur.fetchall()
             
 
             results = []
@@ -126,98 +98,65 @@ def select_transcriptions(id):
 
 def select_record(id):
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
 
         with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
+            
+            cur.execute("select * from transcription where id = %s;", (id,))
 
+            row = cur.fetchone()
+            #create json from records
 
-            if cur.fetchone()[0]:
-                print("table exists")
-                cur.execute("select * from transcription where id = %s;", (id,))
-                conn.commit()
-
-                records = cur.fetchall()
-                row = records[0]
-                #create json from records
-
-                if not records:
-                    return {}
-                cur.execute("select * from transcription where id = %s;", (id,))
+            if not row:
+                return {}
+            else:
 
                 json_data = {
-                        'id': row[0],
-                        'timestamp': row[1].strftime("%d.%m.%Y  %H:%M:%S"),
-                        'transcription': row[2],
-                        'status': row[3]
+                    'id': row[0],
+                    'timestamp': row[1].strftime("%d.%m.%Y  %H:%M:%S"),
+                    'transcription': row[2],
+                    'status': row[3]
                     }
     return json_data
 
-def get_id(timestamp, transcription,status):
-    with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
-    ) as conn:
 
-        with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
-            
-     
-            if cur.fetchone()[0]:
-                print("table exists")
-                cur.execute("select id from transcription where timestamp = %s and final_transcription = %s and successful_transcription = %s;", (timestamp, transcription,status,))
-                conn.commit()
-
-                id = cur.fetchall()
-
-                
-    return id[0][0]
 
 def get_latest_id():
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
 
         with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
             
-     
-            if cur.fetchone()[0]:
-                print("table exists")
-                cur.execute("select max(id) from transcription;")
-                conn.commit()
 
-                id = cur.fetchall()
+            cur.execute("select max(id) from transcription;")
 
+
+            id = cur.fetchone()
+            if id is None:
+                return -1
                 
-    return id[0][0]    
+    return id[0]   
 
 def insert_intermediate_record(transcription, column_index,id):
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
          with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
+            
 
             match column_index:
                 case 0:
@@ -240,42 +179,37 @@ def insert_intermediate_record(transcription, column_index,id):
                 
 def create_new_record():
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
          with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
-
+            
             cur.execute("insert into transcription (timestamp) values (now());")
-            conn.commit()
+
 
 # status is boolean: Either True or False
-def set_success_status(id,status):
-    print("status ", status)
+def set_success_status(id,status):  
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
          with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
-
+            
             cur.execute("update transcription set successful_transcription = %s where id = %s", (status,id,))
 
 def add_audio_path(id, path, path_flag):
      with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
          with conn.cursor() as cur:
             match path_flag:
@@ -286,55 +220,49 @@ def add_audio_path(id, path, path_flag):
 
 def select_intermediate_result(id, column_index):
     with psycopg.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        dbname=DB_Name,
+        user=DB_User,
+        password=DB_Password,
+        host=DB_Host,
+        port=DB_Port
     ) as conn:
 
         with conn.cursor() as cur:
-            table_name = 'transcription'
-            cur.execute("select exists(select from information_schema.tables where table_name=%s)",(table_name,))
-            
-     
-            if cur.fetchone()[0]:
-                print("table exists")
-                match column_index:
-                    case 0:
-                        cur.execute("select final_transcription,successful_transcription from transcription where id = %s;", (id,))
-                    case 1:
-                        cur.execute("select raw_transcr, timestamp from transcription where id = %s;", (id,))
-                    case 2:
-                        cur.execute("select bp_preemp_transcr,successful_transcription from transcription where id = %s;", (id,))
-                    case 3:
-                        cur.execute("select mamba_bp_transcr,successful_transcription from transcription where id = %s;", (id,))
-                    case 4:
-                        cur.execute("select mamba_bp_preemp_transcr,successful_transcription from transcription where id = %s;", (id,))
-                    case 5:
-                        cur.execute("select mamba_bp_preemp_deepfilternet_transcrp,successful_transcription from transcription  where id = %s", (id,))
-                    case 6:
-                        cur.execute("select bp_transcr from transcription,successful_transcription                             where id = %s", (id,))
-                    case _:
-                        print("No valid column index provided.")
-                        return
+           
+            match column_index:
+                case 0:
+                    cur.execute("select final_transcription,successful_transcription from transcription where id = %s;", (id,))
+                case 1:
+                    cur.execute("select raw_transcr, timestamp from transcription where id = %s;", (id,))
+                case 2:
+                    cur.execute("select bp_preemp_transcr,successful_transcription from transcription where id = %s;", (id,))
+                case 3:
+                    cur.execute("select mamba_bp_transcr,successful_transcription from transcription where id = %s;", (id,))
+                case 4:
+                    cur.execute("select mamba_bp_preemp_transcr,successful_transcription from transcription where id = %s;", (id,))
+                case 5:
+                    cur.execute("select mamba_bp_preemp_deepfilternet_transcrp,successful_transcription from transcription  where id = %s", (id,))
+                case 6:
+                    cur.execute("select bp_transcr from transcription,successful_transcription                             where id = %s", (id,))
+                case _:
+                    print("No valid column index provided.")
+                    return
                     
 
-                records = cur.fetchall()
-                row = records[0]
-                #create json from records
+            row = cur.fetchone()
+            
+            #create json from records
 
-                if not records:
-                    return {}
-                cur.execute("select * from transcription where id = %s;", (id,))
+            if not row:
+                return {}
 
-                json_data = {
-                        'id': id,
-                        'timestamp': row[1].strftime("%d.%m.%Y  %H:%M:%S"),
-                        'transcription': row[0],
-                    }
-                
-                return json_data
+            json_data = {
+                    'id': id,
+                    'timestamp': row[1].strftime("%d.%m.%Y  %H:%M:%S"),
+                    'transcription': row[0],
+                }
+            
+            return json_data
 
 
 

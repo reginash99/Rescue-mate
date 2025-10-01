@@ -81,7 +81,7 @@ const props = defineProps({
   data: Object, // contains { transcription, id, status, timestamp }
   status: { type: Boolean, default: false },
 })
-const emit = defineEmits(['markers-found'])
+const emit = defineEmits(['markers-found','final-transcription'])
 
 const panelOpen = ref(false)
 const showModal = ref(false)
@@ -89,6 +89,7 @@ const isGeocoding = ref(false)
 const markers = ref([])
 const updates = ref([]) 
 const logs = ref([])
+const finalTranscriptionReceived = ref(false)
 let pollInterval = null
 let logPollInterval = null
 
@@ -123,6 +124,19 @@ function startPolling(id) {
       if (!res.ok) return
       const json = await res.json()
       updates.value = json.transcripts || []
+
+      
+      // Emit is sent only once when final transcription is received
+      if(finalTranscriptionReceived.value){
+        return
+      }
+      else if(updates.value.length > 0 && updates.value[0].final_transcription){
+       
+        finalTranscriptionReceived.value = true
+        emit('final-transcription', finalTranscriptionReceived.value)
+        
+      }
+
     } catch (e) {
       console.error("Polling error:", e)
     }
@@ -165,6 +179,7 @@ function stopLogPolling() {
 
 watch(() => props.data?.id, (newId) => {
   if (newId) {
+    finalTranscriptionReceived.value = false
     startPolling(newId)
     startLogPolling(newId) 
    }

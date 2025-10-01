@@ -55,7 +55,15 @@
             <div class="modal-content">
             <button class="modal-close" @click="closeModal">×</button>
                 <div v-if="selectedItem">
-                    <p><strong>Transcription:</strong> {{ selectedItem.transcription }}</p>
+                    <p>
+                        <strong>Transcription:</strong> 
+                        <div v-if="selectedItem.transcription">
+                            {{ selectedItem.transcription }}
+                        </div>
+                        <div v-else>
+                        {{ selectedItem.raw_transcription }}
+                        </div>
+                    </p>
                 </div>
             </div>
         </div>
@@ -66,7 +74,7 @@
 import { ref } from 'vue';
 
 
-defineProps({
+const props = defineProps({
   history: {
     type: Array,
     default: () => []

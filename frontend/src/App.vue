@@ -11,11 +11,14 @@
         :data="transcriptionData"
         :status="waitingForRecording"
         @markers-found="onMarkersFound"
+        @final-transcription="updateHistoryTable"
       />
     </div>
 
     <div class="grid-item history">
-      <HistoryTable :history="history" />
+      <HistoryTable 
+      :history="history" 
+      />
     </div>
 
     <div class="grid-item map">
@@ -39,6 +42,14 @@ const waitingForRecording = ref(false);
 // NEW: markers state
 const markers = ref([]);
 
+// update history table when final transcription is ready
+function updateHistoryTable(update) {
+  if (update){
+    addHistoryEntry();
+  }
+  
+
+}
 // NEW: handler receives markers from Transcription
 function onMarkersFound(m) {
   markers.value = Array.isArray(m) ? m : [];
@@ -72,7 +83,7 @@ onMounted(async() =>
 
 async function get_records() {
     try {
-    const response = await fetch('http://localhost:8000/get-history')
+    const response = await fetch('/get-history')
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
