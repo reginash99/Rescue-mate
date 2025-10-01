@@ -1,0 +1,119 @@
+{
+  "text": "Wir brauchen Hilfe in der Kurfürstenstraße 29 beim Jungfernstieg und in Eppendorf.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 7.94,
+      "text": " Wir brauchen Hilfe in der Kurfürstenstraße 29 beim Jungfernstieg und in Eppendorf.",
+      "tokens": [
+        50364,
+        4347,
+        19543,
+        37448,
+        294,
+        1163,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        9413,
+        13922,
+        12739,
+        28958,
+        372,
+        20408,
+        674,
+        294,
+        462,
+        427,
+        521,
+        28030,
+        13,
+        50814
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.32218727698692906,
+      "compression_ratio": 0.9545454545454546,
+      "no_speech_prob": 0.013413460925221443,
+      "words": [
+        {
+          "word": " Wir",
+          "start": 0.0,
+          "end": 1.6,
+          "probability": 0.535820484161377
+        },
+        {
+          "word": " brauchen",
+          "start": 1.6,
+          "end": 2.0,
+          "probability": 0.9924939870834351
+        },
+        {
+          "word": " Hilfe",
+          "start": 2.0,
+          "end": 2.42,
+          "probability": 0.9786973595619202
+        },
+        {
+          "word": " in",
+          "start": 2.42,
+          "end": 2.64,
+          "probability": 0.9621434211730957
+        },
+        {
+          "word": " der",
+          "start": 2.64,
+          "end": 2.74,
+          "probability": 0.9659969210624695
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 2.74,
+          "end": 3.82,
+          "probability": 0.9312943339347839
+        },
+        {
+          "word": " 29",
+          "start": 3.82,
+          "end": 4.38,
+          "probability": 0.6835196614265442
+        },
+        {
+          "word": " beim",
+          "start": 4.38,
+          "end": 5.36,
+          "probability": 0.6131418943405151
+        },
+        {
+          "word": " Jungfernstieg",
+          "start": 5.36,
+          "end": 6.42,
+          "probability": 0.8776145875453949
+        },
+        {
+          "word": " und",
+          "start": 6.42,
+          "end": 7.14,
+          "probability": 0.8743610978126526
+        },
+        {
+          "word": " in",
+          "start": 7.14,
+          "end": 7.3,
+          "probability": 0.761993408203125
+        },
+        {
+          "word": " Eppendorf.",
+          "start": 7.3,
+          "end": 7.94,
+          "probability": 0.7978584058582783
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250924_213610"
+}

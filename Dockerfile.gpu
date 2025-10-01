@@ -1,0 +1,55 @@
+# Dockerfile.gpu
+# Devel image includes nvcc so mamba_ssm can compile if a wheel isn't available
+FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    CUDA_HOME=/usr/local/cuda
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.11 python3.11-venv python3.11-distutils python3.11-dev \
+    build-essential gcc g++ make \
+    ffmpeg libsndfile1 libffi-dev \
+    libpq5 libpq-dev \
+    git curl ninja-build \
+ && rm -rf /var/lib/apt/lists/* \
+ && ln -sf /usr/bin/python3.11 /usr/bin/python \
+ && curl -sS https://bootstrap.pypa.io/get-pip.py | python
+
+WORKDIR /app
+COPY requirements.txt /app/requirements.txt
+
+# Core Python build helpers
+RUN python -m pip install --upgrade pip setuptools wheel Cython
+
+# Torch matching CUDA 12.1
+RUN pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 \
+    --index-url https://download.pytorch.org/whl/cu121
+
+# Install your app deps first (faster layer caching)
+RUN python -m pip install --no-cache-dir -r requirements.txt
+
+# ---- Install mamba_ssm from your local folder ----
+# Copy only the installer first to leverage Docker cache
+COPY backend/mamba_install /app/backend/mamba_install
+# Let it try cached wheel; if not, compile with nvcc
+# Ensure README.md exists where setup.py expects it
+RUN if [ ! -f /app/backend/mamba_install/README.md ]; then \
+      if [ -f /app/README.md ]; then cp /app/README.md /app/backend/mamba_install/README.md; \
+      else echo "# mamba_ssm\nLocal build inside container." > /app/backend/mamba_install/README.md; fi; \
+    fi
+
+# Now install it (will use prebuilt wheel if available, else compile with nvcc)
+RUN cd /app/backend/mamba_install && python -m pip install --no-cache-dir .
+
+# Now copy the rest of the project
+COPY . /app
+
+# optional: psql client
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app/backend
+EXPOSE 8000
+CMD ["uvicorn", "api_server:app", "--host", "0.0.0.0", "--port", "8000"]

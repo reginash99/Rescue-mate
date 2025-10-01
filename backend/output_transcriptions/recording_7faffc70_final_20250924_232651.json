@@ -1,0 +1,188 @@
+{
+  "text": "Wenn ich fluche, dann sollte das gottverdammte Scheiße noch mal nicht zensiert werden. Fack, fack, fack.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.4199999999999996,
+      "end": 4.28,
+      "text": " Wenn ich fluche, dann sollte das gottverdammte Scheiße noch mal nicht zensiert werden.",
+      "tokens": [
+        50364,
+        7899,
+        1893,
+        932,
+        17545,
+        11,
+        3594,
+        18042,
+        1482,
+        658,
+        83,
+        331,
+        67,
+        5136,
+        975,
+        25321,
+        47828,
+        3514,
+        2806,
+        1979,
+        710,
+        694,
+        4859,
+        4604,
+        13,
+        50581
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.3025539788332852,
+      "compression_ratio": 1.21875,
+      "no_speech_prob": 0.04526923596858978,
+      "words": [
+        {
+          "word": " Wenn",
+          "start": 0.4199999999999996,
+          "end": 0.82,
+          "probability": 0.8153128027915955
+        },
+        {
+          "word": " ich",
+          "start": 0.82,
+          "end": 1.0,
+          "probability": 0.9754346013069153
+        },
+        {
+          "word": " fluche,",
+          "start": 1.0,
+          "end": 1.44,
+          "probability": 0.971246600151062
+        },
+        {
+          "word": " dann",
+          "start": 1.5,
+          "end": 1.6,
+          "probability": 0.9660025835037231
+        },
+        {
+          "word": " sollte",
+          "start": 1.6,
+          "end": 1.82,
+          "probability": 0.995387852191925
+        },
+        {
+          "word": " das",
+          "start": 1.82,
+          "end": 2.06,
+          "probability": 0.9939724802970886
+        },
+        {
+          "word": " gottverdammte",
+          "start": 2.06,
+          "end": 2.74,
+          "probability": 0.9211214979489645
+        },
+        {
+          "word": " Scheiße",
+          "start": 2.74,
+          "end": 3.1,
+          "probability": 0.6732637286186218
+        },
+        {
+          "word": " noch",
+          "start": 3.1,
+          "end": 3.24,
+          "probability": 0.7493394017219543
+        },
+        {
+          "word": " mal",
+          "start": 3.24,
+          "end": 3.44,
+          "probability": 0.9529785513877869
+        },
+        {
+          "word": " nicht",
+          "start": 3.44,
+          "end": 3.54,
+          "probability": 0.9508864283561707
+        },
+        {
+          "word": " zensiert",
+          "start": 3.54,
+          "end": 4.04,
+          "probability": 0.8456392884254456
+        },
+        {
+          "word": " werden.",
+          "start": 4.04,
+          "end": 4.28,
+          "probability": 0.9983444213867188
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 4.48,
+      "end": 5.6,
+      "text": " Fack, fack, fack, fack, fack.",
+      "tokens": [
+        50581,
+        479,
+        501,
+        11,
+        283,
+        501,
+        11,
+        283,
+        501,
+        11,
+        283,
+        501,
+        11,
+        283,
+        501,
+        13,
+        50656
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.3025539788332852,
+      "compression_ratio": 1.21875,
+      "no_speech_prob": 0.04526923596858978,
+      "words": [
+        {
+          "word": " Fack,",
+          "start": 4.48,
+          "end": 4.64,
+          "probability": 0.38256388902664185
+        },
+        {
+          "word": " fack,",
+          "start": 4.7,
+          "end": 4.86,
+          "probability": 0.7269516438245773
+        },
+        {
+          "word": " fack,",
+          "start": 5.1,
+          "end": 5.14,
+          "probability": 0.9889277517795563
+        },
+        {
+          "word": " fack,",
+          "start": 5.14,
+          "end": 5.36,
+          "probability": 0.9787555932998657
+        },
+        {
+          "word": " fack.",
+          "start": 5.36,
+          "end": 5.6,
+          "probability": 0.980617880821228
+        }
+      ]
+    }
+  ],
+  "language": "de",
+  "timestamp": "20250924_232651"
+}

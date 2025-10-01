@@ -1,0 +1,74 @@
+{
+  "text": "Either do something true or something false.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 3.02,
+      "text": " Either do something true or something false.",
+      "tokens": [
+        50364,
+        13746,
+        360,
+        746,
+        2074,
+        420,
+        746,
+        7908,
+        13,
+        50528
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.7420869307084517,
+      "compression_ratio": 1.0232558139534884,
+      "no_speech_prob": 0.6315262317657471,
+      "words": [
+        {
+          "word": " Either",
+          "start": 0.0,
+          "end": 0.9,
+          "probability": 0.027628466486930847
+        },
+        {
+          "word": " do",
+          "start": 0.9,
+          "end": 1.58,
+          "probability": 0.910485029220581
+        },
+        {
+          "word": " something",
+          "start": 1.58,
+          "end": 1.96,
+          "probability": 0.9912574291229248
+        },
+        {
+          "word": " true",
+          "start": 1.96,
+          "end": 2.26,
+          "probability": 0.21179847419261932
+        },
+        {
+          "word": " or",
+          "start": 2.26,
+          "end": 2.44,
+          "probability": 0.7260388731956482
+        },
+        {
+          "word": " something",
+          "start": 2.44,
+          "end": 2.72,
+          "probability": 0.9486292600631714
+        },
+        {
+          "word": " false.",
+          "start": 2.72,
+          "end": 3.02,
+          "probability": 0.12286404520273209
+        }
+      ]
+    }
+  ],
+  "language": "en",
+  "timestamp": "20250925_101743"
+}

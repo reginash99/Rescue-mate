@@ -1,0 +1,39 @@
+{
+  "text": "For these.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 0.46,
+      "text": " For these.",
+      "tokens": [
+        50364,
+        1171,
+        613,
+        13,
+        50414
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.9504111607869467,
+      "compression_ratio": 0.5555555555555556,
+      "no_speech_prob": 0.38649246096611023,
+      "words": [
+        {
+          "word": " For",
+          "start": 0.0,
+          "end": 0.24,
+          "probability": 0.22650611400604248
+        },
+        {
+          "word": " these.",
+          "start": 0.24,
+          "end": 0.46,
+          "probability": 0.641822874546051
+        }
+      ]
+    }
+  ],
+  "language": "en",
+  "timestamp": "20250924_211937"
+}

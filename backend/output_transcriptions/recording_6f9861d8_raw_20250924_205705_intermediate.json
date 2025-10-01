@@ -1,0 +1,52 @@
+{
+  "text": "I know your test.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 2.18,
+      "text": " I know your test.",
+      "tokens": [
+        50364,
+        286,
+        458,
+        428,
+        1500,
+        13,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.5404356718063354,
+      "compression_ratio": 0.68,
+      "no_speech_prob": 0.019061854109168053,
+      "words": [
+        {
+          "word": " I",
+          "start": 0.0,
+          "end": 1.24,
+          "probability": 0.8939967155456543
+        },
+        {
+          "word": " know",
+          "start": 1.24,
+          "end": 1.48,
+          "probability": 0.957230806350708
+        },
+        {
+          "word": " your",
+          "start": 1.48,
+          "end": 1.68,
+          "probability": 0.9512889981269836
+        },
+        {
+          "word": " test.",
+          "start": 1.68,
+          "end": 2.18,
+          "probability": 0.9487107992172241
+        }
+      ]
+    }
+  ],
+  "language": "en"
+}

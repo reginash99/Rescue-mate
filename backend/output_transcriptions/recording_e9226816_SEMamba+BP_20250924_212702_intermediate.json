@@ -1,0 +1,42 @@
+{
+  "text": " Kurfürstenstraße 2020.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.88,
+      "end": 4.0,
+      "text": " Kurfürstenstraße 2020.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        4808,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.42424764633178713,
+      "compression_ratio": 0.75,
+      "no_speech_prob": 0.03011002205312252,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 1.88,
+          "end": 3.28,
+          "probability": 0.8799829125404358
+        },
+        {
+          "word": " 2020.",
+          "start": 3.28,
+          "end": 4.0,
+          "probability": 0.3756464123725891
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}
