@@ -252,12 +252,14 @@ To display the transcription received from the backend, it is put together with 
 
 # Transcription
 
-The text "No data received yet." is displyed by default and the text "No transcription available." is displayed in case the received transcription is empty. Otherwise, the transcription is displayed as is.
+The text "Press the record button to transcribe your audio" is displyed by default and the text "No transcription available." is displayed in case the received transcription is empty. Otherwise, the transcription is displayed as is. 
+
+A side-panel can be opened by clicking on the notification bell button. This side-panel shows a filtered/enhanced transcription (if one exists). In case the audio was classified as clean, only raw transcription (trnascribed by Whisper only) will be available. A small _info_ button is also available at top right corner to explain this to the user.
 
 
 # History
 
-To show a history of transcriptions, a table with unique IDs, a timestamp, and a status (successful - not empty transcription, fail - empty transcription) is displayed.
+To show a history of transcriptions, a table with unique IDs, a timestamp, a status (successful - not empty transcription, fail - empty transcription) and _View_ button is displayed. Transcriptions are shown from the last 24 hours. Currently recorded transcriptions are received from the recording component as props and can be viewed by clicking on the _View_ button.
 
 # USER
 
@@ -273,6 +275,10 @@ A new audio cannot be recorded during this processing, therefore, the recording 
 
 ## Transcription
 Once the transcription is available, it will appear in the transcription view. In case the audio could not be transcribed, "No transcription available" text will be displayed instead.
+
+A raw transcription will be displayed as soon as processing is complete. Below the transcription box, log messages can be seen. These will indicate if there is further processing happening in the background i.e. application of different filters for different audio classifications. 
+
+If further filters were applied, and updated transcription will be available. This will be indicated by a red notification bubble on the bell button at the bottom right corner of the transcription box. By clicking this bell button, a side-panel will open from the right contaning the updated transcription. **The last log message will indicate whether the old (raw) or new (updated) transcription is better.**
 
 ## History
 Records of each trancription along with a unique *ID*, a *timestamp* (at the time the recording is started), and a *status* are saved in the database and displayed in the History table in the frontend. A _View_ button can be seen in each row of the displayed record. Click on this _View_ button to view the trancription of the selected record.

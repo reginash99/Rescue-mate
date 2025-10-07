@@ -33,36 +33,35 @@
             <p v-else-if="u.mamba_bp_transcr">{{ u.mamba_bp_transcr }}</p> 
             <p v-else-if="u.mamba_bp_preemp_transcr">{{ u.mamba_bp_preemp_transcr }}</p> 
             <p v-else-if="u.mamba_bp_preemp_deepfilternet_transcr">{{ u.mamba_bp_preemp_deepfilternet_transcr }}</p> 
-            <p v-else-if="u.bp_transcr">{{ u.bp_transcr }}</p> 
-
+            <p v-else-if="u.bp_transcr">{{ u.bp_transcr }}</p>
+            <p v-else-if="cleanAudio">No Updates</p>
           </div>
         </div>
+
         <div v-else>
-          <p><i>No updates available</i></p>
+          <p><i>Record an audio to get updates</i></p>
         </div>
       </div>
-      <button class="btn floating-btn" @click="panelOpen = !panelOpen">
+
+      <button class="btn floating-btn" @click="panelWork">
         <img src="./media/notification.png"></img>
-        <span v-if="!panelOpen">!</span>
+        
+        <!-- Notification bubble -->
+        <span v-if="notifyUser == true">!</span>
       </button>
     </div>
 
-
-
+    <!-- Updates showing audio processing steps -->
     <div class="updates-div">
       <p v-if="logs.length === 0"><i>No log messages yet… </i></p>
       <div v-else>
-        <!-- <p>
-          [{{ logs[logs.length - 1].timestamp }}] {{ logs[logs.length - 1].message }}
-        </p> -->
         <p v-for="(log, i) in logs" :key="i">
           [{{ log.timestamp }}] {{ log.message }}
         </p>
       </div>
     </div>
 
-
-
+    <!-- Info  -->
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-content">
         <button class="modal-close" @click="closeModal">×</button>
@@ -93,6 +92,12 @@ const finalTranscriptionReceived = ref(false)
 let pollInterval = null
 let logPollInterval = null
 
+// Flag to indicate if audio was clean
+const cleanAudio = ref(false)
+
+// Flag to notify user of updated transcription
+const notifyUser = ref(false)
+
 // Watch raw transcription for geocoding
 watch(() => props.data?.transcription, async (newVal) => {
 const text = typeof newVal === "string" ? newVal : newVal?.transcription
@@ -119,7 +124,7 @@ function startPolling(id) {
   stopPolling()
   pollInterval = setInterval(async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/get-intermediate-transcript/${id}`)
+          const res = await fetch(`http://127.0.0.1:8000/get-intermediate-transcript/${id}`)
       
       if (!res.ok) return
       const json = await res.json()
@@ -131,10 +136,21 @@ function startPolling(id) {
         return
       }
       else if(updates.value.length > 0 && updates.value[0].final_transcription){
-       
+        console.log("Final transcription received", updates.value)
         finalTranscriptionReceived.value = true
         emit('final-transcription', finalTranscriptionReceived.value)
-        
+
+        if (updates.value[0].bp_preemp_transcr == null && updates.value[0].mamba_bp_transcr == null && updates.value[0].mamba_bp_preemp_transcr == null && updates.value[0].mamba_bp_preemp_deepfilternet_transcr == null && updates.value[0].bp_transcr == null){
+          // If all transcription fields are null, mark audio as clean
+          cleanAudio.value = true
+        }
+        else{
+          // If any transcription field is not null, mark audio as not clean
+          cleanAudio.value = false
+
+          // Notify user of updated transcription
+          notifyUser.value = true
+        }
       }
 
     } catch (e) {
@@ -196,6 +212,13 @@ onUnmounted(() => {
 
 function openModal() { showModal.value = true }
 function closeModal() { showModal.value = false }
+
+
+function panelWork() { 
+  // Toggle panel and reset notification
+  panelOpen.value = !panelOpen.value
+  notifyUser.value = false
+  }
 </script>
 
 
@@ -226,7 +249,8 @@ function closeModal() { showModal.value = false }
   margin: 15px;
   border-radius: 15px;
   box-shadow: 0 8px 8px var(--shadow-color);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: auto;
   align-items: stretch;
 }
 
@@ -239,6 +263,7 @@ function closeModal() { showModal.value = false }
   color: var(--color-text);
   width: 100%;
   max-width: 100%;
+  overflow: auto;
   z-index: 1;
   flex: 1;
 }
@@ -297,14 +322,13 @@ function closeModal() { showModal.value = false }
 .updates-div {
   position: relative;
   left: 20px;
+  margin-right: 40px;
   margin-top: -5px;
   margin-bottom: -12px;
   opacity: 1;
   max-height: 80px;
   overflow-y: auto;
   scrollbar-width: thin;
-  max-width: 1320px;
-  /* animation: fadeInCaption 0.5s cubic-bezier(.77,0,.18,1) forwards; */
 }
 
 @keyframes fadeInCaption {
@@ -362,13 +386,18 @@ function closeModal() { showModal.value = false }
   right: 0;
   width: 50%;
   min-height: 100%;
-  position: absolute;
+  position: relative;
   border-radius: 0 15px 15px 0;
   background-color: var(--ternary-background);
   transition: opacity 0.3s;
   color: var(--color-text-2) !important;
+  margin-top: -15px;
+  margin-bottom: -15px;
+  margin-right: -15px;
   overflow-y: auto;
+  overflow-x: auto;
   padding: 15px;
+  
   flex: 1;
 }
 

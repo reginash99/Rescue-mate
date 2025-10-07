@@ -2,7 +2,10 @@
 <template>
   <div class="grid-container">
     <div class="grid-item record">
-      <Record @transcription="handleData" @waitingForRecording="indicateRecordingStatus" />
+      <Record 
+      @transcription="handleData"
+      @waitingForRecording="indicateRecordingStatus"
+      />
     </div>
 
     <div class="grid-item transcript">
@@ -23,7 +26,9 @@
 
     <div class="grid-item map">
       <!-- Pass markers down to Map -->
-      <Map :markers="markers" />
+      <Map
+      :markers="markers"
+      />
     </div>
   </div>
 </template>
@@ -47,9 +52,8 @@ function updateHistoryTable(update) {
   if (update){
     addHistoryEntry();
   }
-  
-
 }
+
 // NEW: handler receives markers from Transcription
 function onMarkersFound(m) {
   markers.value = Array.isArray(m) ? m : [];
@@ -97,8 +101,6 @@ async function get_records() {
 }
 </script>
 
-
-
 <style>
 
 #app {
@@ -111,6 +113,7 @@ html, body {
   height: 100%;
 }
 
+/* Overall container containing the four components */
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -136,20 +139,22 @@ html, body {
   overflow: hidden;
 }
 
+/* Setting min and max widths */
 .record {
   resize: horizontal;
+}
+
+.record, .history {
   min-width: calc(100vw - 65vw);
   max-width: calc(100vw - 35vw);
 }
+
 .transcript, .map {
   min-width: calc(100vw - 70vw);
   max-width: calc(100vw - 30vw);
 }
 
-.transcript {
-  resize: vertical !important;
-}
-
+/* Resize for smaller screens */
 @media (max-width: 900px) {
   .grid-container {
     grid-template-columns: 1fr;

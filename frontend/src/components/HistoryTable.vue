@@ -12,23 +12,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- <tr>
-                        <td>01</td>
-                        <td>10.12.32 34:12:20</td>
-                        <td>
-                            <div class="sent">
-                                Success
-                                <i class="fa fa-check-circle"></i>
-                            </div>
-                        </td>
-                        <td>
-                            <button class="btn-view" @click="openModal(item)">
-                                <span class="eye-icon">
-                                    <i class="fa fa-eye"></i>View
-                                </span>
-                            </button>
-                       </td>
-                    </tr> -->
                     <tr v-for="(item, idx) in history" :key="idx">
                         <td>{{ item.id}}</td>
                         <td>{{ item.timestamp }}</td>
@@ -40,6 +23,7 @@
                             </div>
                         </td>
                        <td>
+                        <!-- View Button -->
                         <button class="btn-view" @click="openModal(item)">
                             <span class="eye-icon">
                                 <i class="fa fa-eye"></i>View
@@ -81,8 +65,10 @@ const props = defineProps({
   }
 })
 
-const showModal = ref(false)
 const selectedItem = ref(null)
+
+// For the View Modal - show/hide
+const showModal = ref(false)
 
 function openModal(item) { 
     showModal.value = true
@@ -97,10 +83,8 @@ function closeModal() {
 
 <style scoped>
 
-h1 {
-    text-align: center;
-}
 
+/* Overall History Component */
 .main-table {
     display: flex;
     padding: 10px;
@@ -112,6 +96,12 @@ h1 {
     position: relative;
 }
 
+/* Main Heading */
+h1 {
+    text-align: center;
+}
+
+/* Div containing table */
 .table_component {
     overflow: hidden;
     min-height: 0;
@@ -124,6 +114,8 @@ h1 {
     text-align: left;
     max-height: 100%;
 }
+
+/* Table */
 
 .table_component table {
     width: 100%;
@@ -158,12 +150,6 @@ h1 {
     background-color: var(grid-item-backgound-color);
 }
 
-@media (max-width: 900px) {
-    .table_component th {
-        position: relative;
-    }
-}
-
 .table_component tr td:first-child {
     border-top-left-radius: 18px;
     border-bottom-left-radius: 18px;
@@ -171,23 +157,29 @@ h1 {
 }
 
 .table_component tr td:last-child {
-  border-top-right-radius: 18px;
-  border-bottom-right-radius: 18px;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
 }
 
 .table_component th:first-child {
-  border-top-left-radius: 18px;
-  border-bottom-left-radius: 18px;
-  padding-left: 13px !important;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+    padding-left: 13px !important;
 }
 
 .table_component th:last-child {
-  border-top-right-radius: 18px;
-  border-bottom-right-radius: 18px;
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
 }
 
-/* Status */
+/* Resize for smaller screens */
+@media (max-width: 900px) {
+    .table_component th {
+        position: relative;
+    }
+}
 
+/* Status Label */
 .sent {
     i{
         color: #34A853;
@@ -229,7 +221,6 @@ h1 {
 }
 
 /* Modal View */
-
 .modal-overlay {
     position: absolute;
     top: 0;
