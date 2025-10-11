@@ -31,7 +31,7 @@ def bandpass_filter(audio, lowcut=80.0, highcut=7000.0, fs=16000, order=6):
 def pre_emphasis(audio, coeff=0.97):
     return np.append(audio[0], audio[1:] - coeff * audio[:-1])
 
-#Designed for: post-denoised but still unclear speech, Real-time capable (low CPU/GPU use),Runs as a CLI or via Python wrapper, Open-source + pretrained.
+#Designed for: post-denoised but still unclear speech, Real-time capable (low CPU/GPU use), open-source + pretrained
 def run_deepfilternet(input_folder, output_folder):
     subprocess.run(["deepFilter", "-i", input_folder, "-o", output_folder], check=True)
 

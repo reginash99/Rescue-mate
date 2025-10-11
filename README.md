@@ -1,33 +1,47 @@
 # Rescue-mate
 
-Naming Convention:
-- f = frontend
-- b = backend
-- f_component_something
-- b_component_something
+# BACKEND
 
-## BACKEND
-# SE Mamba
-For SE Mamba (the code is inside the backend folder), a Linux-based system is required, but since we are operating on Windows, we will use WSL on windows and install Ubuntu 22.04 using it (there are tutorials on how to make this work but it is fairly simple and involves only terminal commands). By doing this, we will be able to use the Ubuntu terminal on our respective windows devices.
+## Docker
+Instructions on how setting up with Docker go here.
+
+## Installation procedure for SEMamba
+
+We based our backend on SEMamba, which is a low-artifact denoising model used to suppress background noise while preserving speech transients and long-range context.
+
+
+Below, you will find a set of instructions on how to set up the backend the long way in case setting up via docker (as explained in the instructions listed in the Docker section) fails.
+
+
+A linux-based system is required, if you are operating on Windows, use WSL on windows and install Ubuntu 22.04 using it (there are tutorials on how to make this work but it is fairly simple and involves only terminal commands). By doing this, you will be able to use the Ubuntu terminal on our respective windows devices.
 
 
 WSL, conda, Pytorch, Torchaudio, and Cuda are required. 
 
 
-Firstly, it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use these commands one by one to first install pytorch, torchaudio and cuda-toolkit:  
+Firstly, it is recommended to install miniconda on Ubuntu. Then create a conda virtual environment with python version 3.11 and activate it. After that use these commands one by one to first install pytorch, torchaudio and cuda-toolkit whilst being inside your conda environment:  
 
 
-`conda install pytorch=2.2.2 -c conda-forge -c pytorch -c nvidia`
+```
+conda install pytorch=2.2.2 -c conda-forge -c pytorch -c nvidia
+```
 
-`conda install torchaudio=2.2.2 torchvision -c conda-forge -c pytorch -c nvidia`
 
-`conda install cuda-toolkit=12.1 -c conda-forge -c pytorch -c nvidia`
+```
+conda install torchaudio=2.2.2 torchvision -c conda-forge -c pytorch -c nvidia
+```
+
+
+```
+conda install cuda-toolkit=12.1 -c conda-forge -c pytorch -c nvidia
+```
+
 
 
 Install all the packages stated in the requirements.txt file inside the project root folder using the same command style: conda install... (excluding openai-whisper and deepfilernet, see below), and make sure to include all the channels: -c conda-forge, -c pytorch, -c nvidia (sometimes you might need to install pytorch-cuda as well, version 12.1). 
 
 
-Install openai-whisper and deepfilternet by using pip instead of conda. Install openai-whisper, sentence-transformers, deepfilternet, fastapi, uvicorn only after you finish building mamba_ssm.  
+Install openai-whisper and deepfilternet by using pip instead of conda. Install: openai-whisper, sentence-transformers, deepfilternet, fastapi, uvicorn only after you finish building mamba_ssm.  
 
 
 Sometimes when installing them in a single command it may cause issues. If this happens, try to install them one by one, for example: conda install python-multipart -c conda-forge -c pytorch -c nvidia, conda install packaging -c conda-forge -c pytorch -c nvidia etc.
@@ -37,15 +51,25 @@ If you get errors including the package triton, you might need to uninstall it t
 You might also need to downgrade numpy to 1.26.
 
 
-Then we need to build the mamba_ssm by running (inside the backend folder): 
-1.  cd mamba_install
-2.    pip install .
+Then we need to build the mamba_ssm by running (make sure you are inside the backend folder, if not, then move to it by using: cd backend) : 
 
+
+```
+cd mamba_install
+```
+
+
+```
+pip install .
+```
 
 
 If you run into trouble with nvcc run these in the terminal: 
 
-`sudo rm /usr/local/cuda/bin/nvcc`
+
+```
+sudo rm /usr/local/cuda/bin/nvcc
+```
 
 
 And see if you get a value, if not then you need to install nvcc or reinstall pytorch, torchaudio and torchvision. 
@@ -54,52 +78,55 @@ And see if you get a value, if not then you need to install nvcc or reinstall py
 If you still have issues with cuda even though it is installed, these commands help the system recognize and find where it is installed: 
 
 
-`export CUDA_HOME=$CONDA_PREFIX`
+```
+export CUDA_HOME=$CONDA_PREFIX
+```
 
-`export PATH="$CUDA_HOME/bin:$PATH"`
 
-`export CPLUS_INCLUDE_PATH="$CUDA_HOME/include"`
+```
+export PATH="$CUDA_HOME/bin:$PATH"
+```
 
-`export C_INCLUDE_PATH="$CUDA_HOME/include"`
+
+```
+export CPLUS_INCLUDE_PATH="$CUDA_HOME/include"
+```
+
+
+```
+export C_INCLUDE_PATH="$CUDA_HOME/include"
+```
 
 
 To backup your current environment (if you need it just in case) run: 
-conda list --explicit > env-backup.txt
+`conda list --explicit > env-backup.txt`
 
 
-# Whisper
-After each check and subsequent filter combo is deemed appropriate, Whisper is used to transcribe. The transcription from whisper is used by several functions to calculate a score by using both average log probability and a multilingual sentence transformer model that validates how 'correct' it is and essentially how much sense it makes context wise. This score is then used to compare this script with the next one to determine which is best. In the end, only the best one is written/saved.
+## Whisper
+Whisper is an encoder–decoder Transformer that converts audio (log‑Mel spectrograms) into text using large-scale multilingual supervised training. We are using the "small" model for whisper because it takes less time.
 
 
-Whisper is also fine tuned with parameters and a prompt in german (the prompt might still need work).
-Extra functions are also implemented to ensure the repetition of words or sentences whisper does sometimes doesnt happen again.
-
-
-# Filters
-We added deepfilternet3 for speech enhancement and a bandpass filter for more thorough noise cleaning. After these, then whisper is called to transcribe. We are using the "small" model for whisper because it takes less time, we might use "medium" as well, this is still being tested.
-
-
-With these changes we managed to make the entire pipeline run in under approximately 30 seconds for a 1 minute audio input, which is a great improvement from the initial 3 minutes that this took.
-
-
-So far we have changed the way files are processed so that only the last added input audio (into the input_audio folder) is processed instead of all of them.
+After each check and subsequent filter combo is deemed appropriate, Whisper is used to transcribe. The transcription from whisper is then passed through several functions to both format it and calculate a score by using both average log probability and a multilingual sentence transformer model, all of this to validate how 'correct' the transcript is, and essentially how much sense it makes context wise. The functions used to format include functions that ensure the repetition of words or sentences whisper sometimes does, doesn't happen again.
+Whisper is also finetuned with parameters and a prompt in german.
 
 
 
-
-# FASTAPI
-This is how to start the backend server (run it on wsl ubuntu, inside the backend folder): uvicorn api_server:app --reload. 
+This score is then used to compare the initial transcript (the one generated after the initial recording is received and no filters are applied to it, we call this the raw transcript) with any other transcripts that may follow to determine which is best. In the end, both the initial and the final transcript, which is the one that was determined to be the best, are send and displayed in the frontend.
 
 
-If you face issues with the pretrained.sh encoding: Look at the bottom right of your screen, next to the UTF-8 while you are in the file pretrained.sh. Being inside the file pretrained.sh is important, the encoding does not work for the entire project, it is file dependant. After you change the encoding between them (LF and CRLF) it will appear as if you have made changes to the pretrained.sh, this is fine, save and make sure you have stopped the server. If you still get errors, try changing it back to what it was before, then save then try again.
+
+## Filters
+We use: 
+1. Deepfilternet3 for speech enhancement.
+2. A bandpass filter to improve speech intelligibility.
+3. Deepfilternet3, which is a neural speech‑enhancement model that suppresses background noise more aggresively preserving speech naturalness.
+4. Pre-emphasis to further enhance consonants that Whisper needs (like "s", "t", "sh").
 
 
-# Checks for filters 
-
-We noticed that when a "clean" audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. 
+When a clean or mostly clean audio was recorded and passed through the filters, the output was worse than the input. This happened because when you clean an already cleaned file, the quality will drop significantly. 
 
 
-To fix this issue, we implemented several functions that calculate the noise and quality of the input audio, if it reaches certain levels, then only certain filters are applied.  Before we apply any of the filters (mamba, deepfilternet, bandpass filter) we check first if it is needed, if not, we skip it. This also improves the processing speed. 
+To fix this issue, we implemented several functions that calculate the noise and quality of the input audio, if it reaches certain levels, then only certain filters are applied.  Before we apply any of the filters that are mentioned above, we check first if it is needed, if not, we skip it. This also improves the processing speed. 
 
 
 The functions we used are: 
@@ -111,7 +138,16 @@ The functions we used are:
 4. Background RMS (root mean square) which measures the average energy (loudness) of the background (non-speech) portions of audio to detect if the background is quiet or noisy.
 
 
-# DATABASE
+
+## FASTAPI
+This is how to start the backend server (run it on wsl ubuntu, inside the backend folder): `uvicorn api_server:app --reload`
+
+
+If you face issues with the pretrained.sh encoding: Look at the bottom right of your screen, next to the UTF-8 while you are in the file pretrained.sh. Being inside the file pretrained.sh is important, the encoding does not work for the entire project, it is file dependant. After you change the encoding between them (LF and CRLF) it will appear as if you have made changes to the pretrained.sh, this is fine, save and make sure you have stopped the server. If you still get errors, try changing it back to what it was before, then save then try again.
+
+
+
+## DATABASE
 
 We use posgresql 17.6 for our database system.
 
@@ -205,8 +241,8 @@ OUTPUT_AUDIO_DIR="PATH_WITHIN_SERVER_TO_STORE_AUDIO_OUTPUTS"
 
 The audio files are deleted after 24h
 
-## FRONTEND
-# Map
+# FRONTEND
+## Map
 
 For implementing the map we used Vue Map, a provided open-source UI Framework for vue.js based on Leaflet which is an open-source JavaScript library
 for mobile-friendly interactive maps.
@@ -241,7 +277,7 @@ Currently the geo data of the Hamburg Rathaus are used to display a marker in th
 If no data was found, then no map but a notification will be displayed informing that no data was found.
 
 
-# Recording
+## Recording
 
 To record the incomming audio, we used MediaStream Recording API. Incorporating this API, it is possible to store real-time recorded audio.
 Attention: It is necessary to give permisson to use the microphone of your device. It may happen that some browsers deny this per default. 
@@ -250,14 +286,14 @@ The icons are provided by bootstrap. While recording the audio, a video is shown
 
 To display the transcription received from the backend, it is put together with a timestamp in an object and emitted. The timestamp is recorded when the recording starts. Upon emission, a handleData function is triggered which sends this object to the trancription component and the history component. 
 
-# Transcription
+## Transcription
 
 The text "Press the record button to transcribe your audio" is displyed by default and the text "No transcription available." is displayed in case the received transcription is empty. Otherwise, the transcription is displayed as is. 
 
 A side-panel can be opened by clicking on the notification bell button. This side-panel shows a filtered/enhanced transcription (if one exists). In case the audio was classified as clean, only raw transcription (trnascribed by Whisper only) will be available. A small _info_ button is also available at top right corner to explain this to the user.
 
 
-# History
+## History
 
 To show a history of transcriptions, a table with unique IDs, a timestamp, a status (successful - not empty transcription, fail - empty transcription) and _View_ button is displayed. Transcriptions are shown from the last 24 hours. Currently recorded transcriptions are received from the recording component as props and can be viewed by clicking on the _View_ button.
 
