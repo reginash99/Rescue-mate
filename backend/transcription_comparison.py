@@ -14,7 +14,7 @@ def semantic_similarity(text1, text2):
     emb2 = semantic_model.encode(text2, convert_to_tensor=True)
     return float(util.cos_sim(emb1, emb2))
 
-#Return a penalty if text is highly repetitive
+#Return a penalty if the text is highly repetitive
 def repetition_score(text: str, max_ngram=4) -> float:
     words = text.strip().split()
     if len(words) < 4:
@@ -114,14 +114,14 @@ def score_transcript(result, baseline_len=None):
 
     div = word_diversity(text)
     if div < 0.2:
-        score -= 15.0  # reject low-diversity junk
+        score -= 15.0 
 
     ar = alpha_ratio(text)
     if ar < 0.5:
-        score -= 20.0  # reject mostly non-letters
+        score -= 20.0
 
     if looks_like_nonsense(text):
-        score -= 50.0  # outright reject nonsense
+        score -= 50.0 
 
     if compression_ratio < 0.25:
         score -= 5.0
@@ -154,7 +154,6 @@ def compare_and_update(old_result, new_result, stage_name, semantic_weight=2.0):
 
     sim = semantic_similarity(new_clean, old_clean)
 
-    # Only boost if new text is not repetitive
     if repetition_score(new_clean) < 3:
         combined_new = new_score + semantic_weight * sim
     else:

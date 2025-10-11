@@ -1,13 +1,10 @@
 import argparse
 import librosa
 import torch
-import os
 import numpy as np
 from scipy.signal import butter, sosfiltfilt
 import subprocess
 from models.stfts import mag_phase_stft, mag_phase_istft
-import datetime 
-import json 
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -42,18 +39,6 @@ def is_muffled(audio, sr=16000, threshold=0.2):
     S = np.abs(librosa.stft(audio))
     flatness = librosa.feature.spectral_flatness(S=S).mean()
     return flatness < threshold
-
-def save_intermediate_transcript(script_base_name, stage_name, transcript, out_dir="output_transcriptions"):
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-
-    if stage_name=="final":
-        fname = os.path.join(out_dir, f"{script_base_name}_{stage_name}_{timestamp}.json")
-    else: 
-        fname = os.path.join(out_dir, f"{script_base_name}_{stage_name}_{timestamp}_intermediate.json")
-    
-    os.makedirs(out_dir, exist_ok=True)
-    with open(fname, "w", encoding="utf-8") as f:
-        json.dump(transcript, f, ensure_ascii=False, indent=2)
 
 # Chunked SEMamba denoising for audio recordings longer than 4 minutes to keep peak GPU memory low while remaining relatively fast
 def semamba_denoise_chunks(audio_np, sr, model, device, n_fft, hop_size, win_size, compress_factor,

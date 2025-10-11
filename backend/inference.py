@@ -1,6 +1,5 @@
 import os
 import argparse
-import json
 import torch
 import librosa
 from models.stfts import mag_phase_stft, mag_phase_istft
@@ -11,15 +10,13 @@ import whisper
 import numpy as np
 from utils.util import load_config
 import datetime
-from collections import Counter
 from snr_helpers import estimate_snr_vad, classify_audio_quality
-from helpers_and_filters import bandpass_filter, pre_emphasis, run_deepfilternet, str2bool, semamba_denoise_chunks, save_intermediate_transcript
+from helpers_and_filters import bandpass_filter, pre_emphasis, run_deepfilternet, str2bool, semamba_denoise_chunks
 from transcription_comparison import cleanup_repetition, compare_and_update
 from db import insert_intermediate_record,set_success_status,add_audio_path
 import dotenv
 from requests import post
 
-# Load environment variables for database connection
 dotenv.load_dotenv()
 
 
@@ -47,7 +44,6 @@ DOMAIN_PROMPT = (
 
 def whisper_decode(model, audio_array, language=None):
     
-     #ensure no negative strides by copying
     if not isinstance(audio_array, np.ndarray):
         audio_array = np.array(audio_array)
     audio_array = np.ascontiguousarray(audio_array).astype(np.float32)
@@ -74,7 +70,6 @@ def whisper_decode(model, audio_array, language=None):
 
 def inference(args, device):
 
-    # current id for database access
     current_id = int(args.current_id)
 
     cfg = load_config(args.config)
@@ -122,14 +117,11 @@ def inference(args, device):
 
 
         # ===== Stage 1: RAW/Clean (always baseline) =====
-        #FIRST RAW TRANSCRIPT IS GENERATED HERE and saved at best_result - NO FILTERS APPLIED
         best_result = whisper_decode(whisper_model, best_audio)
         best_result["text"] = cleanup_repetition(best_result["text"])
-        #save_intermediate_transcript(base, stage, best_result)
         print(f"Stage RAW text: {best_result.get('text','').strip()}")
 
 
-        # Here is where we insert the raw transcript into the database
         insert_intermediate_record(best_result["text"].strip(), 1,current_id)
         if(best_result["text"]):
             set_success_status(current_id, True)  
@@ -150,7 +142,6 @@ def inference(args, device):
         print("Audio classified as clean -> skipping filtering.")
         stage = "final"
         send_log_to_frontend(current_id, "Audio classified as clean -> skipping filtering.")
-        #save_intermediate_transcript(base, stage, best_result)
 
     # ===== Stage 2: Band-pass (conditional) =====
     elif quality == "moderate":
@@ -193,7 +184,7 @@ def inference(args, device):
             send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
         
     # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
-    elif quality == "noisy":  #run SEMamba only when noisy enough
+    elif quality == "noisy":
         print("Audio is noisy, applying SEmamba and bandpass.")
         send_log_to_frontend(current_id, "Audio is noisy, applying SEmamba and bandpass.")
         stage = "SEMamba+BP"
@@ -216,7 +207,6 @@ def inference(args, device):
 
             amp_g, pha_g, _ = model(noisy_amp, noisy_pha)
             mamba_audio = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor=0.8)
-            #mamba_audio = (mamba_audio / norm_factor).squeeze().cpu().detach().numpy()
 
             mamba_audio = (mamba_audio / norm_factor.cpu().item())
             mamba_audio = mamba_audio.squeeze().cpu().detach().numpy()
@@ -226,10 +216,8 @@ def inference(args, device):
             del amp_g, pha_g, noisy_amp, noisy_pha
             torch.cuda.empty_cache()
             
-        # --- Always bandpass after SEMamba ---
         mamba_audio = bandpass_filter(mamba_audio, 80, 7000)
 
-        # --- Conditional pre-emphasis ---
         fft = np.abs(np.fft.rfft(mamba_audio))**2
         freqs = np.fft.rfftfreq(len(mamba_audio), 1/sr)
         hf_energy = fft[(freqs > 3000) & (freqs < 8000)].sum()
@@ -288,7 +276,6 @@ def inference(args, device):
             
             dfn_audio, _ = librosa.load(dfn_path, sr=16000, mono=True)
             dfn_result = whisper_decode(whisper_model, dfn_audio)
-            #save_intermediate_transcript(base, stage, dfn_result)
             best_result, new_or_old = compare_and_update(best_result, dfn_result, stage)
             best_audio = dfn_audio
 
@@ -303,7 +290,6 @@ def inference(args, device):
             
             os.remove(dfn_path)
 
-    # Save final
     sf.write(final_wav_out, best_audio, 16000, 'PCM_16')
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     best_result["timestamp"] = timestamp

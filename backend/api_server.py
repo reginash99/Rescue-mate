@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
-import json
 from db import delete_records, select_records, get_latest_id, create_new_record, add_audio_path, select_transcriptions, select_intermediate_result
 import dotenv
 import unicodedata
@@ -20,10 +19,8 @@ logs_store = {}
 pending_responses = {}
 
 
-# --- create app FIRST ---
 app = FastAPI()
 
-# --- CORS (optional if you proxy through Vite) ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
@@ -33,10 +30,8 @@ app.add_middleware(
 )
 
 # --- Paths & helpers ---
-# Base directory for backend files
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-# Directories can be overridden with environment variables when deploying to a server
 UPLOAD_DIR = os.getenv("INPUT_AUDIO_DIR", os.path.join(BASE_DIR, "input_audio"))
 OUTPUT_AUDIO_DIR = os.getenv("OUTPUT_AUDIO_DIR", os.path.join(BASE_DIR, "output_audio"))
 OUTPUT_TRANSCRIPT_DIR = os.getenv("OUTPUT_TRANSCRIPT_DIR", os.path.join(BASE_DIR, "output_transcriptions"))
@@ -50,15 +45,12 @@ def normalize_query(q: str) -> str:
         return q
     s = q.strip()
 
-    # unify common suffix spellings
     s = re.sub(r'\bStr\.\b', 'Straße', s, flags=re.IGNORECASE)
     s = re.sub(r'\bStrasse\b', 'Straße', s, flags=re.IGNORECASE)
 
-    # two-way ß/ss variants
     return s
 
 def variants(q: str) -> list[str]:
-    """Return a few spelling variants to try with Nominatim."""
     if not q:
         return []
 
@@ -66,11 +58,9 @@ def variants(q: str) -> list[str]:
 
     out = {s}
 
-    # ß <-> ss
     out.add(s.replace('ß', 'ss'))
     out.add(s.replace('ss', 'ß'))
 
-    # de-accent version (ä->a etc.) for lenient search
     deacc = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
     out.add(deacc)
 
@@ -80,7 +70,6 @@ def variants(q: str) -> list[str]:
     # collapse double spaces
     out = {re.sub(r'\s+', ' ', v).strip() for v in out}
 
-    # keep short non-empty
     return [v for v in out if v]
 
 
@@ -110,25 +99,21 @@ async def upload_audio(file: UploadFile = File(...)):
         with open(webm_path, "wb") as f:
             f.write(await file.read())
 
-        # Convert to WAV
         wav_filename = f"{base}_{unique_id}.wav"
         wav_location = os.path.join(UPLOAD_DIR, wav_filename)
         convert_webm_to_wav(webm_path, wav_location)
         os.remove(webm_path)
 
-        # DB: create new record
         create_new_record()
         current_id = str(get_latest_id())
         add_audio_path(current_id, wav_location, 0)
 
-        # Update environment variables for subprocess
         env = os.environ.copy()
         env.update({
             "INPUT_AUDIO_DIR": UPLOAD_DIR,
             "OUTPUT_AUDIO_DIR": OUTPUT_AUDIO_DIR
         })
 
-        # Launch inference
         subprocess.Popen(
             [
                 "python", "inference.py",
@@ -143,12 +128,10 @@ async def upload_audio(file: UploadFile = File(...)):
             cwd=os.path.abspath(os.path.dirname(__file__))
         )
 
-        # delete all records older that 24 hours
         old_records = delete_records()
         delete_old_records(old_records)
         
 
-        # Suspend until inference notifies us
         loop = asyncio.get_running_loop()
         fut = loop.create_future()
         pending_responses[current_id] = fut
@@ -191,10 +174,6 @@ async def log_update(request: Request):
     data = await request.json()
     current_id = str(data["id"])
     message = data["message"]
-    
-    # Store in DB or just push into memory
-    #add_log_message(current_id, message)
-
 
     if current_id not in logs_store:
         logs_store[current_id] = []
@@ -215,7 +194,6 @@ async def get_logs(id: int):
 
 @app.get("/get-history/")
 async def get_history():
-    # delete all records older than 24 hours
     old_records = delete_records()
     delete_old_records(old_records)
     records = select_records()
@@ -231,16 +209,13 @@ poi_list = [
     "Rathausmarkt","Speicherstadt","Fischmarkt","Eppendorf","Winterhude",
 ]
 
-# Suffixes we care about (also handle "...stieg")
 SUFFIX_WORD = r"(?:Stra(?:ße|sse)|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer|Stieg)"
 
-# 1) Attached form: "Kurfürstenstraße 29", "Jungfernstieg 12", "Jungfernstieg"
 ATTACHED = re.compile(
     rf"\b([A-ZÄÖÜ][\wÄÖÜäöüß\-]*(?:{SUFFIX_WORD}))(?:\s+(\d+[a-zA-Z]?))?\b",
     re.IGNORECASE | re.UNICODE,
 )
 
-# 2) Separated form: "Kurfürsten Straße 29"
 SEPARATED = re.compile(
     rf"\b([A-ZÄÖÜ][\wÄÖÜäöüß\-]+(?:[ -][A-ZÄÖÜ][\wÄÖÜäöüß\-]+)*)\s{SUFFIX_WORD}(?:\s+(\d+[a-zA-Z]?))?\b",
     re.IGNORECASE | re.UNICODE,
@@ -250,32 +225,26 @@ def extract_candidates(text: str) -> list[str]:
     cands: set[str] = set()
     t = text or ""
 
-    # streets: attached suffix
     for m in ATTACHED.finditer(t):
         street, num = m.groups()
         cands.add(street if not num else f"{street} {num}")
 
-    # streets: separated suffix (reconstruct exact surface form)
     for m in SEPARATED.finditer(t):
         s = t[m.start():m.end()]
         cands.add(s.strip())
 
-    # POIs
     for poi in poi_list:
         if re.search(rf"\b{re.escape(poi)}\b", t, re.IGNORECASE):
             cands.add(poi)
 
-    # last resort: comma/semicolon chunks with a suffix token somewhere
     if not cands:
         for chunk in re.split(r"[;,]", t):
             if re.search(SUFFIX_WORD, chunk, re.IGNORECASE):
                 cands.add(chunk.strip())
 
-    # absolute fallback: try the whole string (Nominatim is tolerant)
     if not cands and t.strip():
         cands.add(t.strip())
 
-    # collapse spaces
     return [re.sub(r"\s+", " ", c).strip() for c in cands if c.strip()]
 
 async def geocode_one(query: str) -> Optional[dict]:
@@ -316,7 +285,6 @@ async def geocode_one(query: str) -> Optional[dict]:
         else:
             lat, lon = float(lat), float(lon)
 
-        # pretty label
         addr = x.get("address", {})
         city = addr.get("city") or addr.get("town") or addr.get("village") or "Hamburg"
         street = addr.get("road")
@@ -337,7 +305,7 @@ async def geocode_one(query: str) -> Optional[dict]:
             "source": "nominatim",
             "bbox": x.get("boundingbox"),
             "raw_address": addr,
-            "q_used": q,  # helps debug which variant matched
+            "q_used": q,
         }
 
     return None
@@ -371,10 +339,8 @@ async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
         resp["debug"] = dbg
     return resp
 
-# --- delete audio files referenced by old records ---
 def delete_old_records(records):
     for record in records:
-        # expected tuple: (id, inputpath, outputpath)
         print("deleting files from record with id: ", record[0])
 
         try:
