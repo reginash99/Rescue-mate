@@ -2,8 +2,75 @@
 
 # BACKEND
 
-## Docker
+## Docker 
+
+### 1. Install Docker Desktop and set it up
+
 Instructions on how setting up with Docker go here.
+You need Docker Desktop for your OS, downloadable via https://www.docker.com/products/docker-desktop/. 
+Install it and enable WSL 2 integration (on Windows). 
+Open Docker Desktop and make sure the engine is running. 
+Go to Settings --> Resources --> GPU and enable GPU support (NVIDIA only).
+
+
+### 2. Clone the project
+
+In a terminal (or VS Code terminal)
+
+```
+cd ~/code
+git clone <your_repo_url> Rescue-mate
+cd Rescue-mate
+
+```
+
+### Create environment files 
+
+Make sure you have the following files: 
+
+#### backend/.env
+
+```
+DB_NAME="rescue_mate"
+DB_USER="postgres"
+DB_PASSWORD="postgres"
+DB_HOST="db"
+DB_PORT="5432"
+
+INPUT_AUDIO_DIR=./input_audio
+
+OUTPUT_AUDIO_DIR=./output_audio
+
+```
+
+#### frontend/.env
+
+```
+VITE_API_URL=http://api:8000
+
+```
+
+### Build and start the project
+
+Run this in the project root: 
+
+```
+docker compose up --build
+
+```
+
+You'll see three services start: 
+
+db         | PostgreSQL 17 ...
+api        | Uvicorn running on 0.0.0.0:8000
+frontend   | Vite dev server running on port 5173
+
+### Access the app
+
+Frontend: http://localhost:5173
+API: http://localhost:8000/healthy (should return {"status":"ok"})
+Database: PostgreSQL accessible at localhost:5432 (user postgres, pass postgres)
+
 
 ## Installation procedure for SEMamba
 
