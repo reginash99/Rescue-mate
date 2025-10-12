@@ -2,9 +2,9 @@
 
 # BACKEND
 
-Before setting up the project, you have to install the database:
+Before setting up the project, you have to install the database.
 
-## Database
+To set up the database without Docker, please refer to the _Database (without Docker)_ section below after _FastAPI_ section.
 
 ## DATABASE
 
@@ -302,7 +302,9 @@ If you face issues with the pretrained.sh encoding: Look at the bottom right of 
 
 
 
-## DATABASE
+## DATABASE (Without Docker)
+
+This section describes the steps for setting up the database without Docker setup.
 
 We use posgresql 17.6 for our database system.
 
