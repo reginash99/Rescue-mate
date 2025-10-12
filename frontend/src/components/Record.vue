@@ -19,8 +19,7 @@
             <path d="M3.5 5A1.5 1.5 0 0 1 5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11zM5 4.5a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5z" />
           </svg>
 
-          <svg v-else width="16" height="16">  
-          </svg>          
+          <!-- removed redundant empty <svg> that duplicated the button structure -->
           
           <div v-if="isRecording">
             Stop recording
@@ -69,12 +68,9 @@
     </div>
     
   </div>
-
-
 </template>
 
 <style>
-
 .btn.btn-danger {
   box-shadow: 0 4px 16px var(--shadow-color);
 }
@@ -113,7 +109,6 @@
 }
 [class*='wave'] {
   aspect-ratio: .125/1;
-  /*This can all be written on one line:*/
   animation: waveform var(--wavefreq)
              ease-in-out infinite
              forwards;
@@ -134,17 +129,17 @@
     transform: scaleY(.5);
   }
 }
-
-
 </style>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 
-const emit = defineEmits(['transcription', 'waitingForRecording'])
+const API = '/api';
+
+const emit = defineEmits(['transcription','waitingForRecording'])
 const isRecording = ref(false)
-const waitingForRecording = ref(false);
-const error_message = ref(null);
+const waitingForRecording = ref(false)
+const error_message = ref(null)
 const clientWidth = ref(800);
 
 let record_component = ref(null)
@@ -153,37 +148,27 @@ let data = []
 let audio = [];
 
 async function startRecording() {
-
   isRecording.value = true;
   console.log("Recording started")
-
   audio = [];
   data = []; // Clear previous data
   if(recorder){
-  recorder.start();
-
-}
-else{
-  try{
-   await createRecorder();
-    console.log("Recorder has to be created first")
     recorder.start();
-
+  } else {
+    try {
+      await createRecorder();
+      console.log("Recorder has to be created first")
+      recorder.start();
+    } catch (error){
+      console.error("Error creating recorder: ", error);
+      error_message.value = "Error creating recorder. Please check your microphone settings."
+    }
   }
-  catch (error){
-    console.error("Error creating recorder: ", error);
-    error_message.value = "Error creating recorder. Please check your microphone settings."
-  }
-}
-
-
 }
 
 function stopRecording() {
   recorder.stop();
-  if (recorder.state == "inactive") {
-
-  }
+  if (recorder.state == "inactive") {}
   isRecording.value = false;
   console.log("Recording stopped")
 }
@@ -191,15 +176,10 @@ function stopRecording() {
 async function sendAudioToBackend(file) {
   const formData = new FormData();
   formData.append('file', file);
-
-  const response = await fetch('/transcribe-audio', { method:'POST', body: formData });
-
-  if (!response.ok) {
-    throw new Error('Failed to get transcription');
-  }
-  const data = await response.json();
-  // data.transcription contains the transcription JSON as a string
-  return data.transcription;
+  const res = await fetch(`${API}/transcribe-audio`, { method:'POST', body: formData });
+  if (!res.ok) throw new Error('Failed to get transcription');
+  const payload = await res.json();
+  return payload.transcription ?? payload;
 }
 
 async function sentAudio() {
@@ -209,96 +189,75 @@ async function sentAudio() {
   let audio = new Blob(data, { type: "audio/webm;codecs=opus" });
   let file = new File([audio], "recording.webm", { type: "audio/webm" });
 
-  // To check if the audio was generated successfully
-   try{
- 
+  try {
     const backend_response = await sendAudioToBackend(file);
-
     console.log("Transcription received: ", backend_response);
     const parsed_transcription = backend_response
-
-    // Putting transcription, timestamp, status and id into an object to emit
     const transcription = {
       transcription: parsed_transcription['transcription'],
       timestamp: parsed_transcription['timestamp'],
       status: parsed_transcription['status'],
       id: parsed_transcription['id']
-        }
+    }
     emit('transcription', transcription)
     emit('waitingForRecording', false)
     waitingForRecording.value = false;
     data = []; // Clear data after sending
-   }
-   catch (error){
-     waitingForRecording.value = false;
-     emit('waitingForRecording', false)
-     console.error("Error creating audio URL: ", error);
-   }
+  } catch (error){
+    waitingForRecording.value = false;
+    emit('waitingForRecording', false)
+    console.error("Error creating audio URL: ", error);
+  }
 }
 
 function createRecorder() {
   error_message.value = null;
-  return navigator.mediaDevices.getUserMedia(
-      
-      {
-        audio: true
-      })
-    
-      .then((stream) => {
-
-        let options = { mimeType: "audio/webm;codecs=opus" };
-        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-          options = { mimeType: "" };
-        }
-        recorder = new MediaRecorder(stream, options);
-
-        recorder.ondataavailable = (event) => {
-          data.push(event.data)
-        }
-
-        recorder.onstop = () => {
-          sentAudio()
-        }
-      })
-      .catch((error) => {
-        error_message.value = "Microphone access denied. Please enable microphone access in your browser settings."
-        console.error("Error occured: ", error)
-        
-      })
+  return navigator.mediaDevices.getUserMedia({ audio: true })
+    .then((stream) => {
+      let options = { mimeType: "audio/webm;codecs=opus" };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options = { mimeType: "" };
+      }
+      recorder = new MediaRecorder(stream, options);
+      recorder.ondataavailable = (event) => {
+        data.push(event.data)
+      }
+      recorder.onstop = () => {
+        sentAudio()
+      }
+    })
+    .catch((error) => {
+      error_message.value = "Microphone access denied. Please enable microphone access in your browser settings."
+      console.error("Error occured: ", error)
+    })
 }
 
 //check for microphone permission
 navigator.permissions.query({ name: 'microphone' })
-    .then((permission) => {
-      
-      if (permission.state === 'denied'){
-        error_message.value = "Microphone access denied. Please enable microphone access in your browser settings"
-      }
-      else if (permission.state === 'prompt'){
-        error_message.value = "Please accept microphone access to use our application"
-       
-        navigator.mediaDevices.getUserMedia({
-        audio: true
-      }
-      ).then((stream) => {
-        error_message.value = null;  
-      
-      }).catch((error) => {
-        error_message.value = "Microphone access denied. Please enable microphone access in your browser settings"
-        console.error("Error occured: ", error)
-      })
-      }
-      else {
-        error_message.value = null;
-        createRecorder();
-      }
+  .then((permission) => {
+    if (permission.state === 'denied'){
+      error_message.value = "Microphone access denied. Please enable microphone access in your browser settings"
+    }
+    else if (permission.state === 'prompt'){
+      error_message.value = "Please accept microphone access to use our application"
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then((stream) => {
+          error_message.value = null;  
+        })
+        .catch((error) => {
+          error_message.value = "Microphone access denied. Please enable microphone access in your browser settings"
+          console.error("Error occured: ", error)
+        })
+    }
+    else {
+      error_message.value = null;
+      createRecorder();
+    }
   })
+
 onMounted(() => {
   if (record_component.value) {
     clientWidth.value = record_component.value.clientWidth;
   }
 })
-
-
-  
 </script>

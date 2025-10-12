@@ -1,36 +1,39 @@
-import os, re, uuid, subprocess
-from typing import List, Set, Optional
-from fastapi import FastAPI, UploadFile, File, HTTPException, Query
+import os, uuid, subprocess, asyncio, datetime
+from typing import List, Set, Optional, Dict
+
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from db import delete_records, select_records, get_latest_id, create_new_record, add_audio_path, select_transcriptions, select_intermediate_result
+
+from db import (
+    delete_records, select_records, get_latest_id, create_new_record,
+    add_audio_path, select_transcriptions, select_intermediate_result
+)
 from geocoding import geocode_one, extract_candidates
 import dotenv
-import asyncio
-from fastapi import Request
-import datetime
 
 dotenv.load_dotenv()
 
-app = FastAPI()
-logs_store = {}
-pending_responses = {}
+# single app instance
+app = FastAPI(redirect_slashes=True)
 
-
-app = FastAPI()
-
+# allow all (docker-friendly)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ------ Paths & helpers ------
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+# ------ state ------
+logs_store: Dict[str, list[dict]] = {}
+pending_responses: Dict[str, asyncio.Future] = {}
 
+# ------ paths ------
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_DIR = os.getenv("INPUT_AUDIO_DIR", os.path.join(BASE_DIR, "input_audio"))
 OUTPUT_AUDIO_DIR = os.getenv("OUTPUT_AUDIO_DIR", os.path.join(BASE_DIR, "output_audio"))
 OUTPUT_TRANSCRIPT_DIR = os.getenv("OUTPUT_TRANSCRIPT_DIR", os.path.join(BASE_DIR, "output_transcriptions"))
@@ -38,7 +41,7 @@ OUTPUT_TRANSCRIPT_DIR = os.getenv("OUTPUT_TRANSCRIPT_DIR", os.path.join(BASE_DIR
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(OUTPUT_AUDIO_DIR, exist_ok=True)
 
-
+# ------ helpers ------
 def run(cmd, cwd=None):
     p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
     if p.returncode != 0:
@@ -52,38 +55,32 @@ def convert_webm_to_wav(webm_path, wav_path):
 
 def delete_old_records(records):
     for record in records:
-        print("deleting files from record with id: ", record[0])
-
         try:
             if record[1]:
-                print("deleting input audio file: ", record[1])
                 os.remove(record[1])
-        except Exception as e:
-            print("could not delete input audio file: ", e)
-
+        except Exception:
+            pass
         try:
             if record[2]:
-                print("deleting output audio file: ", record[2])
                 os.remove(record[2])
-        except Exception as e:
-            print("could not delete output audio file: ", e)
+        except Exception:
+            pass
 
+# ------ routes ------
 
-# ------ REQUESTS    ------
-
-
-@app.post("/transcribe-audio/")
 @app.post("/transcribe-audio")
 async def upload_audio(file: UploadFile = File(...)):
     try:
         unique_id = uuid.uuid4().hex[:8]
         base, ext = os.path.splitext(file.filename or "audio.webm")
         ext = ext or ".webm"
+
         webm_name = f"{base}_{unique_id}{ext}"
         webm_path = os.path.join(UPLOAD_DIR, webm_name)
 
+        content = await file.read()
         with open(webm_path, "wb") as f:
-            f.write(await file.read())
+            f.write(content)
 
         wav_filename = f"{base}_{unique_id}.wav"
         wav_location = os.path.join(UPLOAD_DIR, wav_filename)
@@ -94,6 +91,7 @@ async def upload_audio(file: UploadFile = File(...)):
         current_id = str(get_latest_id())
         add_audio_path(current_id, wav_location, 0)
 
+        # pass env to subprocess (docker-friendly)
         env = os.environ.copy()
         env.update({
             "INPUT_AUDIO_DIR": UPLOAD_DIR,
@@ -111,18 +109,19 @@ async def upload_audio(file: UploadFile = File(...)):
                 "--file", wav_filename,
                 "--current_id", current_id
             ],
-            cwd=os.path.abspath(os.path.dirname(__file__))
+            cwd=os.path.abspath(os.path.dirname(__file__)),
+            env=env
         )
 
         old_records = delete_records()
         delete_old_records(old_records)
-        
-
         loop = asyncio.get_running_loop()
-        fut = loop.create_future()
+        fut: asyncio.Future = loop.create_future()
         pending_responses[current_id] = fut
         return await fut
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -130,12 +129,23 @@ async def upload_audio(file: UploadFile = File(...)):
 @app.post("/transcription-ready")
 async def transcription_ready(request: Request):
     """Called by inference.py when raw transcript is ready"""
-    data = await request.json()
-    current_id = str(data["id"])
-    record = select_intermediate_result(current_id, 1)
+    try:
+        data = await request.json()
+        current_id = str(data.get("id"))
+        if not current_id:
+            raise HTTPException(status_code=400, detail="Missing id")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
+
+    try:
+        record = select_intermediate_result(current_id, 1)
+    except Exception:
+        record = None
 
     fut = pending_responses.pop(current_id, None)
-    if fut:
+    if fut and not fut.done():
         fut.set_result(JSONResponse(content={
             "transcription": record,
             "id": int(current_id)
@@ -147,26 +157,28 @@ async def transcription_ready(request: Request):
 async def get_intermediate_transcript(id: int):
     try:
         transcripts = select_transcriptions(id)
-
         return JSONResponse(content={"transcripts": transcripts})
-    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/log-update")
 async def log_update(request: Request):
-    data = await request.json()
-    current_id = str(data["id"])
-    message = data["message"]
+    try:
+        data = await request.json()
+        current_id = str(data.get("id"))
+        message = data.get("message", "")
+        if not current_id:
+            raise HTTPException(status_code=400, detail="Missing id")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
 
-    if current_id not in logs_store:
-        logs_store[current_id] = []
-    logs_store[current_id].append({
+    logs_store.setdefault(current_id, []).append({
         "message": message,
         "timestamp": datetime.datetime.now().strftime("%H:%M:%S")
     })
-
     return JSONResponse(content={"ok": True})
 
 
@@ -177,16 +189,19 @@ async def get_logs(id: int):
     return JSONResponse(content={"logs": logs})
 
 
-@app.get("/get-history/")
+@app.get("/get-history")
 async def get_history():
     old_records = delete_records()
     delete_old_records(old_records)
     records = select_records()
     return JSONResponse(content={"history": records})
 
+
 class GeocodeIn(BaseModel):
     text: Optional[str] = None
     texts: Optional[List[str]] = None
+
+from fastapi.encoders import jsonable_encoder
 
 @app.post("/geocode")
 async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
@@ -202,13 +217,18 @@ async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
     for cand in candidates:
         try:
             hit = await geocode_one(cand)
-            dbg.append({"candidate": cand, "hit": bool(hit)})
+            if debug:
+                dbg.append({"candidate": cand, "hit": bool(hit)})
             if hit:
                 markers.append(hit)
         except Exception as e:
-            dbg.append({"candidate": cand, "error": str(e)})
+            if debug:
+                dbg.append({"candidate": cand, "error": str(e)})
 
-    resp = {"markers": markers, "meta": {"candidates": list(candidates), "count": len(markers)}}
-    if debug:
-        resp["debug"] = dbg
-    return resp
+    resp = {
+        "markers": markers,                         # list[dict]
+        "meta": {"candidates": list(candidates), "count": len(markers)},
+        **({"debug": dbg} if debug else {}),
+    }
+    return JSONResponse(content=jsonable_encoder(resp))
+

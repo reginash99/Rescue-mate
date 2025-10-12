@@ -1,10 +1,52 @@
-import re
-from typing import Optional
-import unicodedata
-import httpx
+# geocoding.py
+from __future__ import annotations
 
+import os
+import re
+import unicodedata
+from typing import Optional, Iterable, Dict, Any
+
+import httpx
+from pydantic import BaseModel, Field, validator
+
+# ----------------------------- Config -----------------------------
 
 HAMBURG_VIEWBOX = dict(left=8.4, top=53.95, right=10.5, bottom=53.3)
+DEFAULT_CITY = "Hamburg"
+DEFAULT_COUNTRYCODES = "de"
+DEFAULT_TIMEOUT = 10.0
+
+# Respect Nominatim policy: set a usable UA and (optionally) email.
+GEOCODER_USER_AGENT = os.getenv(
+    "GEOCODER_USER_AGENT",
+    "hamburg-transcription-geocoder/1.0 (+https://example.invalid)"
+)
+NOMINATIM_EMAIL = os.getenv("NOMINATIM_EMAIL")  # optional
+
+
+# ----------------------------- Data models -----------------------------
+
+class GeocodeHit(BaseModel):
+    label: str
+    lat: float = Field(..., description="Latitude (WGS84)")
+    lng: float = Field(..., description="Longitude (WGS84)")
+    source: str = "nominatim"
+    bbox: Optional[Iterable[float]] = None
+    raw_address: Optional[Dict[str, Any]] = None
+    q_used: Optional[str] = None
+
+    @validator("bbox", pre=True)
+    def _coerce_bbox(cls, v):
+        # Nominatim can return strings — coerce to floats if possible.
+        if v is None:
+            return v
+        try:
+            return [float(x) for x in v]
+        except Exception:
+            return v
+
+
+# ----------------------------- Regexes -----------------------------
 
 poi_list = [
     "Elbphilharmonie","Miniatur Wunderland","HafenCity","Landungsbrücken",
@@ -25,41 +67,31 @@ SEPARATED = re.compile(
     re.IGNORECASE | re.UNICODE,
 )
 
+
+# ----------------------------- Helpers -----------------------------
+
 def normalize_query(q: str) -> str:
     if not q:
         return q
     s = q.strip()
-
     s = re.sub(r'\bStr\.\b', 'Straße', s, flags=re.IGNORECASE)
     s = re.sub(r'\bStrasse\b', 'Straße', s, flags=re.IGNORECASE)
-
     return s
 
 
 def variants(q: str) -> list[str]:
     if not q:
         return []
-
     s = normalize_query(q)
-
-    out = {s}
-
-    out.add(s.replace('ß', 'ss'))
-    out.add(s.replace('ss', 'ß'))
-
+    out = {s, s.replace('ß', 'ss'), s.replace('ss', 'ß')}
     deacc = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
     out.add(deacc)
-
-    # very common missing-'t' in '...stenstraße' (e.g. Kurfürsenstraße -> Kurfürstenstraße)
-    out.add(re.sub(r'senstraße\b', 'stenstraße', s, flags=re.IGNORECASE))
-
-    # collapse double spaces
     out = {re.sub(r'\s+', ' ', v).strip() for v in out}
-
     return [v for v in out if v]
 
 
 def extract_candidates(text: str) -> list[str]:
+    """Return likely street/POI substrings from free text. Pure function (no I/O)."""
     cands: set[str] = set()
     t = text or ""
 
@@ -85,6 +117,9 @@ def extract_candidates(text: str) -> list[str]:
 
     return [re.sub(r"\s+", " ", c).strip() for c in cands if c.strip()]
 
+
+# ----------------------------- Nominatim lookup -----------------------------
+
 async def geocode_one(query: str) -> Optional[dict]:
     cand_list = variants(query)
     headers = {"User-Agent": "hamburg-transcription-geocoder/1.0 (you@example.com)"}
@@ -95,8 +130,7 @@ async def geocode_one(query: str) -> Optional[dict]:
             "format": "json",
             "addressdetails": "1",
             "limit": "1",
-            "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},"
-                       f"{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
+            "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
             "bounded": "1",
             "accept-language": "de",
             "countrycodes": "de",
@@ -123,27 +157,34 @@ async def geocode_one(query: str) -> Optional[dict]:
         else:
             lat, lon = float(lat), float(lon)
 
-        addr = x.get("address", {})
-        city = addr.get("city") or addr.get("town") or addr.get("village") or "Hamburg"
-        street = addr.get("road")
-        house  = addr.get("house_number")
+        # sanitize bbox to floats (or None)
+        bbox_raw = x.get("boundingbox")
+        bbox = [float(v) for v in bbox_raw] if isinstance(bbox_raw, list) and len(bbox_raw) == 4 else None
+
+        # slim/sanitize address to simple JSON scalars
+        addr = x.get("address") or {}
+        addr_slim = {str(k): (v if isinstance(v, (str, int, float, bool)) or v is None else str(v))
+                     for k, v in addr.items()}
+
+        city = addr_slim.get("city") or addr_slim.get("town") or addr_slim.get("village") or "Hamburg"
+        street = addr_slim.get("road")
+        house  = addr_slim.get("house_number")
         parts = []
         if street:
             parts.append(f"{street}{(' ' + house) if house else ''}")
-        if addr.get("postcode"):
-            parts.append(addr["postcode"])
+        if addr_slim.get("postcode"):
+            parts.append(addr_slim["postcode"])
         if city:
             parts.append(city)
         label = ", ".join(parts) if parts else x.get("display_name")
 
         return {
             "label": label,
-            "lat": lat,
-            "lng": lon,
+            "lat": float(lat),
+            "lng": float(lon),
             "source": "nominatim",
-            "bbox": x.get("boundingbox"),
-            "raw_address": addr,
+            "bbox": bbox,                 # list[float] | None
+            "raw_address": addr_slim,     # dict[str, scalar]
             "q_used": q,
         }
-
     return None

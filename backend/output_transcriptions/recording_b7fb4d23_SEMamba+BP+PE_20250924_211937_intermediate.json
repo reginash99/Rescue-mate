@@ -1,0 +1,39 @@
+{
+  "text": " ...for these...",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 1.1,
+      "text": " ...for these...",
+      "tokens": [
+        50364,
+        1097,
+        2994,
+        613,
+        485,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.976360525403704,
+      "compression_ratio": 0.6521739130434783,
+      "no_speech_prob": 0.49912533164024353,
+      "words": [
+        {
+          "word": " ...for",
+          "start": 0.0,
+          "end": 0.24,
+          "probability": 0.2697971442248672
+        },
+        {
+          "word": " these...",
+          "start": 0.24,
+          "end": 1.1,
+          "probability": 0.5464956238865852
+        }
+      ]
+    }
+  ],
+  "language": "en"
+}

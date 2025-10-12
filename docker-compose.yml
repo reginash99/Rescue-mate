@@ -1,20 +1,64 @@
-version: "3.8"
 services:
-  backend:
-    build: ./backend
-    container_name: nlp-backend
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${DB_NAME:-rescue_mate}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/migrations/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    image: rescue_mate
+    env_file:
+      - ./backend/.env
+    environment:
+      INPUT_AUDIO_DIR: /data/input_audio
+      OUTPUT_AUDIO_DIR: /data/output_audio
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      API_BASE_URL: http://127.0.0.1:8000
+    volumes:
+      - input_audio:/data/input_audio
+      - output_audio:/data/output_audio
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app
-    command: uvicorn app:app --host 0.0.0.0 --port 8000
+    depends_on:
+      db:
+        condition: service_healthy
+    gpus: all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
 
   frontend:
-    build: ./frontend
-    container_name: nlp-frontend
-    ports:
-      - "3000:3000"
+    image: node:20-alpine
+    working_dir: /app
     volumes:
       - ./frontend:/app
     environment:
-      - NODE_ENV=production
+      # IMPORTANT: point to the API by Docker DNS name, not localhost
+      VITE_API_URL: "http://api:8000"
+    command: sh -lc "npm ci || npm i && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  input_audio:
+  output_audio:

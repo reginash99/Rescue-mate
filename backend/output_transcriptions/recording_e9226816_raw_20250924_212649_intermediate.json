@@ -1,0 +1,43 @@
+{
+  "text": "Kurfürstenstraße 920.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.8599999999999999,
+      "end": 4.28,
+      "text": " Kurfürstenstraße 920.",
+      "tokens": [
+        50364,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        1722,
+        2009,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.41271005977283826,
+      "compression_ratio": 0.7419354838709677,
+      "no_speech_prob": 0.010157198645174503,
+      "words": [
+        {
+          "word": " Kurfürstenstraße",
+          "start": 1.8599999999999999,
+          "end": 3.26,
+          "probability": 0.9052467107772827
+        },
+        {
+          "word": " 920.",
+          "start": 3.26,
+          "end": 4.28,
+          "probability": 0.6013379395008087
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

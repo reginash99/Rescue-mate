@@ -1,0 +1,108 @@
+{
+  "text": "Wir sind in der Kurfürstenstraße 29 und wollen zum Jungfernstieg fahren.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 1.3199999999999998,
+      "end": 6.66,
+      "text": " Wir sind in der Kurfürstenstraße 29 und wollen zum Jungfernstieg fahren.",
+      "tokens": [
+        50364,
+        4347,
+        3290,
+        294,
+        1163,
+        16481,
+        12474,
+        6266,
+        19639,
+        11451,
+        9413,
+        674,
+        11253,
+        5919,
+        12739,
+        28958,
+        372,
+        20408,
+        25593,
+        13,
+        50714
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.28131315924904565,
+      "compression_ratio": 0.925,
+      "no_speech_prob": 0.03668665885925293,
+      "words": [
+        {
+          "word": " Wir",
+          "start": 1.3199999999999998,
+          "end": 1.96,
+          "probability": 0.8110225200653076
+        },
+        {
+          "word": " sind",
+          "start": 1.96,
+          "end": 2.32,
+          "probability": 0.980721116065979
+        },
+        {
+          "word": " in",
+          "start": 2.32,
+          "end": 2.58,
+          "probability": 0.8566734194755554
+        },
+        {
+          "word": " der",
+          "start": 2.58,
+          "end": 2.7,
+          "probability": 0.9567598104476929
+        },
+        {
+          "word": " Kurfürstenstraße",
+          "start": 2.7,
+          "end": 3.8,
+          "probability": 0.8862674474716187
+        },
+        {
+          "word": " 29",
+          "start": 3.8,
+          "end": 4.08,
+          "probability": 0.6237261891365051
+        },
+        {
+          "word": " und",
+          "start": 4.08,
+          "end": 5.02,
+          "probability": 0.9360555410385132
+        },
+        {
+          "word": " wollen",
+          "start": 5.02,
+          "end": 5.28,
+          "probability": 0.9890567660331726
+        },
+        {
+          "word": " zum",
+          "start": 5.28,
+          "end": 5.5,
+          "probability": 0.9888659119606018
+        },
+        {
+          "word": " Jungfernstieg",
+          "start": 5.5,
+          "end": 6.3,
+          "probability": 0.8915998637676239
+        },
+        {
+          "word": " fahren.",
+          "start": 6.3,
+          "end": 6.66,
+          "probability": 0.9963478446006775
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}

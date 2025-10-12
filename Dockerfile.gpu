@@ -1,0 +1,65 @@
+# Dockerfile.gpu
+FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    CUDA_HOME=/usr/local/cuda
+
+# system deps + compiler toolchain
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.11 python3.11-venv python3.11-distutils python3.11-dev \
+    build-essential gcc g++ make \
+    ffmpeg libsndfile1 libffi-dev \
+    libpq5 libpq-dev \
+    git curl ninja-build \
+ && rm -rf /var/lib/apt/lists/* \
+ && ln -sf /usr/bin/python3.11 /usr/bin/python \
+ && curl -sS https://bootstrap.pypa.io/get-pip.py | python
+
+WORKDIR /app
+
+# ---- Python deps (except mamba_ssm) ----
+COPY requirements.txt /app/requirements.txt
+RUN python -m pip install --upgrade pip setuptools wheel Cython
+
+# Torch 2.2.2 stack for CUDA 12.1
+RUN pip install torch==2.2.2 torchaudio==2.2.2 \
+    --index-url https://download.pytorch.org/whl/cu121
+
+ENV TRANSFORMERS_NO_TORCHVISION=1
+
+# Your normal deps (keep psycopg/psycopg2 consistent with your code)
+RUN python -m pip install --no-cache-dir -r requirements.txt
+
+# ---- Build mamba_ssm from source to match the above Torch/ABI ----
+# copy just this directory first (better layer caching)
+COPY backend/mamba_install /app/backend/mamba_install
+
+# make sure README exists (some setups expect it)
+RUN if [ ! -f /app/backend/mamba_install/README.md ]; then \
+      echo "# mamba_ssm" > /app/backend/mamba_install/README.md; \
+    fi
+
+# IMPORTANT: force CUDA build with the same C++ ABI PyTorch expects, and disable build isolation
+# so it uses the in-image torch headers. Set compute arch to your GPU (3050 Ti ~ sm_86).
+ENV FORCE_CUDA=1 \
+    CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=1" \
+    TORCH_CUDA_ARCH_LIST="8.6" \
+    MAX_JOBS=2
+
+RUN python -m pip uninstall -y mamba-ssm mamba_ssm || true && \
+    rm -rf /root/.cache/pip /root/.cache/torch_extensions || true && \
+    cd /app/backend/mamba_install && \
+    python -m pip install --no-cache-dir --no-build-isolation -v .
+
+# ---- Copy the rest of the project ----
+COPY . /app
+
+# optional: psql client
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app/backend
+EXPOSE 8000
+CMD ["uvicorn", "api_server:app", "--host", "0.0.0.0", "--port", "8000"]

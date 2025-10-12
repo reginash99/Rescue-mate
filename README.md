@@ -2,6 +2,84 @@
 
 # BACKEND
 
+Before setting up the project, you have to install the database:
+
+## Database
+
+## DATABASE
+
+We use posgresql 17.6 for our database system.
+
+Since we use WSL, install the database within your WSL system with the following command: 
+
+```
+sudo apt install postgresql
+```
+
+Start postgresql in wsl:
+``` 
+sudo service postgresql start
+```
+
+connect to psql:
+```
+sudo -u postgres psql
+```
+
+Set a password for the user postgres within psql
+```
+ ALTER USER postgres WITH PASSWORD 'PASSWORD_PLACEHOLDER';
+```
+Got to the following path within your wsl:
+```
+sudo nano /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
+```
+And change the following to enable the connection via password authentification:
+from  
+
+local   all    postgres   peer 
+
+to 
+
+local   all    postgres   md5
+
+Afterwards, restart posgresql:
+```
+sudo service postgresql restart
+```
+
+Additionally, the python library psycopg has to be installed:
+In the following installation instruction examples, the database is called rescue_mate and it is listening on port 5432 but the values can be adjusted.
+
+```
+conda install psycopg 
+```
+the database can be installed within a terminal 
+
+```
+createdb -U postgres -p 5432 rescue_mate
+```
+
+there is one table called transcription which can be installed within a terminal
+(the schema lies in migration folder of the project, the respective command has to be executed in the backend folder, otherwise adjust the path to the sql file):
+
+
+```
+psql -U postgres -p 5432 -d rescue_mate -f migrations/schema.sql 
+```
+
+for the connection to the database, create an .env file called .env in the backend folder with the following structure:
+
+DB_NAME="DB_NAME_PLACEHOLDER" 
+
+DB_USER="USER_PLACEHOLDER" 
+
+DB_PASSWORD="PASSWORD_PLACEHOLDER" 
+
+DB_HOST="HOST_PLACEHOLDER"
+
+DB_PORT="PORT_PLACEHOLDER"
+
 ## Docker 
 
 ### 1. Install Docker Desktop and set it up
@@ -22,7 +100,7 @@ Docker Desktop needs to be running all the time while handling the app.
 In a terminal (or VS Code terminal)
 
 ```
-cd ~/code
+cd ~/<your_desired_project_folder>
 git clone <your_repo_url> Rescue-mate
 cd Rescue-mate
 
@@ -34,12 +112,14 @@ Make sure you have the following files:
 
 #### backend/.env
 
+Replace the placeholders with those that you set up in your database installation.
+
 ```
-DB_NAME="rescue_mate"
-DB_USER="postgres"
-DB_PASSWORD="postgres"
-DB_HOST="db"
-DB_PORT="5432"
+DB_NAME="DB_NAME_PLACEHOLDER" 
+DB_USER="USER_PLACEHOLDER" 
+DB_PASSWORD="PASSWORD_PLACEHOLDER" 
+DB_HOST="HOST_PLACEHOLDER"
+DB_PORT="PORT_PLACEHOLDER"
 
 INPUT_AUDIO_DIR=./input_audio
 
@@ -410,14 +490,3 @@ The components can be resized to your liking by dragging the bottom right corner
 The theme of the webite follows the theme of your browser. There are two themes available, dark and light.
 
 
-## Citation
-
-Citing Mamba:
-```
-@article{mamba,
-  title={Mamba: Linear-Time Sequence Modeling with Selective State Spaces},
-  author={Gu, Albert and Dao, Tri},
-  journal={arXiv preprint arXiv:2312.00752},
-  year={2023}
-}
-```

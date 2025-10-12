@@ -1,26 +1,35 @@
 <template>
-  <div class="transcription-main" :class="{ 'is-busy': status }">
+  <div class="transcription-main" :class="{ 'is-busy': props.status }">
     <h1>Transcription</h1>
-    <button class="btn-info" @click="openModal">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-lg" viewBox="0 0 16 16">
+
+    <button class="btn-info" @click="openModal" title="How it works">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+           fill="currentColor" class="bi bi-info-lg" viewBox="0 0 16 16">
         <path d="m9.708 6.075-3.024.379-.108.502.595.108c.387.093.464.232.38.619l-.975 4.577c-.255 1.183.14 1.74 1.067 1.74.72 0 1.554-.332 1.933-.789l.116-.549c-.263.232-.65.325-.905.325-.363 0-.494-.255-.402-.704zm.091-2.755a1.32 1.32 0 1 1-2.64 0 1.32 1.32 0 0 1 2.64 0"/>
-        </svg>
+      </svg>
     </button>
 
     <div class="transcription">
       <div :class="['transcription-text', { shrunk: panelOpen }]">
         <div v-if="props.data?.transcription">
-          <p>{{ props.data.transcription ?? "…" }}</p>
+          <p>
+            {{
+              typeof props.data.transcription === 'string'
+                ? props.data.transcription
+                : (props.data.transcription ?? '…')
+            }}
+          </p>
 
-          <small v-if="props.data.transcription.timestamp">
-            {{ props.data.transcription.timestamp }}
+          <small v-if="typeof props.data.transcription !== 'string' && props.data?.timestamp">
+            {{ props.data.timestamp }}
           </small>
         </div>
-      
+
         <div v-else>
           <p><i>Press the record button to transcribe your audio</i></p>
         </div>
-        <div v-if="status" class="overlay">
+
+        <div v-if="props.status" class="overlay">
           <div class="spinner"></div>
           <div class="overlay-text">Processing…</div>
         </div>
@@ -28,7 +37,7 @@
 
       <div class="side-panel" v-if="panelOpen">
         <div v-if="updates.length > 0">
-          <div v-for="(u, i) in updates" :key="i"> 
+          <div v-for="(u, i) in updates" :key="i">
             <p v-if="u.bp_preemp_transcr">{{ u.bp_preemp_transcr }}</p>
             <p v-else-if="u.mamba_bp_transcr">{{ u.mamba_bp_transcr }}</p> 
             <p v-else-if="u.mamba_bp_preemp_transcr">{{ u.mamba_bp_preemp_transcr }}</p> 
@@ -52,6 +61,7 @@
     </div>
 
     <!-- Updates showing audio processing steps -->
+
     <div class="updates-div">
       <p v-if="logs.length === 0"><i>No log messages yet… </i></p>
       <div v-else>
@@ -66,7 +76,13 @@
       <div class="modal-content">
         <button class="modal-close" @click="closeModal">×</button>
         <h4>Information</h4>
-          <p>The transcription displayed initially is raw. After further processing, the transcription will be updated if its quality is better than the raw transcription. If an update is available, the bell button in the bottom right corner of the transcription will show a red alert bubble and can be clicked to display the updated transcription.</p>
+        <p>
+          The transcription displayed initially is raw. After further processing, the
+          transcription will be updated if its quality is better than the raw transcription.
+          If an update is available, the bell button in the bottom right corner of the
+          transcription will show a red alert bubble and can be clicked to display the
+          updated transcription.
+        </p>
       </div>
     </div>
   </div>
@@ -77,20 +93,27 @@ import { ref, watch, onUnmounted } from 'vue'
 import { geocodeTranscription } from '@/composables/useGeocode.js'
 
 const props = defineProps({
-  data: Object, // contains { transcription, id, status, timestamp }
+  data: Object, // { transcription, id, status, timestamp }
   status: { type: Boolean, default: false },
 })
 const emit = defineEmits(['markers-found','final-transcription'])
+
+
+const API = '/api'
+
 
 const panelOpen = ref(false)
 const showModal = ref(false)
 const isGeocoding = ref(false)
 const markers = ref([])
-const updates = ref([]) 
+const updates = ref([])
 const logs = ref([])
+
 const finalTranscriptionReceived = ref(false)
 let pollInterval = null
 let logPollInterval = null
+let transcriptsAbort = null
+let logsAbort = null
 
 // Flag to indicate if audio was clean
 const cleanAudio = ref(false)
@@ -119,67 +142,79 @@ const text = typeof newVal === "string" ? newVal : newVal?.transcription
   }
 })
 
-// Poll backend for updates
+// Poll backend for intermediate transcripts
 function startPolling(id) {
   stopPolling()
   pollInterval = setInterval(async () => {
     try {
-          const res = await fetch(`http://127.0.0.1:8000/get-intermediate-transcript/${id}`)
-      
+      if (transcriptsAbort) transcriptsAbort.abort()
+      transcriptsAbort = new AbortController()
+
+      const res = await fetch(`${API}/get-intermediate-transcript/${id}`, {
+        signal: transcriptsAbort.signal,
+      })
       if (!res.ok) return
       const json = await res.json()
-      updates.value = json.transcripts || []
+      updates.value = Array.isArray(json.transcripts) ? json.transcripts : []
 
-      
       // Emit is sent only once when final transcription is received
-      if(finalTranscriptionReceived.value){
+      if (finalTranscriptionReceived.value) {
         return
-      }
-      else if(updates.value.length > 0 && updates.value[0].final_transcription){
+      } else if (updates.value.length > 0 && updates.value[0].final_transcription) {
         console.log("Final transcription received", updates.value)
         finalTranscriptionReceived.value = true
         emit('final-transcription', finalTranscriptionReceived.value)
 
-        if (updates.value[0].bp_preemp_transcr == null && updates.value[0].mamba_bp_transcr == null && updates.value[0].mamba_bp_preemp_transcr == null && updates.value[0].mamba_bp_preemp_deepfilternet_transcr == null && updates.value[0].bp_transcr == null){
+        if (
+          updates.value[0].bp_preemp_transcr == null &&
+          updates.value[0].mamba_bp_transcr == null &&
+          updates.value[0].mamba_bp_preemp_transcr == null &&
+          updates.value[0].mamba_bp_preemp_deepfilternet_transcr == null &&
+          updates.value[0].bp_transcr == null
+        ) {
           // If all transcription fields are null, mark audio as clean
           cleanAudio.value = true
-        }
-        else{
+        } else {
           // If any transcription field is not null, mark audio as not clean
           cleanAudio.value = false
-
           // Notify user of updated transcription
           notifyUser.value = true
         }
       }
-
     } catch (e) {
-      console.error("Polling error:", e)
+      if (e?.name !== 'AbortError') console.error('Polling error:', e)
     }
   }, 3000)
 }
+
 
 function stopPolling() {
   if (pollInterval) {
     clearInterval(pollInterval)
     pollInterval = null
   }
+  if (transcriptsAbort) {
+    transcriptsAbort.abort()
+    transcriptsAbort = null
+  }
 }
 
+// Poll backend for logs
 function startLogPolling(id) {
   stopLogPolling()
   logPollInterval = setInterval(async () => {
     try {
-          if (logs.length > 0) {
-            logs = []
-        }
-      const res = await fetch(`http://127.0.0.1:8000/get-logs/${id}`)
+      if (logsAbort) logsAbort.abort()
+      logsAbort = new AbortController()
+
+      const res = await fetch(`${API}/get-logs/${id}`, {
+        signal: logsAbort.signal,
+      })
       if (!res.ok) return
       const json = await res.json()
-      
-      logs.value = json.logs || []
+      logs.value = Array.isArray(json.logs) ? json.logs : []
     } catch (e) {
-      console.error("Log polling error:", e)
+      if (e?.name !== 'AbortError') console.error('Log polling error:', e)
     }
   }, 3000)
 }
@@ -189,21 +224,28 @@ function stopLogPolling() {
     clearInterval(logPollInterval)
     logPollInterval = null
   }
+  if (logsAbort) {
+    logsAbort.abort()
+    logsAbort = null
+  }
 }
 
-
-
-watch(() => props.data?.id, (newId) => {
-  if (newId) {
-    finalTranscriptionReceived.value = false
+// (Re)start polling when record id changes
+watch(
+  () => props.data?.id,
+  (newId) => {
+    if (newId) {
+      updates.value = []
+      logs.value = []
+      finalTranscriptionReceived.value = false
     startPolling(newId)
-    startLogPolling(newId) 
-   }
-   else{
-    stopPolling()
-    stopLogPolling()
-   } 
-})
+      startLogPolling(newId)
+    } else {
+      stopPolling()
+      stopLogPolling()
+    }
+  }
+)
 
 onUnmounted(() => {
   stopPolling()
@@ -221,10 +263,7 @@ function panelWork() {
   }
 </script>
 
-
-
 <style scoped>
-
 .transcription-main {
   display: flex;
   flex-direction: column;
@@ -232,11 +271,7 @@ function panelWork() {
   width: 100%;
   position: relative;
 }
-
-.transcription-main h1 {
-  text-align: center;
-  margin: 1% 0 0 2%;
-}
+.transcription-main h1 { text-align: center; margin: 1% 0 0 2%; }
 
 .transcription {
   position: relative;
@@ -275,48 +310,21 @@ function panelWork() {
 
 /* Floating Button */
 .floating-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: auto;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #AAD2DE;
-  color: white;
-  border: none;
+  position: absolute; bottom: 10px; right: 10px;
+  width: auto; height: 50px; border-radius: 50%;
+  background-color: #aad2de; color: white; border: none;
   box-shadow: 0 4px 16px var(--shadow-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  z-index: 10;
-  transition: background 0.2s, box-shadow 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; z-index: 10; transition: background .2s, box-shadow .2s;
   text-decoration: none;
 }
-
-.floating-btn:hover {
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 8px 32px var(--shadow-color);
-}
-
+.floating-btn:hover { background-color: #fff; box-shadow: 0 8px 32px var(--shadow-color); }
 .floating-btn span {
-  position: absolute;
-  top: -3px;
-  right: 0px;
-  background: #eb0010;
-  font-size: 14px;
-  font-weight: bold;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  justify-content: center;
-  border-radius: 50%;
+  position: absolute; top: -3px; right: 0px;
+  background: #eb0010; font-size: 14px; font-weight: bold;
+  width: 20px; height: 20px; display: flex; justify-content: center; border-radius: 50%;
 }
-
-.floating-btn img {
-  width: 27px;
-  height: 27px;
-}
+.floating-btn img { width: 27px; height: 27px; }
 
 /* Updates caption */
 .updates-div {
@@ -341,44 +349,20 @@ function panelWork() {
 }
 
 /* Processing Buffer */
-.is-busy {
-  filter: grayscale(1);
-  opacity: 0.5;
-  pointer-events: none; /* block interactions */
-  color: var(--color-text-2) !important;
-}
+.is-busy { filter: grayscale(1); opacity: 0.5; pointer-events: none; color: var(--color-text-2) !important; }
 
 .overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  backdrop-filter: blur(2px);
-  color: var(--color-text-2) !important;
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  backdrop-filter: blur(2px); color: var(--color-text-2) !important;
 }
-
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(0,0,0,0.2);
-  border-top-color: rgba(0,0,0,0.6);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  color: var(--color-text-2) !important;
-  margin-bottom: 8px;
+  width: 40px; height: 40px;
+  border: 4px solid rgba(0,0,0,0.2); border-top-color: rgba(0,0,0,0.6);
+  border-radius: 50%; animation: spin .8s linear infinite; margin-bottom: 8px;
 }
-
-.overlay-text {
-  font-size: 0.9rem;
-  color: var(--color-text-2) !important;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
+.overlay-text { font-size: .9rem; color: var(--color-text-2) !important; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* Side Panel */
 .side-panel {
@@ -403,65 +387,24 @@ function panelWork() {
 
 /* Info button */
 .btn-info {
-  position: absolute;
-  top: 20px;
-  right: 25px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: var(--secondary-background);
-  color: var(--color-text);
-  border: none;
-  box-shadow: 0 4px 16px var(--shadow-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  cursor: pointer;
-  z-index: 10;
-  transition: background 0.2s, box-shadow 0.2s;
+  position: absolute; top: 20px; right: 25px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background-color: var(--secondary-background); color: var(--color-text);
+  border: none; box-shadow: 0 4px 16px var(--shadow-color);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; cursor: pointer; z-index: 10; transition: background .2s, box-shadow .2s;
 }
 
-/* Modal View */
-
+/* Modal */
 .modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(190, 188, 188, 0.288);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(190, 188, 188, 0.288); display: flex; align-items: center; justify-content: center; z-index: 100;
 }
-
 .modal-content {
-    overflow-y: auto;
-    overflow-x: auto;
-    background: var(--color-background);
-    border-radius: 12px;
-    padding: 28px 24px 24px 24px;
-    width: auto;
-    min-width: 250px;
-    max-width: 500px;
-    height: auto;
-    max-height: 400px;
-    min-height: 250px;
-    box-shadow: 0 8px 32px var(--shadow-color);
-    position: relative;
-    font-size: larger;
+  overflow-y: auto; overflow-x: auto; background: var(--color-background);
+  border-radius: 12px; padding: 28px 24px 24px; width: auto; min-width: 250px; max-width: 500px;
+  height: auto; max-height: 400px; min-height: 250px; box-shadow: 0 8px 32px var(--shadow-color);
+  position: relative; font-size: larger;
 }
-
-.modal-close {
-    position: absolute;
-    top: 10px;
-    right: 16px;
-    background: none;
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-}
-
+.modal-close { position: absolute; top: 10px; right: 16px; background: none; border: none; font-size: 2rem; cursor: pointer; }
 </style>

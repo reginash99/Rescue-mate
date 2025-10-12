@@ -34,18 +34,19 @@
 </template>
 
 <script setup>
-import { ref,onMounted } from 'vue';
-import Transcription from "../src/components/Transcription.vue";
-import HistoryTable from "./components/HistoryTable.vue";
-import Map from "./components/Map.vue";
-import Record from "./components/Record.vue";
+import { ref, onMounted } from 'vue'
+import Transcription from '@/components/Transcription.vue'
+import HistoryTable from '@/components/HistoryTable.vue'
+import Map from '@/components/Map.vue'
+import Record from '@/components/Record.vue'
 
-const transcriptionData = ref(null);
-const history = ref([]);
-const waitingForRecording = ref(false);
+const API = '/api'
 
-// NEW: markers state
-const markers = ref([]);
+const transcriptionData = ref(null)
+const history = ref([])
+const waitingForRecording = ref(false)
+const markers = ref([])
+
 
 // update history table when final transcription is ready
 function updateHistoryTable(update) {
@@ -87,7 +88,7 @@ onMounted(async() =>
 
 async function get_records() {
     try {
-    const response = await fetch('/get-history')
+    const response = await fetch(`${API}/get-history`)
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }

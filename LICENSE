@@ -9,13 +9,38 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+Attribution Notice:
+This project makes use of the following third-party components, each under their respective open-source licenses:
+
+PostgreSQL: Copyright (c) The PostgreSQL Global Development Group
+Used as a database system under the PostgreSQL License.
+
+Whisper: Copyright (c) OpenAI (MIT License)
+This project includes fine-tuned or modified versions of Whisper. 
+
+DeepFilterNet: Copyright (c) Hendrik Schröter (MIT License)
+Used as-is without modification.
+
+SE-Mamba: Copyright (c) RONG CHAO (MIT License)
+Used as-is without modification.
+
+vue-ui-map: Copyright (c) 2020 Nikolay Naumenkov
+Used as-is without modification.
+
+Font Awesome (Free version) — Copyright (c) Fonticons, Inc. — Icons (SVG/JS): CC BY 4.0; Fonts: SIL OFL 1.1; CSS/JS: MIT.
+
+Flaticon icons (Free version) — used under “Free License (with attribution)”
+“notification” icon — designed by small_icons from Flaticon 
+
+The inclusion of these components does not imply endorsement by their respective authors.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.

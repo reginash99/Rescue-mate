@@ -1,0 +1,89 @@
+{
+  "text": " It's either do something to it, something that was...",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 3.28,
+      "text": " It's either do something to it, something that was...",
+      "tokens": [
+        50364,
+        467,
+        311,
+        2139,
+        360,
+        746,
+        281,
+        309,
+        11,
+        746,
+        300,
+        390,
+        485,
+        50528
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.7017436345418294,
+      "compression_ratio": 1.0392156862745099,
+      "no_speech_prob": 0.48419657349586487,
+      "words": [
+        {
+          "word": " It's",
+          "start": 0.0,
+          "end": 0.24,
+          "probability": 0.27048002695664763
+        },
+        {
+          "word": " either",
+          "start": 0.24,
+          "end": 0.9,
+          "probability": 0.9401746988296509
+        },
+        {
+          "word": " do",
+          "start": 0.9,
+          "end": 1.58,
+          "probability": 0.8498097658157349
+        },
+        {
+          "word": " something",
+          "start": 1.58,
+          "end": 1.96,
+          "probability": 0.9912136197090149
+        },
+        {
+          "word": " to",
+          "start": 1.96,
+          "end": 2.24,
+          "probability": 0.756842851638794
+        },
+        {
+          "word": " it,",
+          "start": 2.24,
+          "end": 2.4,
+          "probability": 0.9577186703681946
+        },
+        {
+          "word": " something",
+          "start": 2.48,
+          "end": 2.7,
+          "probability": 0.9741435050964355
+        },
+        {
+          "word": " that",
+          "start": 2.7,
+          "end": 3.0,
+          "probability": 0.7594599723815918
+        },
+        {
+          "word": " was...",
+          "start": 3.0,
+          "end": 3.28,
+          "probability": 0.4427623599767685
+        }
+      ]
+    }
+  ],
+  "language": "en"
+}

@@ -1,0 +1,71 @@
+{
+  "text": "Ich bin in der Kurfürsendstraße 29.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.9599999999999995,
+      "end": 4.24,
+      "text": " Ich bin in der Kurfürsendstraße 29.",
+      "tokens": [
+        50364,
+        3141,
+        5171,
+        294,
+        1163,
+        16481,
+        12474,
+        82,
+        521,
+        19639,
+        11451,
+        9413,
+        13,
+        50614
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.49223992029825847,
+      "compression_ratio": 0.8409090909090909,
+      "no_speech_prob": 0.03501851484179497,
+      "words": [
+        {
+          "word": " Ich",
+          "start": 0.9599999999999995,
+          "end": 1.9,
+          "probability": 0.5470373630523682
+        },
+        {
+          "word": " bin",
+          "start": 1.9,
+          "end": 2.14,
+          "probability": 0.9839761257171631
+        },
+        {
+          "word": " in",
+          "start": 2.14,
+          "end": 2.28,
+          "probability": 0.8039525151252747
+        },
+        {
+          "word": " der",
+          "start": 2.28,
+          "end": 2.4,
+          "probability": 0.9382922053337097
+        },
+        {
+          "word": " Kurfürsendstraße",
+          "start": 2.4,
+          "end": 3.54,
+          "probability": 0.5929116743306319
+        },
+        {
+          "word": " 29.",
+          "start": 3.54,
+          "end": 4.24,
+          "probability": 0.9168766140937805
+        }
+      ]
+    }
+  ],
+  "language": "de"
+}
