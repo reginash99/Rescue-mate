@@ -1,5 +1,7 @@
+const API = '/api' 
+
 export async function geocodeTranscription(text) {
-  const res = await fetch('/geocode', { // <- relative path
+  const res = await fetch(`${API}/geocode`, { // <- relative path
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text }),

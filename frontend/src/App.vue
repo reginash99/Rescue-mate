@@ -2,7 +2,10 @@
 <template>
   <div class="grid-container">
     <div class="grid-item record">
-      <Record @transcription="handleData" @waitingForRecording="indicateRecordingStatus" />
+      <Record 
+      @transcription="handleData"
+      @waitingForRecording="indicateRecordingStatus"
+      />
     </div>
 
     <div class="grid-item transcript">
@@ -11,33 +14,47 @@
         :data="transcriptionData"
         :status="waitingForRecording"
         @markers-found="onMarkersFound"
+        @final-transcription="updateHistoryTable"
       />
     </div>
 
     <div class="grid-item history">
-      <HistoryTable :history="history" />
+      <HistoryTable 
+      :history="history" 
+      />
     </div>
 
     <div class="grid-item map">
       <!-- Pass markers down to Map -->
-      <Map :markers="markers" />
+      <Map
+      :markers="markers"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref,onMounted } from 'vue';
-import Transcription from "../src/components/Transcription.vue";
-import HistoryTable from "./components/HistoryTable.vue";
-import Map from "./components/Map.vue";
-import Record from "./components/Record.vue";
+import { ref, onMounted } from 'vue'
+import Transcription from '@/components/Transcription.vue'
+import HistoryTable from '@/components/HistoryTable.vue'
+import Map from '@/components/Map.vue'
+import Record from '@/components/Record.vue'
 
-const transcriptionData = ref(null);
-const history = ref([]);
-const waitingForRecording = ref(false);
+const API = '/api'
 
+const transcriptionData = ref(null)
+const history = ref([])
+const waitingForRecording = ref(false)
+const markers = ref([])
 // NEW: markers state
-const markers = ref([]);
+
+
+// update history table when final transcription is ready
+function updateHistoryTable(update) {
+  if (update){
+    addHistoryEntry();
+  }
+}
 
 // NEW: handler receives markers from Transcription
 function onMarkersFound(m) {
@@ -72,7 +89,7 @@ onMounted(async() =>
 
 async function get_records() {
     try {
-    const response = await fetch('http://localhost:8000/get-history')
+    const response = await fetch(`${API}/get-history/`)
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
@@ -86,8 +103,6 @@ async function get_records() {
 }
 </script>
 
-
-
 <style>
 
 #app {
@@ -100,6 +115,7 @@ html, body {
   height: 100%;
 }
 
+/* Overall container containing the four components */
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -125,20 +141,22 @@ html, body {
   overflow: hidden;
 }
 
+/* Setting min and max widths */
 .record {
   resize: horizontal;
+}
+
+.record, .history {
   min-width: calc(100vw - 65vw);
   max-width: calc(100vw - 35vw);
 }
+
 .transcript, .map {
   min-width: calc(100vw - 70vw);
   max-width: calc(100vw - 30vw);
 }
 
-.transcript {
-  resize: vertical !important;
-}
-
+/* Resize for smaller screens */
 @media (max-width: 900px) {
   .grid-container {
     grid-template-columns: 1fr;

@@ -1,343 +1,359 @@
-import os
-import argparse
-import json
-import torch
-import librosa
-from models.stfts import mag_phase_stft, mag_phase_istft
-from models.generator import SEMamba
-from models.pcs400 import cal_pcs
-import soundfile as sf
-import whisper
-import numpy as np
-from utils.util import load_config
-import datetime
-from collections import Counter
-from snr_helpers import estimate_snr_vad, classify_audio_quality
-from helpers_and_filters import bandpass_filter, pre_emphasis, run_deepfilternet, str2bool, semamba_denoise_chunks, save_intermediate_transcript
-from transcription_comparison import cleanup_repetition, compare_and_update
-from db import insert_intermediate_record,set_success_status,add_audio_path
+# api_server.py
+import os, re, uuid, subprocess, time, unicodedata, datetime, asyncio, logging
+from typing import List, Set, Optional
+
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
 import dotenv
-from requests import post
+import psycopg  # used indirectly via db.py, keep import if you rely on it elsewhere
 
-# Load environment variables for database connection
-dotenv.load_dotenv()
-
-
-h = None
-device = None 
-
-
-def send_log_to_frontend(current_id, message):
-    try:
-        post("http://127.0.0.1:8000/log-update", json={
-            "id": current_id,
-            "message": message
-        })
-    except Exception as e:
-        print("Failed to send log:", e)
-
-
-# ------------------------------
-# Whisper config
-# ------------------------------
-
-DOMAIN_PROMPT = (
-    "Der Input sind Funksprüche von Rettungseinsätzen in Hamburg. Alle hörbaren Wörter (einschließlich Orts- und Straßennamen) exakt wiedergeben. Keine zusätzlichen Wörter erfinden oder ergänzen. Zahlen als Ziffern darstellen. Unverständliche Stellen mit '...' markieren. Kurze Sätze, einfache Grammatik."
+# DB helpers
+from db import (
+    delete_records, select_records, get_latest_id, create_new_record,
+    add_audio_path, select_transcriptions, select_intermediate_result
 )
 
-def whisper_decode(model, audio_array, language=None):
-    
-     #ensure no negative strides by copying
-    if not isinstance(audio_array, np.ndarray):
-        audio_array = np.array(audio_array)
-    audio_array = np.ascontiguousarray(audio_array).astype(np.float32)
+dotenv.load_dotenv()
 
-    return model.transcribe(
-        audio_array,
-        task="transcribe",
-        language=language,
-        condition_on_previous_text=False,   
-        initial_prompt=DOMAIN_PROMPT,       
-        beam_size=5,                        
-        best_of=3,
-        patience=1.2,
-        temperature=(0.0, 0.2),             
-        no_speech_threshold=0.1,
-        compression_ratio_threshold=2.4,
-        word_timestamps=True
-    )
+# ---------- App & logging ----------
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+log = logging.getLogger("api")
 
+# Create the app ONCE (redirect_slashes to normalize /foo and /foo/)
+app = FastAPI(redoc_url=None, docs_url=None, redirect_slashes=True)
 
-# ------------------------------
-# Core pipeline
-# ------------------------------
+# CORS (kept wide because you proxy in dev)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-def inference(args, device):
+# In-memory stores
+logs_store: dict[str, list[dict]] = {}
+pending_responses: dict[str, asyncio.Future] = {}
 
-    # current id for database access
-    current_id = int(args.current_id)
+# ---------- Health ----------
+@app.get("/healthy")
+@app.get("/healthy/")
+def healthy():
+    return {"status": "ok"}
 
-    cfg = load_config(args.config)
-    n_fft, hop_size, win_size = cfg['stft_cfg']['n_fft'], cfg['stft_cfg']['hop_size'], cfg['stft_cfg']['win_size']
-    compress_factor = cfg['model_cfg']['compress_factor']
-    
-    model = SEMamba(cfg).to(device).half()
+# ---------- Paths & helpers ----------
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_DIR = os.getenv("INPUT_AUDIO_DIR", os.path.join(BASE_DIR, "input_audio"))
+OUTPUT_AUDIO_DIR = os.getenv("OUTPUT_AUDIO_DIR", os.path.join(BASE_DIR, "output_audio"))
+OUTPUT_TRANSCRIPT_DIR = os.getenv("OUTPUT_TRANSCRIPT_DIR", os.path.join(BASE_DIR, "output_transcriptions"))
 
-    state_dict = torch.load(args.checkpoint_file, map_location=device)
-    model.load_state_dict(state_dict['generator'])
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(OUTPUT_AUDIO_DIR, exist_ok=True)
 
-    os.makedirs(args.output_folder, exist_ok=True)
+def run(cmd, cwd=None):
+    p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    if p.returncode != 0:
+        raise RuntimeError(
+            f"Command failed: {' '.join(cmd)}\nstdout:\n{p.stdout}\nstderr:\n{p.stderr}"
+        )
+    return p
 
-    model.eval()
-    
-    whisper_model = whisper.load_model("small", device=device)
+def convert_webm_to_wav(webm_path, wav_path):
+    run(["ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path])
 
-    with torch.no_grad():
-        if args.file is not None:
-            latest_fname = args.file
-            print(f"Processing specified file: {latest_fname}")
-        else:
-            files = os.listdir(args.input_folder)
-            latest_file = max([os.path.join(args.input_folder, f) for f in files if f.lower().endswith(('.wav', '.mp3', '.flac', '.ogg', '.m4a'))], key=os.path.getmtime)
-            latest_fname = os.path.basename(latest_file)
-            print(f"Processing latest file: {latest_fname}")
-
-        full_path = os.path.join(args.input_folder, latest_fname)
-        if not os.path.isfile(full_path):
-            raise ValueError(f"{full_path} is not a valid file!")
-
-        audio, sr = librosa.load(full_path, sr=None, mono=True)
-        if sr != 16000:
-            audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
-            sr = 16000
-        
-        peak = np.max(np.abs(audio))
-        if peak > 0:
-            audio = audio / (peak + 1e-9)
-
-        base = os.path.splitext(latest_fname)[0]
-        final_wav_out = os.path.join(args.output_folder, f"{base}_final.wav")
-        best_result, best_audio = None, audio
-        stage = "raw"
-
-
-        # ===== Stage 1: RAW/Clean (always baseline) =====
-        #FIRST RAW TRANSCRIPT IS GENERATED HERE and saved at best_result - NO FILTERS APPLIED
-        best_result = whisper_decode(whisper_model, best_audio)
-        best_result["text"] = cleanup_repetition(best_result["text"])
-        #save_intermediate_transcript(base, stage, best_result)
-        print(f"Stage RAW text: {best_result.get('text','').strip()}")
-
-
-        # Here is where we insert the raw transcript into the database
-        insert_intermediate_record(best_result["text"].strip(), 1,current_id)
-        if(best_result["text"]):
-            set_success_status(current_id, True)  
-        
-        # notify API that raw transcription is ready
+# ---------- Upload & kickoff ----------
+@app.post("/transcribe-audio")
+@app.post("/transcribe-audio/")
+async def upload_audio(file: UploadFile = File(...)):
+    t0 = time.time()
     try:
-        post("http://127.0.0.1:8000/transcription-ready", json={
-            "id": current_id
-        })
+        log.info("UPLOAD: received filename=%s content_type=%s", file.filename, file.content_type)
+
+        unique = uuid.uuid4().hex[:8]
+        base, ext = os.path.splitext(file.filename or "audio.webm")
+        ext = ext or ".webm"
+        webm_name = f"{base}_{unique}{ext}"
+        webm_path = os.path.join(UPLOAD_DIR, webm_name)
+
+        raw = await file.read()
+        log.info("UPLOAD: bytes=%d -> %s", len(raw), webm_path)
+        with open(webm_path, "wb") as f:
+            f.write(raw)
+
+        # Convert -> WAV
+        wav_name = f"{base}_{unique}.wav"
+        wav_path = os.path.join(UPLOAD_DIR, wav_name)
+        log.info("FFMPEG: converting %s -> %s", webm_path, wav_path)
+        convert_webm_to_wav(webm_path, wav_path)
+        os.remove(webm_path)
+        log.info("FFMPEG: done; wav exists=%s size=%d", os.path.exists(wav_path), os.path.getsize(wav_path))
+
+        # DB row
+        create_new_record()
+        current_id = str(get_latest_id())
+        add_audio_path(current_id, wav_path, 0)
+        log.info("DB: created record id=%s with input=%s", current_id, wav_path)
+
+        # Start inference (non-blocking)
+        cmd = [
+            "python", "inference.py",
+            "--output_folder", OUTPUT_AUDIO_DIR,
+            "--input_folder", UPLOAD_DIR,
+            "--checkpoint_file", "ckpts/SEMamba_advanced.pth",
+            "--config", "recipes/SEMamba_advanced/SEMamba_advanced.yaml",
+            "--post_processing_PCS", "False",
+            "--file", wav_name,
+            "--current_id", current_id
+        ]
+        log.info("SPAWN: %s", " ".join(cmd))
+        p = subprocess.Popen(cmd, cwd=os.path.abspath(os.path.dirname(__file__)))
+        log.info("SPAWN: pid=%s", p.pid)
+
+        # Clean up old DB rows + files
+        old_records = delete_records()
+        delete_old_records(old_records)
+
+        # Wait for inference to signal ready—but not forever
+        loop = asyncio.get_running_loop()
+        fut: asyncio.Future = loop.create_future()
+        pending_responses[current_id] = fut
+
+        timeout_sec = 180  # adjust if needed
+        log.info("RETURN: waiting for inference… (elapsed %.2fs, timeout %ss)", time.time() - t0, timeout_sec)
+        try:
+            return await asyncio.wait_for(fut, timeout=timeout_sec)
+        except asyncio.TimeoutError:
+            pending_responses.pop(current_id, None)
+            raise HTTPException(status_code=504, detail="Inference timed out")
+    except HTTPException:
+        raise
     except Exception as e:
-        print("Failed to notify API:", e)
-    
-    quality, snr_db, flatness,hf_ratio = classify_audio_quality(best_audio, sr=sr)
-    
-    send_log_to_frontend(current_id, "Checking audio quality...")
+        log.exception("UPLOAD: failed")
+        raise HTTPException(status_code=500, detail=str(e))
 
-    if quality == "clean":
-        print("Audio classified as clean -> skipping filtering.")
-        stage = "final"
-        send_log_to_frontend(current_id, "Audio classified as clean -> skipping filtering.")
-        #save_intermediate_transcript(base, stage, best_result)
+# ---------- Callback from inference ----------
+@app.post("/transcription-ready")
+@app.post("/transcription-ready/")
+async def transcription_ready(request: Request):
+    """Called by inference.py when RAW transcript is stored in DB."""
+    data = await request.json()
+    current_id = str(data.get("id"))
+    if not current_id:
+        raise HTTPException(status_code=400, detail="Missing id")
 
-    # ===== Stage 2: Band-pass (conditional) =====
-    elif quality == "moderate":
-        print("Audio is moderately noisy, applying bandpass.")
-        send_log_to_frontend(current_id, "Audio is moderately noisy, applying bandpass.")
-        
-        bp_audio = bandpass_filter(best_audio)
-        bp_result = whisper_decode(whisper_model, bp_audio)
-        stage = "bandpass"
-        best_result, new_or_old = compare_and_update(best_result, bp_result, stage)
-        best_audio = bp_audio
+    # stage 1 = RAW in your code
+    record = select_intermediate_result(current_id, 1)
 
-        insert_intermediate_record(bp_result["text"].strip(), 6,current_id)
+    fut = pending_responses.pop(current_id, None)
+    if fut and not fut.done():
+        fut.set_result(JSONResponse(content={
+            "transcription": record,
+            "id": int(current_id)
+        }))
+    return {"status": "ok"}
 
-        if(new_or_old=="new is nonsense"):
-            send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
-        elif(new_or_old=="new"):
-            send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
-        elif(new_or_old=="old"):
-            send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
-                
-        # ===== Stage 3: Band-pass + Pre-emphasis (conditional) =====
-    elif quality == "muffled":
-        print("Audio is muffled, applying bandpass and pre-emphasis.")
-        send_log_to_frontend(current_id, "Audio is muffled, applying bandpass and pre-emphasis.")
-        bp_audio = bandpass_filter(best_audio)
-        pe_audio = pre_emphasis(bp_audio)
-        pe_result = whisper_decode(whisper_model, pe_audio)
-        stage = "bandpass+PE"
-        best_result, new_or_old = compare_and_update(best_result, pe_result, stage)
-        best_audio = pe_audio
+# ---------- Intermediate transcripts / logs ----------
+@app.get("/get-intermediate-transcript/{id}")
+async def get_intermediate_transcript(id: int):
+    try:
+        transcripts = select_transcriptions(id)
+        return JSONResponse(content={"transcripts": transcripts})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-        insert_intermediate_record(pe_result["text"].strip(), 2,current_id)
+@app.post("/log-update")
+async def log_update(request: Request):
+    data = await request.json()
+    current_id = str(data.get("id"))
+    message = data.get("message", "")
+    if not current_id:
+        raise HTTPException(status_code=400, detail="Missing id")
 
-        if(new_or_old=="new is nonsense"):
-            send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
-        elif(new_or_old=="new"):
-            send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
-        elif(new_or_old=="old"):
-            send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
-        
-    # ===== Stage 4: SEMamba + Bandpass +PE if needed (conditional) =====
-    elif quality == "noisy":  #run SEMamba only when noisy enough
-        print("Audio is noisy, applying SEmamba and bandpass.")
-        send_log_to_frontend(current_id, "Audio is noisy, applying SEmamba and bandpass.")
-        stage = "SEMamba+BP"
-    
-    # If clip is long (> 4 minutes) use chunked processing to avoid OOM
-        clip_seconds = len(best_audio) / float(sr)
-        if clip_seconds > 4 * 60:
-            print(f"Long clip ({clip_seconds/60:.2f} min) detected: using chunked SEMamba denoise.")
-            mamba_audio = semamba_denoise_chunks(best_audio, sr, model, device, n_fft, hop_size, win_size, compress_factor=0.8, chunk_size_sec=8.0, overlap_sec=2.0)
-        
+    logs_store.setdefault(current_id, []).append({
+        "message": message,
+        "timestamp": datetime.datetime.now().strftime("%H:%M:%S"),
+    })
+    return JSONResponse(content={"ok": True})
+
+@app.get("/get-logs/{id}")
+async def get_logs(id: int):
+    current_id = str(id)
+    logs = logs_store.get(current_id, [])
+    return JSONResponse(content={"logs": logs})
+
+# ---------- History ----------
+@app.get("/get-history")
+@app.get("/get-history/")
+async def get_history():
+    old_records = delete_records()
+    delete_old_records(old_records)
+    records = select_records()
+    return JSONResponse(content={"history": records})
+
+# ---------- Geocoding ----------
+import httpx  # used below
+HAMBURG_VIEWBOX = dict(left=8.4, top=53.95, right=10.5, bottom=53.3)
+
+poi_list = [
+    "Elbphilharmonie","Miniatur Wunderland","HafenCity","Landungsbrücken",
+    "Schanzenviertel","St. Pauli","Reeperbahn","Planten un Blomen","Altona",
+    "Hauptbahnhof","Dammtor","Jungfernstieg","Binnenalster","Außenalster",
+    "Rathausmarkt","Speicherstadt","Fischmarkt","Eppendorf","Winterhude",
+]
+
+SUFFIX_WORD = r"(?:Stra(?:ße|sse)|Str\.|Weg|Allee|Platz|Ring|Damm|Gasse|Chaussee|Ufer|Stieg)"
+
+ATTACHED = re.compile(
+    rf"\b([A-ZÄÖÜ][\wÄÖÜäöüß\-]*(?:{SUFFIX_WORD}))(?:\s+(\d+[a-zA-Z]?))?\b",
+    re.IGNORECASE | re.UNICODE,
+)
+SEPARATED = re.compile(
+    rf"\b([A-ZÄÖÜ][\wÄÖÜäöüß\-]+(?:[ -][A-ZÄÖÜ][\wÄÖÜäöüß\-]+)*)\s{SUFFIX_WORD}(?:\s+(\d+[a-zA-Z]?))?\b",
+    re.IGNORECASE | re.UNICODE,
+)
+
+def normalize_query(q: str) -> str:
+    if not q: return q
+    s = q.strip()
+    s = re.sub(r'\bStr\.\b', 'Straße', s, flags=re.IGNORECASE)
+    s = re.sub(r'\bStrasse\b', 'Straße', s, flags=re.IGNORECASE)
+    return s
+
+def variants(q: str) -> list[str]:
+    if not q: return []
+    s = normalize_query(q)
+    out = {s, s.replace('ß', 'ss'), s.replace('ss', 'ß')}
+    deacc = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
+    out.add(deacc)
+    out = {re.sub(r'\s+', ' ', v).strip() for v in out}
+    return [v for v in out if v]
+
+def extract_candidates(text: str) -> list[str]:
+    cands: set[str] = set()
+    t = text or ""
+
+    for m in ATTACHED.finditer(t):
+        street, num = m.groups()
+        cands.add(street if not num else f"{street} {num}")
+
+    for m in SEPARATED.finditer(t):
+        s = t[m.start():m.end()]
+        cands.add(s.strip())
+
+    for poi in poi_list:
+        if re.search(rf"\b{re.escape(poi)}\b", t, re.IGNORECASE):
+            cands.add(poi)
+
+    if not cands:
+        for chunk in re.split(r"[;,]", t):
+            if re.search(SUFFIX_WORD, chunk, re.IGNORECASE):
+                cands.add(chunk.strip())
+
+    if not cands and t.strip():
+        cands.add(t.strip())
+
+    return [re.sub(r"\s+", " ", c).strip() for c in cands if c.strip()]
+
+async def geocode_one(query: str) -> Optional[dict]:
+    cand_list = variants(query)
+    headers = {"User-Agent": "hamburg-transcription-geocoder/1.0 (you@example.com)"}
+
+    for q in cand_list:
+        params = {
+            "q": f"{q}, Hamburg",
+            "format": "json", "addressdetails": "1", "limit": "1",
+            "viewbox": f"{HAMBURG_VIEWBOX['left']},{HAMBURG_VIEWBOX['top']},{HAMBURG_VIEWBOX['right']},{HAMBURG_VIEWBOX['bottom']}",
+            "bounded": "1", "accept-language": "de", "countrycodes": "de",
+        }
+        try:
+            async with httpx.AsyncClient(timeout=10.0, headers=headers) as client:
+                r = await client.get("https://nominatim.openstreetmap.org/search", params=params)
+            r.raise_for_status()
+            data = r.json()
+        except Exception:
+            continue
+
+        if not data:
+            continue
+
+        x = data[0]
+        lat, lon = x.get("lat"), x.get("lon")
+        if lat is None or lon is None:
+            bbox = x.get("boundingbox")
+            if not bbox or len(bbox) != 4:
+                continue
+            lat = (float(bbox[0]) + float(bbox[1])) / 2.0
+            lon = (float(bbox[2]) + float(bbox[3])) / 2.0
         else:
-            noisy_wav = torch.FloatTensor(best_audio).to(device)
-            norm_factor = torch.sqrt(len(noisy_wav) / torch.sum(noisy_wav ** 2.0)).to(device)
-            
-            noisy_wav = (noisy_wav * norm_factor).unsqueeze(0)
-            noisy_amp, noisy_pha, _ = mag_phase_stft(noisy_wav, n_fft, hop_size, win_size, compress_factor=0.8)
-            
-            noisy_amp = noisy_amp.to(device).half()
-            noisy_pha = noisy_pha.to(device).half()
+            lat, lon = float(lat), float(lon)
 
-            amp_g, pha_g, _ = model(noisy_amp, noisy_pha)
-            mamba_audio = mag_phase_istft(amp_g.float(), pha_g.float(), n_fft, hop_size, win_size, compress_factor=0.8)
-            #mamba_audio = (mamba_audio / norm_factor).squeeze().cpu().detach().numpy()
+        addr = x.get("address", {})
+        city = addr.get("city") or addr.get("town") or addr.get("village") or "Hamburg"
+        street = addr.get("road")
+        house  = addr.get("house_number")
+        parts = []
+        if street:
+            parts.append(f"{street}{(' ' + house) if house else ''}")
+        if addr.get("postcode"):
+            parts.append(addr["postcode"])
+        if city:
+            parts.append(city)
+        label = ", ".join(parts) if parts else x.get("display_name")
 
-            mamba_audio = (mamba_audio / norm_factor.cpu().item())
-            mamba_audio = mamba_audio.squeeze().cpu().detach().numpy()
+        return {
+            "label": label, "lat": lat, "lng": lon, "source": "nominatim",
+            "bbox": x.get("boundingbox"), "raw_address": addr, "q_used": q,
+        }
+    return None
 
-            mamba_audio = mamba_audio / (np.max(np.abs(mamba_audio)) + 1e-9)
+class GeocodeIn(BaseModel):
+    text: Optional[str] = None
+    texts: Optional[List[str]] = None
 
-            del amp_g, pha_g, noisy_amp, noisy_pha
-            torch.cuda.empty_cache()
-            
-        # --- Always bandpass after SEMamba ---
-        mamba_audio = bandpass_filter(mamba_audio, 80, 7000)
+@app.post("/geocode")
+async def geocode(payload: GeocodeIn, debug: bool = Query(False)):
+    texts = payload.texts if payload.texts else ([payload.text] if payload.text else [])
+    if not texts:
+        raise HTTPException(status_code=400, detail="Provide `text` or `texts`.")
 
-        # --- Conditional pre-emphasis ---
-        fft = np.abs(np.fft.rfft(mamba_audio))**2
-        freqs = np.fft.rfftfreq(len(mamba_audio), 1/sr)
-        hf_energy = fft[(freqs > 3000) & (freqs < 8000)].sum()
-        lf_energy = fft[freqs <= 3000].sum()
-        hf_ratio = hf_energy / (lf_energy + 1e-9)
+    candidates: Set[str] = set()
+    for t in texts:
+        candidates.update(extract_candidates(t))
 
-        if args.post_processing_PCS:
-            mamba_audio = cal_pcs(mamba_audio)
-    
-        
-        mamba_result = whisper_decode(whisper_model, mamba_audio)
-        best_result, new_or_old = compare_and_update(best_result, mamba_result, stage)
-        best_audio = mamba_audio
-        insert_intermediate_record(mamba_result["text"].strip(), 3,current_id)
+    markers, dbg = [], []
+    for cand in candidates:
+        try:
+            hit = await geocode_one(cand)
+            dbg.append({"candidate": cand, "hit": bool(hit)})
+            if hit:
+                markers.append(hit)
+        except Exception as e:
+            dbg.append({"candidate": cand, "error": str(e)})
 
-        if(new_or_old=="new is nonsense"):
-            send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
-        elif(new_or_old=="new"):
-            send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
-        elif(new_or_old=="old"):
-            send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
-        
-        if hf_ratio < 0.02:
-            print("Post-Mamba audio still muffled -> applying pre-emphasis.")
-            send_log_to_frontend(current_id, "Post-Mamba audio still muffled -> applying pre-emphasis.")
-            mamba_audio = pre_emphasis(mamba_audio)
-            stage += "+PE"
-            mamba_pe_result = whisper_decode(whisper_model, mamba_audio) 
-            best_result, new_or_old = compare_and_update(best_result, mamba_pe_result, stage)
-            best_audio = mamba_audio
+    resp = {"markers": markers, "meta": {"candidates": list(candidates), "count": len(markers)}}
+    if debug:
+        resp["debug"] = dbg
+    return resp
 
-            insert_intermediate_record(mamba_pe_result["text"].strip(), 4,current_id)
+# --- delete audio files referenced by old records ---
+def delete_old_records(records):
+    for record in records:
+        # expected tuple: (id, inputpath, outputpath)
+        print("deleting files from record with id: ", record[0])
 
-            if(new_or_old=="new is nonsense"):
-                send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
-            elif(new_or_old=="new"):
-                send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
-            elif(new_or_old=="old"):
-                send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
-            
-        # ===== Stage 5: DeepFilterNet (conditional) =====
-        snr_post = estimate_snr_vad(best_audio, sr=16000)
-        flatness_post = librosa.feature.spectral_flatness(S=np.abs(librosa.stft(best_audio))).mean()
-        if snr_post < 15 and flatness_post < 0.01:
-            print(f"SNR Post={snr_post:.2f} dB, flatness post={flatness_post:.4f}")
-            print("Audio is still noisy, applying DeepFilterNet.")
-            send_log_to_frontend(current_id, "Audio is still noisy, applying DeepFilterNet.") 
-            stage = "DeepFilterNet"
+        try:
+            if record[1]:
+                print("deleting input audio file: ", record[1])
+                os.remove(record[1])
+        except Exception as e:
+            print("could not delete input audio file: ", e)
 
-            tmp_dir = "tmp"
-            os.makedirs(tmp_dir, exist_ok=True)
-            dfn_path = os.path.join(tmp_dir, f"{base}_dfn.wav")
-            sf.write(dfn_path, best_audio, 16000, 'PCM_16')
-            
-            run_deepfilternet(dfn_path, tmp_dir)
-            
-            dfn_audio, _ = librosa.load(dfn_path, sr=16000, mono=True)
-            dfn_result = whisper_decode(whisper_model, dfn_audio)
-            #save_intermediate_transcript(base, stage, dfn_result)
-            best_result, new_or_old = compare_and_update(best_result, dfn_result, stage)
-            best_audio = dfn_audio
-
-            insert_intermediate_record(dfn_result["text"].strip(), 5,current_id)
-
-            if(new_or_old=="new is nonsense"):
-                send_log_to_frontend(current_id, "New transcription looks like nonsensense, the raw transcription is recommended.")
-            elif(new_or_old=="new"):
-                send_log_to_frontend(current_id, "The transcription after filters is deemed better than the raw transcription.")
-            elif(new_or_old=="old"):
-                send_log_to_frontend(current_id, "Raw transcription is better than the transcription after filters.")
-            
-            os.remove(dfn_path)
-
-    # Save final
-    sf.write(final_wav_out, best_audio, 16000, 'PCM_16')
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    best_result["timestamp"] = timestamp
-    best_result["text"] = cleanup_repetition(best_result["text"])
-
-    add_audio_path(current_id, final_wav_out,1) # 1 for output audio path
-
-    insert_intermediate_record(best_result["text"].strip(), 0,current_id)
-    
-    print(f"\nFINAL TEXT   : {best_result.get('text','').strip()}")
-    print(f"SAVED WAV    : {final_wav_out}")
-    print(f"SAVED JSON   : {base}")
-
-
-def main():
-    print('Initializing Inference Process..')
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--input_folder', default='test_sounds')
-    parser.add_argument('--output_folder', default='results')
-    parser.add_argument('--config', default='results')
-    parser.add_argument('--checkpoint_file', required=True)
-    parser.add_argument('--post_processing_PCS', type=str2bool, default=False)
-    parser.add_argument('--file', type=str, default=None, help='Specific file to process')
-    parser.add_argument('--current_id', type=int, default=None, help='Current ID for database record')
-    args = parser.parse_args()
-
-    global device
-    if torch.cuda.is_available():
-        device = torch.device('cuda')
-    else:
-        raise RuntimeError("Currently, CPU mode is not supported.")
-        
-    inference(args, device)
-
-if __name__ == '__main__':
-    main()
-
+        try:
+            if record[2]:
+                print("deleting output audio file: ", record[2])
+                os.remove(record[2])
+        except Exception as e:
+            print("could not delete output audio file: ", e)

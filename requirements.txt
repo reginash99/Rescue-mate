@@ -1,21 +1,37 @@
-fastapi
-uvicorn
+# Web framework
+fastapi>=0.111
+uvicorn[standard]>=0.30
 python-multipart
+pydantic>=2.6
+
+# Utils
 packaging
-librosa
-pysoundfile
 pyyaml
-tensorboard
+tqdm
+dotenv
+
+# Audio / Speech
+librosa
+soundfile           # (same as pysoundfile)
+webrtcvad
 pesq
-einops
+deepfilternet
+
+# ML / Torch (CUDA 12.1 wheels)
 torch==2.2.2
 torchaudio==2.2.2
-webrtcvad
-dotenv
-psycopg
-webrtcvad
-openai-whisper
+einops
+tensorboard
+
+# NLP / Transformers
+transformers
 sentence-transformers
-deepfilternet
-fastapi
-uvicorn
+openai-whisper
+
+# Database (psycopg v3)
+psycopg
+
+# Math / Sci
+numpy
+scipy
+httpx

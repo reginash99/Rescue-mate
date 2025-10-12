@@ -1,27 +1,31 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
 
-export default defineConfig({
-  plugins: [vue()],
-  resolve: {
-    alias: { '@': path.resolve(__dirname, './src') },
-  },
-server: {
-  proxy: {
-    '^/transcribe-audio/?$': {
-      target: 'http://127.0.0.1:8000',   // or 8001 if that’s your backend
-      changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const API_TARGET = env.VITE_API_URL || 'http://api:8000'  // docker-internal default
+
+  return {
+    plugins: [vue()],
+    server: {
+      host: '0.0.0.0',
+      port: 5173,
+      strictPort: true,
+      proxy: {
+        '/api': {
+          target: API_TARGET,       // <- will be http://api:8000 in container
+          changeOrigin: true,
+          secure: false,
+          rewrite: p => p.replace(/^\/api/, ''),
+        },
+      },
     },
-    '^/geocode/?$': {
-      target: 'http://127.0.0.1:8000',
-      changeOrigin: true,
+    resolve: {
+      alias: { '@': '/src' },
     },
-  },
-},
-
-
-
+    build: {
+      outDir: 'dist',
+      sourcemap: true,
+    },
+  }
 })
-
-

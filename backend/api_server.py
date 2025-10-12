@@ -1,17 +1,20 @@
 import os, re, uuid, subprocess
 from typing import List, Set, Optional
-from fastapi import FastAPI, UploadFile, File, HTTPException, Query
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
 import json
-from db import insert_record, delete_records, select_records, get_id, get_latest_id, select_record, create_new_record, add_audio_path, select_transcriptions, select_intermediate_result
+from db import delete_records, select_records, get_latest_id, create_new_record, add_audio_path, select_transcriptions, select_intermediate_result
 import dotenv
 import unicodedata
 import asyncio
-from fastapi import Request
 import datetime
+import psycopg
+import logging, os, asyncio, uuid, subprocess, time
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+log = logging.getLogger("api")
 
 dotenv.load_dotenv()
 
@@ -23,10 +26,15 @@ pending_responses = {}
 # --- create app FIRST ---
 app = FastAPI()
 
+@app.get("/healthy")
+def healthy():
+    return {"status": "ok"}
+
+
 # --- CORS (optional if you proxy through Vite) ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -74,9 +82,6 @@ def variants(q: str) -> list[str]:
     deacc = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
     out.add(deacc)
 
-    # very common missing-'t' in '...stenstraße' (e.g. Kurfürsenstraße -> Kurfürstenstraße)
-    out.add(re.sub(r'senstraße\b', 'stenstraße', s, flags=re.IGNORECASE))
-
     # collapse double spaces
     out = {re.sub(r'\s+', ' ', v).strip() for v in out}
 
@@ -96,65 +101,66 @@ def convert_webm_to_wav(webm_path, wav_path):
     run(["ffmpeg", "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path])
 
 
-
-@app.post("/transcribe-audio/")
 @app.post("/transcribe-audio")
 async def upload_audio(file: UploadFile = File(...)):
+    t0 = time.time()
     try:
-        unique_id = uuid.uuid4().hex[:8]
+        log.info("UPLOAD: received filename=%s content_type=%s", file.filename, file.content_type)
+
+        unique = uuid.uuid4().hex[:8]
         base, ext = os.path.splitext(file.filename or "audio.webm")
         ext = ext or ".webm"
-        webm_name = f"{base}_{unique_id}{ext}"
+        webm_name = f"{base}_{unique}{ext}"
         webm_path = os.path.join(UPLOAD_DIR, webm_name)
 
+        raw = await file.read()
+        log.info("UPLOAD: bytes=%d -> %s", len(raw), webm_path)
         with open(webm_path, "wb") as f:
-            f.write(await file.read())
+            f.write(raw)
 
-        # Convert to WAV
-        wav_filename = f"{base}_{unique_id}.wav"
-        wav_location = os.path.join(UPLOAD_DIR, wav_filename)
-        convert_webm_to_wav(webm_path, wav_location)
+        # Convert -> WAV
+        wav_name = f"{base}_{unique}.wav"
+        wav_path = os.path.join(UPLOAD_DIR, wav_name)
+        log.info("FFMPEG: converting %s -> %s", webm_path, wav_path)
+        convert_webm_to_wav(webm_path, wav_path)
         os.remove(webm_path)
+        log.info("FFMPEG: done; wav exists=%s size=%d", os.path.exists(wav_path), os.path.getsize(wav_path))
 
-        # DB: create new record
+        # DB row
         create_new_record()
         current_id = str(get_latest_id())
-        add_audio_path(current_id, wav_location, 0)
+        add_audio_path(current_id, wav_path, 0)
+        log.info("DB: created record id=%s with input=%s", current_id, wav_path)
 
-        # Update environment variables for subprocess
-        env = os.environ.copy()
-        env.update({
-            "INPUT_AUDIO_DIR": UPLOAD_DIR,
-            "OUTPUT_AUDIO_DIR": OUTPUT_AUDIO_DIR
-        })
+        # Start inference (non-blocking)
+        cmd = [
+            "python", "inference.py",
+            "--output_folder", OUTPUT_AUDIO_DIR,
+            "--input_folder", UPLOAD_DIR,
+            "--checkpoint_file", "ckpts/SEMamba_advanced.pth",
+            "--config", "recipes/SEMamba_advanced/SEMamba_advanced.yaml",
+            "--post_processing_PCS", "False",
+            "--file", wav_name,
+            "--current_id", current_id
+        ]
+        log.info("SPAWN: %s", " ".join(cmd))
+        p = subprocess.Popen(cmd, cwd=os.path.abspath(os.path.dirname(__file__)))
+        log.info("SPAWN: pid=%s", p.pid)
 
-        # Launch inference
-        subprocess.Popen(
-            [
-                "python", "inference.py",
-                "--output_folder", OUTPUT_AUDIO_DIR,
-                "--input_folder", UPLOAD_DIR,
-                "--checkpoint_file", "ckpts/SEMamba_advanced.pth",
-                "--config", "recipes/SEMamba_advanced/SEMamba_advanced.yaml",
-                "--post_processing_PCS", "False",
-                "--file", wav_filename,
-                "--current_id", current_id
-            ],
-            cwd=os.path.abspath(os.path.dirname(__file__))
-        )
-
-        # delete all records older that 24 hours
+        # cleanup old
         old_records = delete_records()
         delete_old_records(old_records)
-        
 
-        # Suspend until inference notifies us
+        # Wait for inference to signal ready
         loop = asyncio.get_running_loop()
         fut = loop.create_future()
         pending_responses[current_id] = fut
+
+        log.info("RETURN: waiting for inference… (elapsed %.2fs)", time.time() - t0)
         return await fut
 
     except Exception as e:
+        log.exception("UPLOAD: failed")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -183,8 +189,6 @@ async def get_intermediate_transcript(id: int):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
 
 @app.post("/log-update")
 async def log_update(request: Request):

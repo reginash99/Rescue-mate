@@ -1,5 +1,4 @@
 # Dockerfile.gpu
-# Devel image includes nvcc so mamba_ssm can compile if a wheel isn't available
 FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -8,6 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     CUDA_HOME=/usr/local/cuda
 
+# system deps + compiler toolchain
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.11 python3.11-venv python3.11-distutils python3.11-dev \
     build-essential gcc g++ make \
@@ -19,32 +19,42 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && curl -sS https://bootstrap.pypa.io/get-pip.py | python
 
 WORKDIR /app
-COPY requirements.txt /app/requirements.txt
 
-# Core Python build helpers
+# ---- Python deps (except mamba_ssm) ----
+COPY requirements.txt /app/requirements.txt
 RUN python -m pip install --upgrade pip setuptools wheel Cython
 
-# Torch matching CUDA 12.1
-RUN pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 \
+# Torch 2.2.2 stack for CUDA 12.1
+RUN pip install torch==2.2.2 torchaudio==2.2.2 \
     --index-url https://download.pytorch.org/whl/cu121
 
-# Install your app deps first (faster layer caching)
+ENV TRANSFORMERS_NO_TORCHVISION=1
+
+# Your normal deps (keep psycopg/psycopg2 consistent with your code)
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
-# ---- Install mamba_ssm from your local folder ----
-# Copy only the installer first to leverage Docker cache
+# ---- Build mamba_ssm from source to match the above Torch/ABI ----
+# copy just this directory first (better layer caching)
 COPY backend/mamba_install /app/backend/mamba_install
-# Let it try cached wheel; if not, compile with nvcc
-# Ensure README.md exists where setup.py expects it
+
+# make sure README exists (some setups expect it)
 RUN if [ ! -f /app/backend/mamba_install/README.md ]; then \
-      if [ -f /app/README.md ]; then cp /app/README.md /app/backend/mamba_install/README.md; \
-      else echo "# mamba_ssm\nLocal build inside container." > /app/backend/mamba_install/README.md; fi; \
+      echo "# mamba_ssm" > /app/backend/mamba_install/README.md; \
     fi
 
-# Now install it (will use prebuilt wheel if available, else compile with nvcc)
-RUN cd /app/backend/mamba_install && python -m pip install --no-cache-dir .
+# IMPORTANT: force CUDA build with the same C++ ABI PyTorch expects, and disable build isolation
+# so it uses the in-image torch headers. Set compute arch to your GPU (3050 Ti ~ sm_86).
+ENV FORCE_CUDA=1 \
+    CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=1" \
+    TORCH_CUDA_ARCH_LIST="8.6" \
+    MAX_JOBS=2
 
-# Now copy the rest of the project
+RUN python -m pip uninstall -y mamba-ssm mamba_ssm || true && \
+    rm -rf /root/.cache/pip /root/.cache/torch_extensions || true && \
+    cd /app/backend/mamba_install && \
+    python -m pip install --no-cache-dir --no-build-isolation -v .
+
+# ---- Copy the rest of the project ----
 COPY . /app
 
 # optional: psql client
