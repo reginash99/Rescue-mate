@@ -6,11 +6,15 @@
 
 ### 1. Install Docker Desktop and set it up
 
-Instructions on how setting up with Docker go here.
 You need Docker Desktop for your OS, downloadable via https://www.docker.com/products/docker-desktop/. 
+
 Install it and enable WSL 2 integration (on Windows). 
+
 Open Docker Desktop and make sure the engine is running. 
+
 Go to Settings --> Resources --> GPU and enable GPU support (NVIDIA only).
+
+Docker Desktop needs to be running all the time while handling the app.
 
 
 ### 2. Clone the project
