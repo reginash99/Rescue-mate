@@ -1,5 +1,7 @@
 # Rescue-mate
 
+This application allows users to record audio files, clean them of background noise, transcribe them and display locations that are mentioned within the audio file in a geographical map.
+
 # BACKEND
 
 Before setting up the project, you have to install the database.
