@@ -62,13 +62,17 @@ docker compose up --build
 You'll see three services start: 
 
 db         | PostgreSQL 17 ...
+
 api        | Uvicorn running on 0.0.0.0:8000
+
 frontend   | Vite dev server running on port 5173
 
 ### Access the app
 
 Frontend: http://localhost:5173
+
 API: http://localhost:8000/healthy (should return {"status":"ok"})
+
 Database: PostgreSQL accessible at localhost:5432 (user postgres, pass postgres)
 
 
