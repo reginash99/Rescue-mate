@@ -390,7 +390,7 @@ to read the .env file, the following package has to be installed:
 pip install python-dotenv
 ```
 
-#SERVER
+# SERVER
 
 For deploying the application, it is necessary to add two environment variables to the .env file with the following structure:
 
@@ -494,3 +494,11 @@ The components can be resized to your liking by dragging the bottom right corner
 The theme of the webite follows the theme of your browser. There are two themes available, dark and light.
 
 
+# Task division
+Antonela - Backend (Whisper, SEMamba, audio processing and filtering, transcript evaluation and correction), Frontend (Polling updates)
+
+Karen - Backend (Geoparser, Docker, FastAPI), General communication
+
+Regina - Frontend (Recording component, Map component, mic permissions, general design), Backend (Database)
+
+Kashf - Frontend (Transcription component, History component, general design, light/dark themes)
