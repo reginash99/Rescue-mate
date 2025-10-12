@@ -160,7 +160,7 @@ API: http://localhost:8000/healthy (should return {"status":"ok"})
 Database: PostgreSQL accessible at localhost:5432 (user postgres, pass postgres)
 
 
-## Installation procedure for SEMamba
+## Installation procedure for SEMamba (Without Docker)
 
 We based our backend on SEMamba, which is a low-artifact denoising model used to suppress background noise while preserving speech transients and long-range context.
 
