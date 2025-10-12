@@ -1,7 +1,6 @@
 import psycopg
 import dotenv
 import os
-# BEFORE
 
 dotenv.load_dotenv()
 
